@@ -26,7 +26,7 @@ export async function extractRunDataFromImage(
   const today = new Date().toISOString().split("T")[0];
 
   const response = await anthropic.messages.create({
-    model: "claude-3-5-sonnet-20241022",
+    model: "claude-3-haiku-20240307",
     max_tokens: 1024,
     messages: [
       {
