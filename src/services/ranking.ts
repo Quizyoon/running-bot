@@ -35,8 +35,8 @@ export async function getMonthlyRanking(
   if (result.rows.length === 0) return [];
 
   // 정규화를 위한 최대/최소값
-  const maxDistance = Math.max(...result.rows.map((r) => parseFloat(r.total_distance)));
-  const minPace = Math.min(...result.rows.map((r) => parseFloat(r.avg_pace)));
+  const maxDistance = Math.max(...result.rows.map((r: Record<string, any>) => parseFloat(r.total_distance)));
+  const minPace = Math.min(...result.rows.map((r: Record<string, any>) => parseFloat(r.avg_pace)));
 
   // 배지 조회
   const badgeResult = await pool.query(
@@ -44,11 +44,11 @@ export async function getMonthlyRanking(
     [groupId]
   );
   const badgeMap = new Map<string, string[]>();
-  for (const row of badgeResult.rows) {
+  for (const row of badgeResult.rows as Record<string, any>[]) {
     badgeMap.set(row.user_id, row.badges || []);
   }
 
-  const entries: RankingEntry[] = result.rows.map((row) => {
+  const entries: RankingEntry[] = result.rows.map((row: Record<string, any>) => {
     const totalDistance = parseFloat(row.total_distance);
     const avgPace = parseFloat(row.avg_pace);
 
@@ -88,7 +88,7 @@ export async function getDailyPaceRanking(
     [groupId, date]
   );
 
-  return result.rows.map((row, i) => ({
+  return result.rows.map((row: Record<string, any>, i: number) => ({
     rank: i + 1,
     userId: row.user_id,
     displayName: row.display_name,
