@@ -118,6 +118,7 @@ export function buildDuplicateCard(displayName: string): FlexMessage {
       type: "box",
       layout: "vertical",
       paddingAll: "20px",
+      paddingBottom: "16px",
       backgroundColor: "#FFFFFF",
       contents: [
         {
