@@ -28,7 +28,7 @@ export function buildConfirmCard(
 
   const bubble: FlexBubble = {
     type: "bubble",
-    size: "mega",
+    size: "kilo",
     body: {
       type: "box",
       layout: "vertical",
@@ -104,7 +104,7 @@ export function buildConfirmCard(
 export function buildDuplicateCard(displayName: string): FlexMessage {
   const bubble: FlexBubble = {
     type: "bubble",
-    size: "mega",
+    size: "kilo",
     body: {
       type: "box",
       layout: "vertical",
@@ -164,7 +164,7 @@ export function buildDateErrorCard(
 ): FlexMessage {
   const bubble: FlexBubble = {
     type: "bubble",
-    size: "mega",
+    size: "kilo",
     body: {
       type: "box",
       layout: "vertical",

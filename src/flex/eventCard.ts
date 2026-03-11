@@ -117,7 +117,7 @@ export function buildEventResultCard(
 
   const bubble: FlexBubble = {
     type: "bubble",
-    size: "mega",
+    size: "kilo",
     header: {
       type: "box",
       layout: "vertical",
@@ -189,7 +189,7 @@ export function buildWeeklyAttendanceCard(
     altText: `📅 이번 주 개근 현황`,
     contents: {
       type: "bubble",
-      size: "mega",
+      size: "kilo",
       body: {
         type: "box",
         layout: "vertical",
