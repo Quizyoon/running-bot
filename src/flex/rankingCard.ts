@@ -83,7 +83,8 @@ function buildRankRow(entry: RankingEntry): any {
 
 export function buildRankingCard(
   ranking: RankingEntry[],
-  userId?: string
+  userId?: string,
+  displayName?: string
 ): FlexMessage {
   const { week, year } = getWeekRange();
   const top5 = ranking.slice(0, 5);
@@ -132,6 +133,31 @@ export function buildRankingCard(
           color: "#AAAAAA",
           margin: "4px" as any,
         },
+        ...(userEntry && displayName
+          ? [
+              {
+                type: "text" as const,
+                text: `${displayName}님은 ${userEntry.rank}위에요`,
+                size: "20px" as any,
+                weight: "bold" as const,
+                color: "#111111",
+                margin: "12px" as any,
+                wrap: true,
+              },
+            ]
+          : !userEntry && displayName
+          ? [
+              {
+                type: "text" as const,
+                text: `${displayName}님, 기록을 등록해보세요!`,
+                size: "20px" as any,
+                weight: "bold" as const,
+                color: "#111111",
+                margin: "12px" as any,
+                wrap: true,
+              },
+            ]
+          : []),
         {
           type: "box",
           layout: "vertical",

@@ -148,7 +148,20 @@ async function handleRanking(
   // 프로필 이미지 가져오기
   await fillProfileUrls(client, event.source, ranking);
 
-  const rankingCard = buildRankingCard(ranking, userId);
+  // 유저 이름 가져오기
+  let displayName = "Unknown";
+  try {
+    const source = event.source as any;
+    if (source.type === "group" && source.groupId) {
+      const p = await client.getGroupMemberProfile(source.groupId, userId);
+      displayName = p.displayName;
+    } else {
+      const p = await client.getProfile(userId);
+      displayName = p.displayName;
+    }
+  } catch {}
+
+  const rankingCard = buildRankingCard(ranking, userId, displayName);
   await client.replyMessage(event.replyToken, rankingCard);
 }
 

@@ -146,7 +146,18 @@ async function handleCommand(
           text: "📊 이번 주 랭킹\n\n아직 기록이 없습니다.",
         });
       } else {
-        const rankingCard = buildRankingCard(ranking, userId);
+        let displayName = "Unknown";
+        try {
+          const src = event.source as any;
+          if (src.type === "group" && src.groupId) {
+            const p = await client.getGroupMemberProfile(src.groupId, userId);
+            displayName = p.displayName;
+          } else {
+            const p = await client.getProfile(userId);
+            displayName = p.displayName;
+          }
+        } catch {}
+        const rankingCard = buildRankingCard(ranking, userId, displayName);
         await client.replyMessage(event.replyToken, rankingCard);
       }
       break;
