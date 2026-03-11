@@ -9,7 +9,6 @@ export interface OcrResult {
   paceMinPerKm: number | null;
   paceDisplay: string | null;
   runDate: string | null;
-  sourceApp: string | null;
 }
 
 export async function extractRunDataFromImage(
@@ -47,8 +46,7 @@ export async function extractRunDataFromImage(
   "durationDisplay": "HH:MM:SS" 또는 "MM:SS" 형식 문자열,
   "paceMinPerKm": 숫자 (페이스를 분 단위 소수로, 예: 5분30초 = 5.5),
   "paceDisplay": "M'SS\\"" 형식 문자열 (예: 5'30"),
-  "runDate": "YYYY-MM-DD" 형식 문자열,
-  "sourceApp": 앱 이름 문자열 (Nike Run Club, Strava, Garmin, Apple Fitness, Samsung Health, Adidas Running, Runkeeper, KakaoMap 중 하나, 식별 불가 시 null)
+  "runDate": "YYYY-MM-DD" 형식 문자열
 }
 
 정보를 찾을 수 없으면 해당 필드를 null로 설정하세요.
@@ -76,7 +74,6 @@ export async function extractRunDataFromImage(
       paceMinPerKm: null,
       paceDisplay: null,
       runDate: null,
-      sourceApp: null,
     };
   }
 }

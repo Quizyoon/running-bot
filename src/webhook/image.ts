@@ -2,7 +2,7 @@ import { Client, MessageEvent } from "@line/bot-sdk";
 import { extractRunDataFromImage, OcrResult } from "../ocr/claude";
 import { validateRunData, checkDuplicate } from "../services/running";
 import { getActiveEvent } from "../services/event";
-import { buildConfirmCard } from "../flex/confirmCard";
+import { buildConfirmCard, buildDuplicateCard, buildDateErrorCard } from "../flex/confirmCard";
 import { pendingRecords, PendingRecord } from "./state";
 
 export async function handleImageMessage(
@@ -32,22 +32,31 @@ export async function handleImageMessage(
   // 이상치 검증
   const validation = validateRunData(ocrResult);
 
+  // 프로필 이름 (날짜 오류 카드에도 필요하므로 먼저 가져옴)
+  const displayName = await getDisplayName(client, source);
+
+  // 당일 기록만 인정
+  const today = new Date().toISOString().split("T")[0];
+  const runDate = ocrResult.runDate ?? today;
+  if (runDate !== today) {
+    const runDateTimestamp = ocrResult.runDate
+      ? ocrResult.runDate.replace(/-/g, ".")
+      : runDate.replace(/-/g, ".");
+    const dateErrorCard = buildDateErrorCard(displayName, ocrResult, runDateTimestamp);
+    await client.replyMessage(event.replyToken, dateErrorCard);
+    return;
+  }
+
   // 중복 체크
-  const runDate = ocrResult.runDate ?? new Date().toISOString().split("T")[0];
   const isDuplicate = await checkDuplicate(source.userId, groupId, runDate);
   if (isDuplicate) {
-    await client.replyMessage(event.replyToken, {
-      type: "text",
-      text: "⚠️ 이미 오늘 러닝 기록이 등록되어 있습니다. 동일 날짜에는 1건만 인정됩니다.",
-    });
+    const duplicateCard = buildDuplicateCard(displayName);
+    await client.replyMessage(event.replyToken, duplicateCard);
     return;
   }
 
   // 하루 이벤트 참여 여부 확인
   const activeEvent = await getActiveEvent(groupId, runDate);
-
-  // 프로필 이름
-  const displayName = await getDisplayName(client, source);
 
   // 확인 대기 저장
   const confirmId = `${source.userId}_${Date.now()}`;

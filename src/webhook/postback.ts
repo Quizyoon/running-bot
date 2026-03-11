@@ -1,9 +1,11 @@
 import { Client, PostbackEvent } from "@line/bot-sdk";
 import { pendingRecords } from "./state";
 import { saveSession } from "../services/running";
-import { updateMemberStats, computeBadges } from "../services/attendance";
+import { updateMemberStats, computeBadges, getWeeklyAttendance, getWeekStartDate } from "../services/attendance";
 import { buildResultCard } from "../flex/resultCard";
 import { buildCorrectionPrompt } from "../flex/confirmCard";
+import { getMonthlyRanking } from "../services/ranking";
+import { buildRankingCard } from "../flex/rankingCard";
 
 export async function handlePostback(
   client: Client,
@@ -11,8 +13,14 @@ export async function handlePostback(
 ): Promise<void> {
   const params = new URLSearchParams(event.postback.data);
   const action = params.get("action");
-  const confirmId = params.get("id");
 
+  // 카드 버튼에서 호출하는 커맨드 처리 (confirmId 불필요)
+  if (action === "command") {
+    await handleCommand(client, event, params.get("cmd") || "");
+    return;
+  }
+
+  const confirmId = params.get("id");
   if (!confirmId) return;
 
   const record = pendingRecords.get(confirmId);
@@ -62,7 +70,7 @@ async function handleConfirm(
     distanceKm: data.distanceKm!,
     durationSec: data.durationSec ?? 0,
     paceMinPerKm: data.paceMinPerKm ?? 0,
-    sourceApp: data.sourceApp ?? undefined,
+    sourceApp: undefined,
     eventId: record.eventId,
   });
 
@@ -116,4 +124,50 @@ async function handleCorrectSelect(
     type: "text",
     text: `✏️ 올바른 ${fieldNames[field] || field}을(를) 입력해주세요.`,
   });
+}
+
+async function handleCommand(
+  client: Client,
+  event: PostbackEvent,
+  cmd: string
+): Promise<void> {
+  const userId = event.source.userId;
+  if (!userId) return;
+
+  const source = event.source as any;
+  const groupId = source.groupId || source.roomId || userId;
+
+  switch (cmd) {
+    case "ranking": {
+      const now = new Date();
+      const ranking = await getMonthlyRanking(groupId, now.getFullYear(), now.getMonth() + 1);
+      if (ranking.length === 0) {
+        await client.replyMessage(event.replyToken, {
+          type: "text",
+          text: `📊 ${now.getFullYear()}년 ${now.getMonth() + 1}월 랭킹\n\n아직 기록이 없습니다.`,
+        });
+      } else {
+        const rankingCard = buildRankingCard(ranking, now.getFullYear(), now.getMonth() + 1);
+        await client.replyMessage(event.replyToken, rankingCard);
+      }
+      break;
+    }
+    case "attendance": {
+      const weekStart = getWeekStartDate(new Date());
+      const attendance = await getWeeklyAttendance(userId, groupId, weekStart);
+      const dayLabels = ["월", "화", "수", "목", "금", "토", "일"];
+      const dayStr = attendance.days
+        .map((d: boolean, i: number) => (d ? `✅${dayLabels[i]}` : `⬜${dayLabels[i]}`))
+        .join(" ");
+      const remaining = 7 - attendance.totalDays;
+      await client.replyMessage(event.replyToken, {
+        type: "text",
+        text: `📋 이번 주 출석 현황\n\n${dayStr}\n\n출석: ${attendance.totalDays}/7일` +
+          (remaining > 0 ? `\n개근까지 ${remaining}일 남았습니다! 💪` : `\n🎉 7일 개근 달성! 축하합니다!`),
+      });
+      break;
+    }
+    default:
+      break;
+  }
 }

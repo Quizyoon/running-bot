@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Flex Message Preview</title>
+  <style>
+    body {
+      background: #7B8FB2;
+      display: flex;
+      justify-content: center;
+      gap: 24px;
+      padding: 40px;
+      font-family: -apple-system, BlinkMacSystemFont, 'Helvetica Neue', Arial, sans-serif;
+    }
+    .phone {
+      width: 375px;
+      padding: 20px;
+    }
+    .label {
+      color: #FFFFFF;
+      font-size: 13px;
+      font-weight: bold;
+      margin-bottom: 8px;
+      text-align: center;
+    }
+    .bubble {
+      background: #FFFFFF;
+      border-radius: 16px;
+      overflow: hidden;
+      box-shadow: 0 2px 12px rgba(0,0,0,0.1);
+    }
+    /* === 확인 카드 === */
+    .body {
+      padding: 16px 16px 10px 16px;
+    }
+    .title {
+      font-size: 14px;
+      font-weight: bold;
+      color: #333333;
+      margin-bottom: 8px;
+    }
+    .name {
+      font-size: 26px;
+      font-weight: 800;
+      color: #111111;
+      letter-spacing: -0.3px;
+      margin-bottom: 8px;
+    }
+    .timestamp {
+      font-size: 13px;
+      color: #AAAAAA;
+      margin-bottom: 16px;
+    }
+    .row {
+      display: flex;
+      margin-bottom: 6px;
+    }
+    .row-label {
+      width: 40px;
+      margin-right: 32px;
+      font-size: 14px;
+      color: #999999;
+    }
+    .row-value {
+      font-size: 14px;
+      color: #111111;
+      font-weight: normal;
+    }
+    .footer {
+      padding: 0 16px 16px;
+    }
+    .btn-primary {
+      width: 100%;
+      padding: 14px;
+      background: #F5F5F5;
+      color: #000000;
+      border: none;
+      border-radius: 8px;
+      font-size: 15px;
+      font-weight: bold;
+      cursor: pointer;
+      margin-bottom: 8px;
+    }
+    .footer-no-gap {
+      padding: 0 16px 16px;
+    }
+    .footer-no-gap .btn-primary {
+      margin-bottom: 0;
+    }
+    .btn-link {
+      width: 100%;
+      padding: 8px;
+      background: none;
+      color: #000000;
+      border: none;
+      font-size: 14px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+    .warning-text {
+      font-size: 13px;
+      color: #FF0000;
+      line-height: 1.4;
+      margin-bottom: 16px;
+    }
+    /* === 알림 카드 (중복) === */
+    .alert-body {
+      padding: 20px;
+    }
+    .alert-title {
+      font-size: 20px;
+      font-weight: 800;
+      color: #111111;
+      letter-spacing: -0.3px;
+      line-height: 1.4;
+      margin-bottom: 8px;
+    }
+    .alert-desc {
+      font-size: 14px;
+      color: #999999;
+      margin-bottom: 0;
+    }
+    .alert-footer {
+      padding: 0 16px 16px;
+    }
+  </style>
+</head>
+<body>
+  <!-- 확인 카드 -->
+  <div class="phone">
+    <div class="label">확인 카드</div>
+    <div class="bubble">
+      <div class="body">
+        <div class="title">Today's Run</div>
+        <div class="name">Kay</div>
+        <div class="timestamp">2026.03.11 11:44:55</div>
+        <div class="row">
+          <span class="row-label">거리</span>
+          <span class="row-value">5.2km</span>
+        </div>
+        <div class="row">
+          <span class="row-label">시간</span>
+          <span class="row-value">28:14</span>
+        </div>
+        <div class="row">
+          <span class="row-label">페이스</span>
+          <span class="row-value">5'26"/km</span>
+        </div>
+      </div>
+      <div class="footer">
+        <button class="btn-primary">등록하기</button>
+        <button class="btn-link">수정하기</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 중복 등록 카드 -->
+  <div class="phone">
+    <div class="label">중복 등록 시</div>
+    <div class="bubble">
+      <div class="alert-body">
+        <div class="alert-title">오늘 Kay님의 기록은<br>등록되어 있어요.</div>
+        <div class="alert-desc">동일 날짜에는 1건만 인정됩니다.</div>
+      </div>
+      <div class="alert-footer">
+        <button class="btn-primary">내 랭킹 확인하기</button>
+        <button class="btn-link">출석체크 하기</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 날짜 오류 카드 -->
+  <div class="phone">
+    <div class="label">날짜 오류 시</div>
+    <div class="bubble">
+      <div class="body">
+        <div class="title">Today's Run</div>
+        <div class="name">Kay</div>
+        <div class="warning-text">오늘의 기록만 등록할 수 있어요.<br>2021.05.12 20:32:17</div>
+        <div class="row">
+          <span class="row-label">거리</span>
+          <span class="row-value">0.5km</span>
+        </div>
+        <div class="row">
+          <span class="row-label">시간</span>
+          <span class="row-value">28:14</span>
+        </div>
+        <div class="row">
+          <span class="row-label">페이스</span>
+          <span class="row-value">8'43/km</span>
+        </div>
+      </div>
+      <div class="footer-no-gap">
+        <button class="btn-primary">다시 등록하기</button>
+      </div>
+    </div>
+  </div>
+</body>
+</html>
