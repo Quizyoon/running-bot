@@ -19,10 +19,10 @@ export function buildConfirmCard(
       ? warnings.map((w) => ({
           type: "text" as const,
           text: w,
-          size: "xs" as const,
+          size: "13px" as any,
           color: "#FF0000",
           wrap: true,
-          margin: "sm" as const,
+          margin: "8px" as any,
         }))
       : [];
 
@@ -39,30 +39,30 @@ export function buildConfirmCard(
         {
           type: "text",
           text: "Today's Run",
-          size: "sm",
+          size: "14px" as any,
           weight: "bold",
           color: "#333333",
         },
         {
           type: "text",
           text: displayName,
-          size: "xxl",
+          size: "26px" as any,
           weight: "bold",
           color: "#111111",
-          margin: "sm",
+          margin: "8px" as any,
         },
         {
           type: "text",
           text: timestamp,
-          size: "xs",
+          size: "13px" as any,
           color: "#AAAAAA",
-          margin: "sm",
+          margin: "8px" as any,
         },
         {
           type: "box",
           layout: "vertical",
-          spacing: "xs",
-          margin: "lg",
+          spacing: "6px" as any,
+          margin: "16px" as any,
           contents: [
             buildInfoRow("거리", data.distanceKm ? `${data.distanceKm}km` : "-"),
             buildInfoRow("시간", data.durationDisplay ?? "-"),
@@ -75,7 +75,7 @@ export function buildConfirmCard(
     footer: {
       type: "box",
       layout: "vertical",
-      spacing: "sm",
+      spacing: "8px" as any,
       paddingAll: "16px",
       paddingTop: "0px",
       contents: [
@@ -124,8 +124,8 @@ export function buildDuplicateCard(displayName: string): FlexMessage {
       contents: [
         {
           type: "text",
-          text: `오늘 ${displayName}님의\n기록은 등록되어 있어요.`,
-          size: "lg",
+          text: `오늘 ${displayName}님의 기록은\n등록되어 있어요.`,
+          size: "20px" as any,
           weight: "bold",
           color: "#111111",
           wrap: true,
@@ -133,16 +133,16 @@ export function buildDuplicateCard(displayName: string): FlexMessage {
         {
           type: "text",
           text: "동일 날짜에는 1건만 인정됩니다.",
-          size: "xs",
+          size: "14px" as any,
           color: "#999999",
-          margin: "sm",
+          margin: "8px" as any,
         },
       ],
     },
     footer: {
       type: "box",
       layout: "vertical",
-      spacing: "sm",
+      spacing: "8px" as any,
       paddingAll: "16px",
       paddingTop: "0px",
       contents: [
@@ -197,31 +197,31 @@ export function buildDateErrorCard(
         {
           type: "text",
           text: "Today's Run",
-          size: "sm",
+          size: "14px" as any,
           weight: "bold",
           color: "#333333",
         },
         {
           type: "text",
           text: displayName,
-          size: "xxl",
+          size: "26px" as any,
           weight: "bold",
           color: "#111111",
-          margin: "sm",
+          margin: "8px" as any,
         },
         {
           type: "text",
           text: `오늘의 기록만 등록할 수 있어요.\n${runDateTimestamp}`,
-          size: "xs",
+          size: "13px" as any,
           color: "#FF0000",
           wrap: true,
-          margin: "sm",
+          margin: "8px" as any,
         },
         {
           type: "box",
           layout: "vertical",
-          spacing: "xs",
-          margin: "lg",
+          spacing: "6px" as any,
+          margin: "16px" as any,
           contents: [
             buildInfoRow("거리", data.distanceKm ? `${data.distanceKm}km` : "-"),
             buildInfoRow("시간", data.durationDisplay ?? "-"),
@@ -235,6 +235,7 @@ export function buildDateErrorCard(
       layout: "vertical",
       paddingAll: "16px",
       paddingTop: "0px",
+      paddingBottom: "16px",
       contents: [
         {
           type: "button",
@@ -265,14 +266,14 @@ function buildInfoRow(label: string, value: string) {
       {
         type: "text" as const,
         text: label,
-        size: "sm" as const,
+        size: "14px" as any,
         flex: 2,
         color: "#999999",
       },
       {
         type: "text" as const,
         text: value,
-        size: "sm" as const,
+        size: "14px" as any,
         flex: 5,
         color: "#111111",
       },
