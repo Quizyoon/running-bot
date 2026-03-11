@@ -105,7 +105,9 @@ export function buildAttendanceCard(
         },
         {
           type: "text",
-          text: countText,
+          text: remaining > 0
+            ? `${countText} · ${(t("daysRemaining", lang) as (n: number) => string)(remaining)}`
+            : countText,
           size: "12px" as any,
           color: "#AAAAAA",
           margin: "4px" as any,
@@ -117,18 +119,6 @@ export function buildAttendanceCard(
           justifyContent: "space-between" as any,
           contents: dayCircles as any,
         },
-        ...(remaining > 0
-          ? [
-              {
-                type: "text" as const,
-                text: (t("daysRemaining", lang) as (n: number) => string)(remaining),
-                size: "13px" as any,
-                color: "#999999",
-                margin: "12px" as any,
-                align: "center" as const,
-              },
-            ]
-          : []),
       ],
     },
     footer: {
