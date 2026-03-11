@@ -24,15 +24,17 @@ export function buildAttendanceCard(
         backgroundColor: checked ? "#A5FF05" : "#F0F0F0",
         justifyContent: "center" as const,
         alignItems: "center" as const,
-        contents: [
-          {
-            type: "text" as const,
-            text: checked ? "✓" : "",
-            size: "12px" as any,
-            color: "#111111",
-            align: "center" as const,
-          },
-        ],
+        contents: checked
+          ? [
+              {
+                type: "text" as const,
+                text: "✓",
+                size: "12px" as any,
+                color: "#111111",
+                align: "center" as const,
+              },
+            ]
+          : ([] as any[]),
       },
       {
         type: "text" as const,
