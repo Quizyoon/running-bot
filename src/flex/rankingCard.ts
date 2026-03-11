@@ -286,7 +286,7 @@ export function buildRankingCard(
         {
           type: "box",
           layout: "vertical",
-          margin: "10px" as any,
+          margin: "8px" as any,
           contents: rows,
         },
       ],
