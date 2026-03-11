@@ -253,7 +253,7 @@ export function buildRankingCard(
           ? [
               {
                 type: "text" as const,
-                text: `오늘 ${displayName}이\n${userEntry.rank}위에요`,
+                text: `오늘 ${displayName}${userEntry.rank <= 3 ? "이" : "은"}\n${userEntry.rank}위에요`,
                 size: "20px" as any,
                 weight: "bold" as const,
                 color: "#111111",
