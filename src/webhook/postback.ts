@@ -4,7 +4,7 @@ import { saveSession } from "../services/running";
 import { updateMemberStats, computeBadges, getWeeklyAttendance, getWeekStartDate } from "../services/attendance";
 import { buildResultCard } from "../flex/resultCard";
 import { buildCorrectionPrompt } from "../flex/confirmCard";
-import { getMonthlyRanking } from "../services/ranking";
+import { getWeeklyRanking } from "../services/ranking";
 import { buildRankingCard } from "../flex/rankingCard";
 
 export async function handlePostback(
@@ -139,15 +139,14 @@ async function handleCommand(
 
   switch (cmd) {
     case "ranking": {
-      const now = new Date();
-      const ranking = await getMonthlyRanking(groupId, now.getFullYear(), now.getMonth() + 1);
+      const ranking = await getWeeklyRanking(groupId);
       if (ranking.length === 0) {
         await client.replyMessage(event.replyToken, {
           type: "text",
-          text: `📊 ${now.getFullYear()}년 ${now.getMonth() + 1}월 랭킹\n\n아직 기록이 없습니다.`,
+          text: "📊 이번 주 랭킹\n\n아직 기록이 없습니다.",
         });
       } else {
-        const rankingCard = buildRankingCard(ranking, now.getFullYear(), now.getMonth() + 1);
+        const rankingCard = buildRankingCard(ranking, userId);
         await client.replyMessage(event.replyToken, rankingCard);
       }
       break;

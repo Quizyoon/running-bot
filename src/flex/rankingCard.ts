@@ -1,109 +1,175 @@
 import { FlexMessage, FlexBubble } from "@line/bot-sdk";
-import { RankingEntry } from "../services/ranking";
+import { RankingEntry, getWeekRange } from "../services/ranking";
 
-function getMedalEmoji(rank: number): string {
-  if (rank === 1) return "🥇";
-  if (rank === 2) return "🥈";
-  if (rank === 3) return "🥉";
-  return `  ${rank}위`;
+function ordinal(n: number): string {
+  const s = ["th", "st", "nd", "rd"];
+  const v = n % 100;
+  return n + (s[(v - 20) % 10] || s[v] || s[0]);
+}
+
+function buildRankRow(entry: RankingEntry): any {
+  const profileImage = entry.profileUrl
+    ? {
+        type: "image" as const,
+        url: entry.profileUrl,
+        size: "40px" as any,
+        aspectRatio: "1:1",
+        aspectMode: "cover",
+        flex: 0,
+      }
+    : {
+        type: "box" as const,
+        layout: "vertical" as const,
+        width: "40px",
+        height: "40px",
+        backgroundColor: "#CCCCCC",
+        cornerRadius: "20px",
+        flex: 0,
+        contents: [] as any[],
+      };
+
+  return {
+    type: "box" as const,
+    layout: "horizontal" as const,
+    alignItems: "center" as const,
+    spacing: "12px" as any,
+    paddingAll: "10px" as any,
+    paddingStart: "4px" as any,
+    contents: [
+      {
+        type: "text" as const,
+        text: String(entry.rank),
+        size: "20px" as any,
+        weight: "bold" as const,
+        color: "#111111",
+        flex: 0,
+      },
+      profileImage,
+      {
+        type: "box" as const,
+        layout: "vertical" as const,
+        flex: 1,
+        contents: [
+          {
+            type: "text" as const,
+            text: entry.displayName,
+            size: "15px" as any,
+            weight: "bold" as const,
+            color: "#111111",
+          },
+          {
+            type: "text" as const,
+            text: `${entry.totalDistance}km, ${entry.paceDisplay}/km`,
+            size: "13px" as any,
+            color: "#999999",
+            margin: "2px" as any,
+          },
+        ],
+      },
+    ],
+  };
 }
 
 export function buildRankingCard(
   ranking: RankingEntry[],
-  year: number,
-  month: number
+  userId?: string
 ): FlexMessage {
-  const rows = ranking.slice(0, 20).map((entry) => ({
-    type: "box" as const,
-    layout: "horizontal" as const,
-    margin: "sm" as const,
-    contents: [
-      {
-        type: "text" as const,
-        text: `${getMedalEmoji(entry.rank)} ${entry.displayName} ${entry.badges.join("")}`,
-        size: "sm" as const,
-        flex: 5,
-      },
-      {
-        type: "text" as const,
-        text: `${entry.totalDistance}km`,
-        size: "sm" as const,
-        flex: 2,
-        align: "end" as const,
-      },
-      {
-        type: "text" as const,
-        text: entry.paceDisplay,
-        size: "sm" as const,
-        flex: 2,
-        align: "end" as const,
-      },
-    ],
-  }));
+  const { week, year } = getWeekRange();
+  const top5 = ranking.slice(0, 5);
 
-  const lastDay = new Date(year, month, 0).getDate();
+  const rows: any[] = [];
+  top5.forEach((entry, i) => {
+    if (i > 0) {
+      rows.push({ type: "separator" as const, color: "#F0F0F0" });
+    }
+    rows.push(buildRankRow(entry));
+  });
+
+  // 본인이 5위 밖인 경우 추가 표시
+  const userInTop5 = userId ? top5.some((e) => e.userId === userId) : true;
+  const userEntry = userId ? ranking.find((e) => e.userId === userId) : undefined;
+
+  if (!userInTop5 && userEntry) {
+    rows.push({ type: "separator" as const, color: "#F0F0F0" });
+    rows.push(buildRankRow(userEntry));
+  }
+
+  // 등록 전이면 버튼 추가
+  const hasFooter = userId && !userEntry;
 
   const bubble: FlexBubble = {
     type: "bubble",
     size: "mega",
-    header: {
-      type: "box",
-      layout: "vertical",
-      backgroundColor: "#1DB446",
-      paddingAll: "15px",
-      contents: [
-        {
-          type: "text",
-          text: `🏆 이번 달 러닝 랭킹`,
-          weight: "bold",
-          size: "lg",
-          color: "#FFFFFF",
-        },
-        {
-          type: "text",
-          text: `${year}년 ${month}월`,
-          size: "sm",
-          color: "#DDFFDD",
-        },
-      ],
-    },
     body: {
       type: "box",
       layout: "vertical",
-      spacing: "sm",
-      paddingAll: "15px",
-      contents: [
-        {
-          type: "box",
-          layout: "horizontal",
-          contents: [
-            { type: "text" as const, text: "이름", size: "xs" as const, color: "#999999", flex: 5 },
-            { type: "text" as const, text: "거리", size: "xs" as const, color: "#999999", flex: 2, align: "end" as const },
-            { type: "text" as const, text: "페이스", size: "xs" as const, color: "#999999", flex: 2, align: "end" as const },
-          ],
-        },
-        { type: "separator", margin: "sm" },
-        ...rows,
-      ],
-    },
-    footer: {
-      type: "box",
-      layout: "vertical",
+      paddingAll: "20px",
+      paddingBottom: hasFooter ? "8px" : "20px",
+      backgroundColor: "#FFFFFF",
       contents: [
         {
           type: "text",
-          text: `📅 마감: ${month}월 ${lastDay}일  |  /랭킹 으로 확인`,
-          size: "xs",
-          color: "#999999",
-          align: "center",
+          text: "Weekly Ranking",
+          size: "18px" as any,
+          weight: "bold",
+          color: "#111111",
+        },
+        {
+          type: "text",
+          text: `${ordinal(week)} week ${year}`,
+          size: "13px" as any,
+          color: "#AAAAAA",
+          margin: "4px" as any,
+        },
+        {
+          type: "box",
+          layout: "vertical",
+          margin: "16px" as any,
+          contents: rows,
         },
       ],
     },
+    ...(hasFooter
+      ? {
+          footer: {
+            type: "box" as const,
+            layout: "vertical" as const,
+            paddingAll: "16px",
+            paddingTop: "0px",
+            contents: [
+              {
+                type: "box" as const,
+                layout: "vertical" as const,
+                action: {
+                  type: "uri" as const,
+                  label: "내 기록 등록하기",
+                  uri: "https://line.me/R/nv/cameraRoll/single",
+                },
+                backgroundColor: "#F5F5F5",
+                cornerRadius: "8px",
+                paddingAll: "14px",
+                justifyContent: "center" as const,
+                alignItems: "center" as const,
+                contents: [
+                  {
+                    type: "text" as const,
+                    text: "내 기록 등록하기",
+                    size: "15px" as any,
+                    weight: "bold" as const,
+                    color: "#000000",
+                    align: "center" as const,
+                  },
+                ],
+              },
+            ],
+          },
+        }
+      : {}),
   };
 
   return {
     type: "flex",
-    altText: `🏆 ${year}년 ${month}월 러닝 랭킹`,
+    altText: `🏆 Weekly Ranking - ${ordinal(week)} week ${year}`,
     contents: bubble,
   };
 }

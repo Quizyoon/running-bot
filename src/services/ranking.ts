@@ -9,6 +9,76 @@ export interface RankingEntry {
   paceDisplay: string;
   score: number;
   badges: string[];
+  profileUrl?: string;
+}
+
+/** 이번 주 월~일 날짜 범위 반환 */
+export function getWeekRange(): { start: string; end: string; week: number; year: number } {
+  const now = new Date();
+  const day = now.getDay(); // 0=Sun, 1=Mon, ...
+  const diffToMon = day === 0 ? -6 : 1 - day;
+  const monday = new Date(now);
+  monday.setDate(now.getDate() + diffToMon);
+  const sunday = new Date(monday);
+  sunday.setDate(monday.getDate() + 6);
+
+  const startOfYear = new Date(now.getFullYear(), 0, 1);
+  const diff = now.getTime() - startOfYear.getTime();
+  const week = Math.ceil(diff / (7 * 24 * 60 * 60 * 1000));
+
+  const fmt = (d: Date) => d.toISOString().split("T")[0];
+  return { start: fmt(monday), end: fmt(sunday), week, year: now.getFullYear() };
+}
+
+export async function getWeeklyRanking(
+  groupId: string
+): Promise<RankingEntry[]> {
+  const { start, end } = getWeekRange();
+
+  const result = await pool.query(
+    `SELECT
+       user_id,
+       display_name,
+       SUM(distance_km) AS total_distance,
+       AVG(pace_min_per_km) AS avg_pace,
+       COUNT(*) AS run_count
+     FROM running_sessions
+     WHERE group_id = $1
+       AND run_date >= $2
+       AND run_date <= $3
+     GROUP BY user_id, display_name
+     ORDER BY total_distance DESC`,
+    [groupId, start, end]
+  );
+
+  if (result.rows.length === 0) return [];
+
+  const maxDistance = Math.max(...result.rows.map((r: Record<string, any>) => parseFloat(r.total_distance)));
+  const minPace = Math.min(...result.rows.map((r: Record<string, any>) => parseFloat(r.avg_pace)));
+
+  const entries: RankingEntry[] = result.rows.map((row: Record<string, any>) => {
+    const totalDistance = parseFloat(row.total_distance);
+    const avgPace = parseFloat(row.avg_pace);
+    const normalizedDistance = maxDistance > 0 ? (totalDistance / maxDistance) * 100 : 0;
+    const paceScore = avgPace > 0 ? (minPace / avgPace) * 100 : 0;
+    const score = normalizedDistance * 0.6 + paceScore * 0.4;
+
+    return {
+      rank: 0,
+      userId: row.user_id,
+      displayName: row.display_name,
+      totalDistance: Math.round(totalDistance * 100) / 100,
+      avgPace: Math.round(avgPace * 100) / 100,
+      paceDisplay: formatPace(avgPace),
+      score: Math.round(score * 10) / 10,
+      badges: [],
+    };
+  });
+
+  entries.sort((a, b) => b.score - a.score);
+  entries.forEach((e, i) => (e.rank = i + 1));
+
+  return entries;
 }
 
 export async function getMonthlyRanking(

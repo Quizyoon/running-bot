@@ -1,5 +1,5 @@
 import { Client, MessageEvent, TextEventMessage } from "@line/bot-sdk";
-import { getMonthlyRanking, getDailyPaceRanking, formatPace } from "../services/ranking";
+import { getWeeklyRanking, getMonthlyRanking, getDailyPaceRanking, formatPace } from "../services/ranking";
 import { getPersonalStats } from "../services/running";
 import {
   getWeeklyAttendance,
@@ -44,7 +44,7 @@ export async function handleTextMessage(
   // 명령어 처리
   switch (true) {
     case text === "/랭킹" || text === "/ranking":
-      await handleRanking(client, event, groupId);
+      await handleRanking(client, event, userId, groupId);
       break;
     case text === "/내기록" || text === "/mystats":
       await handleMyStats(client, event, userId, groupId);
@@ -132,21 +132,46 @@ async function handleCorrectionInput(
 async function handleRanking(
   client: Client,
   event: MessageEvent,
+  userId: string,
   groupId: string
 ): Promise<void> {
-  const now = new Date();
-  const ranking = await getMonthlyRanking(groupId, now.getFullYear(), now.getMonth() + 1);
+  const ranking = await getWeeklyRanking(groupId);
 
   if (ranking.length === 0) {
     await client.replyMessage(event.replyToken, {
       type: "text",
-      text: `📊 ${now.getFullYear()}년 ${now.getMonth() + 1}월 랭킹\n\n아직 기록이 없습니다. 스크린샷을 업로드해서 첫 기록을 남겨보세요! 🏃`,
+      text: "📊 이번 주 랭킹\n\n아직 기록이 없습니다. 스크린샷을 업로드해서 첫 기록을 남겨보세요! 🏃",
     });
     return;
   }
 
-  const rankingCard = buildRankingCard(ranking, now.getFullYear(), now.getMonth() + 1);
+  // 프로필 이미지 가져오기
+  await fillProfileUrls(client, event.source, ranking);
+
+  const rankingCard = buildRankingCard(ranking, userId);
   await client.replyMessage(event.replyToken, rankingCard);
+}
+
+async function fillProfileUrls(
+  client: Client,
+  source: any,
+  entries: { userId: string; profileUrl?: string }[]
+): Promise<void> {
+  await Promise.all(
+    entries.map(async (entry) => {
+      try {
+        if (source.type === "group" && source.groupId) {
+          const p = await client.getGroupMemberProfile(source.groupId, entry.userId);
+          entry.profileUrl = p.pictureUrl;
+        } else {
+          const p = await client.getProfile(entry.userId);
+          entry.profileUrl = p.pictureUrl;
+        }
+      } catch {
+        // 프로필 못 가져오면 기본 아바타
+      }
+    })
+  );
 }
 
 async function handleMyStats(
