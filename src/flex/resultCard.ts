@@ -1,6 +1,29 @@
 import { FlexMessage, FlexBubble } from "@line/bot-sdk";
 import { formatPace, formatDuration } from "../services/ranking";
 
+function buildInfoRow(label: string, value: string) {
+  return {
+    type: "box" as const,
+    layout: "horizontal" as const,
+    contents: [
+      {
+        type: "text" as const,
+        text: label,
+        size: "14px" as any,
+        flex: 2,
+        color: "#999999",
+      },
+      {
+        type: "text" as const,
+        text: value,
+        size: "14px" as any,
+        flex: 5,
+        color: "#111111",
+      },
+    ],
+  };
+}
+
 export function buildResultCard(
   displayName: string,
   distanceKm: number,
@@ -14,50 +37,92 @@ export function buildResultCard(
   const bubble: FlexBubble = {
     type: "bubble",
     size: "kilo",
-    header: {
-      type: "box",
-      layout: "vertical",
-      backgroundColor: "#4CAF50",
-      paddingAll: "15px",
-      contents: [
-        {
-          type: "text",
-          text: "✅ 러닝 기록 저장 완료!",
-          weight: "bold",
-          size: "md",
-          color: "#FFFFFF",
-        },
-      ],
-    },
     body: {
       type: "box",
       layout: "vertical",
-      spacing: "sm",
-      paddingAll: "15px",
+      paddingAll: "16px",
+      backgroundColor: "#FFFFFF",
       contents: [
         {
           type: "text",
-          text: `🏃 ${displayName}${badgeStr}`,
+          text: "Today's Running Log",
+          size: "14px" as any,
           weight: "bold",
-          size: "md",
+          color: "#333333",
         },
-        { type: "separator", margin: "sm" },
-        buildRow("📏 거리", `${distanceKm} km`),
-        buildRow("⏱ 시간", formatDuration(durationSec)),
-        buildRow("🏃 페이스", `${formatPace(paceMinPerKm)}/km`),
-        buildRow("📅 날짜", runDate),
+        {
+          type: "text",
+          text: `${displayName}${badgeStr}`,
+          size: "26px" as any,
+          weight: "bold",
+          color: "#111111",
+          margin: "4px" as any,
+        },
+        {
+          type: "text",
+          text: "기록 등록 완료!",
+          size: "20px" as any,
+          weight: "bold",
+          color: "#111111",
+          margin: "4px" as any,
+        },
       ],
     },
     footer: {
       type: "box",
       layout: "vertical",
+      spacing: "8px" as any,
+      paddingAll: "16px",
+      paddingTop: "0px",
+      paddingBottom: "10px",
       contents: [
         {
-          type: "text",
-          text: "출석 체크 완료! /랭킹 으로 순위를 확인하세요",
-          size: "xs",
-          color: "#999999",
-          align: "center",
+          type: "box" as const,
+          layout: "vertical" as const,
+          action: {
+            type: "postback" as const,
+            label: "내 랭킹 확인하기",
+            data: "action=command&cmd=ranking",
+          },
+          backgroundColor: "#F5F5F5",
+          cornerRadius: "8px",
+          paddingAll: "14px",
+          justifyContent: "center" as const,
+          alignItems: "center" as const,
+          contents: [
+            {
+              type: "text" as const,
+              text: "내 랭킹 확인하기",
+              size: "15px" as any,
+              weight: "bold" as const,
+              color: "#000000",
+              align: "center" as const,
+            },
+          ],
+        },
+        {
+          type: "box" as const,
+          layout: "vertical" as const,
+          action: {
+            type: "postback" as const,
+            label: "출석 확인하기",
+            data: "action=command&cmd=attendance",
+          },
+          backgroundColor: "#FFFFFF",
+          cornerRadius: "8px",
+          paddingAll: "14px",
+          justifyContent: "center" as const,
+          alignItems: "center" as const,
+          contents: [
+            {
+              type: "text" as const,
+              text: "출석 확인하기",
+              size: "15px" as any,
+              weight: "bold" as const,
+              color: "#000000",
+              align: "center" as const,
+            },
+          ],
         },
       ],
     },
@@ -65,19 +130,7 @@ export function buildResultCard(
 
   return {
     type: "flex",
-    altText: `✅ ${displayName} 러닝 기록: ${distanceKm}km`,
+    altText: `${displayName} 러닝 기록 등록 완료: ${distanceKm}km`,
     contents: bubble,
-  };
-}
-
-function buildRow(label: string, value: string) {
-  return {
-    type: "box" as const,
-    layout: "horizontal" as const,
-    margin: "sm" as const,
-    contents: [
-      { type: "text" as const, text: label, size: "sm" as const, flex: 3, color: "#666666" },
-      { type: "text" as const, text: value, size: "sm" as const, flex: 4, weight: "bold" as const },
-    ],
   };
 }

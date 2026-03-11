@@ -1,8 +1,7 @@
 import { Client, PostbackEvent } from "@line/bot-sdk";
 import { pendingRecords } from "./state";
 import { saveSession } from "../services/running";
-import { updateMemberStats, computeBadges, getWeeklyAttendance, getWeekStartDate } from "../services/attendance";
-import { buildResultCard } from "../flex/resultCard";
+import { updateMemberStats, getWeeklyAttendance, getWeekStartDate } from "../services/attendance";
 import { buildCorrectionPrompt } from "../flex/confirmCard";
 import { getWeeklyRanking } from "../services/ranking";
 import { buildRankingCard, buildEmptyRankingCard } from "../flex/rankingCard";
@@ -76,19 +75,35 @@ async function handleConfirm(
 
   // 출석 + 배지 업데이트
   await updateMemberStats(record.userId, record.groupId, record.displayName);
-  const badges = await computeBadges(record.userId, record.groupId);
 
-  // 결과 카드 전송
-  const resultMessage = buildResultCard(
-    record.displayName,
-    data.distanceKm!,
-    data.durationSec ?? 0,
-    data.paceMinPerKm ?? 0,
-    runDate,
-    badges
+  // 랭킹 카드 전송
+  const ranking = await getWeeklyRanking(record.groupId);
+
+  if (ranking.length === 0) {
+    await client.replyMessage(event.replyToken, buildEmptyRankingCard(record.displayName));
+    return;
+  }
+
+  // 프로필 이미지 가져오기
+  await Promise.all(
+    ranking.map(async (entry) => {
+      try {
+        const src = event.source as any;
+        if (src.type === "group" && src.groupId) {
+          const p = await client.getGroupMemberProfile(src.groupId, entry.userId);
+          entry.profileUrl = p.pictureUrl;
+        } else {
+          const p = await client.getProfile(entry.userId);
+          entry.profileUrl = p.pictureUrl;
+        }
+      } catch {}
+    })
   );
 
-  await client.replyMessage(event.replyToken, resultMessage);
+  const rankingCard = buildRankingCard(ranking, record.userId, record.displayName, {
+    headerTitle: "Today's Run Complete!",
+  });
+  await client.replyMessage(event.replyToken, rankingCard);
 }
 
 async function handleReject(
@@ -154,6 +169,22 @@ async function handleCommand(
         } catch {}
         await client.replyMessage(event.replyToken, buildEmptyRankingCard(name));
       } else {
+        // 프로필 이미지 가져오기
+        await Promise.all(
+          ranking.map(async (entry) => {
+            try {
+              const src = event.source as any;
+              if (src.type === "group" && src.groupId) {
+                const p = await client.getGroupMemberProfile(src.groupId, entry.userId);
+                entry.profileUrl = p.pictureUrl;
+              } else {
+                const p = await client.getProfile(entry.userId);
+                entry.profileUrl = p.pictureUrl;
+              }
+            } catch {}
+          })
+        );
+
         let displayName = "Unknown";
         try {
           const src = event.source as any;

@@ -120,7 +120,7 @@ export function buildDuplicateCard(displayName: string): FlexMessage {
         },
         {
           type: "text",
-          text: `오늘 기록은\n등록되어 있어요.`,
+          text: `오늘 기록은\n이미 등록되어 있어요.`,
           size: "20px" as any,
           weight: "bold",
           color: "#111111",
@@ -161,7 +161,7 @@ export function buildDuplicateCard(displayName: string): FlexMessage {
 
   return {
     type: "flex",
-    altText: "오늘 기록은 등록되어 있어요.",
+    altText: "오늘 기록은 이미 등록되어 있어요.",
     contents: bubble,
   };
 }
@@ -223,7 +223,7 @@ export function buildDateErrorCard(
       layout: "vertical",
       paddingAll: "16px",
       paddingTop: "0px",
-      paddingBottom: "16px",
+      paddingBottom: "10px",
       contents: [
         buildBoxButton("다시 등록하기", {
           type: "uri",

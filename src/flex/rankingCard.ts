@@ -84,9 +84,18 @@ function buildRankRow(entry: RankingEntry): any {
 export function buildEmptyRankingCard(displayName?: string): FlexMessage {
   const { week, year } = getWeekRange();
 
+  const RANKING_HERO_URL = "https://raw.githubusercontent.com/Quizyoon/running-bot/main/img/ranking-hero.jpg";
+
   const bubble: FlexBubble = {
     type: "bubble",
     size: "kilo",
+    hero: {
+      type: "image",
+      url: RANKING_HERO_URL,
+      size: "full",
+      aspectRatio: "1:1",
+      aspectMode: "cover",
+    },
     body: {
       type: "box",
       layout: "vertical",
@@ -127,6 +136,8 @@ export function buildEmptyRankingCard(displayName?: string): FlexMessage {
       layout: "vertical",
       paddingAll: "16px",
       paddingTop: "0px",
+      paddingBottom: "10px",
+      spacing: "8px" as any,
       contents: [
         {
           type: "box" as const,
@@ -145,7 +156,31 @@ export function buildEmptyRankingCard(displayName?: string): FlexMessage {
             {
               type: "text" as const,
               text: "내 기록 등록하기",
-              size: "14px" as any,
+              size: "15px" as any,
+              weight: "bold" as const,
+              color: "#000000",
+              align: "center" as const,
+            },
+          ],
+        },
+        {
+          type: "box" as const,
+          layout: "vertical" as const,
+          action: {
+            type: "uri" as const,
+            label: "상품 확인하기",
+            uri: "https://giftshop-tw.line.me/voucher/322460139",
+          },
+          backgroundColor: "#FFFFFF",
+          cornerRadius: "8px",
+          paddingAll: "14px",
+          justifyContent: "center" as const,
+          alignItems: "center" as const,
+          contents: [
+            {
+              type: "text" as const,
+              text: "상품 확인하기",
+              size: "15px" as any,
               weight: "bold" as const,
               color: "#000000",
               align: "center" as const,
@@ -166,7 +201,8 @@ export function buildEmptyRankingCard(displayName?: string): FlexMessage {
 export function buildRankingCard(
   ranking: RankingEntry[],
   userId?: string,
-  displayName?: string
+  displayName?: string,
+  options?: { headerTitle?: string }
 ): FlexMessage {
   const { week, year } = getWeekRange();
   const top5 = ranking.slice(0, 5);
@@ -187,9 +223,18 @@ export function buildRankingCard(
   // 등록 전: "내 기록 등록하기", 등록 후: "출석 확인하기"
   const hasFooter = !!userId;
 
+  const RANKING_HERO_URL = "https://raw.githubusercontent.com/Quizyoon/running-bot/main/img/ranking-hero.jpg";
+
   const bubble: FlexBubble = {
     type: "bubble",
     size: "kilo",
+    hero: {
+      type: "image",
+      url: RANKING_HERO_URL,
+      size: "full",
+      aspectRatio: "1:1",
+      aspectMode: "cover",
+    },
     body: {
       type: "box",
       layout: "vertical",
@@ -199,7 +244,7 @@ export function buildRankingCard(
       contents: [
         {
           type: "text",
-          text: "Weekly Ranking",
+          text: options?.headerTitle ?? "Weekly Ranking",
           size: "14px" as any,
           weight: "bold",
           color: "#333333",
@@ -253,60 +298,86 @@ export function buildRankingCard(
             layout: "vertical" as const,
             paddingAll: "16px",
             paddingTop: "0px",
-            paddingBottom: userEntry ? "16px" : "10px",
-            contents: userEntry
-              ? [
-                  {
-                    type: "box" as const,
-                    layout: "vertical" as const,
-                    action: {
-                      type: "postback" as const,
-                      label: "출석 확인하기",
-                      data: "action=command&cmd=attendance",
+            paddingBottom: "10px",
+            contents: [
+              ...(userEntry
+                ? [
+                    {
+                      type: "box" as const,
+                      layout: "vertical" as const,
+                      action: {
+                        type: "postback" as const,
+                        label: "출석 확인하기",
+                        data: "action=command&cmd=attendance",
+                      },
+                      backgroundColor: "#F5F5F5",
+                      cornerRadius: "8px",
+                      paddingAll: "14px",
+                      justifyContent: "center" as const,
+                      alignItems: "center" as const,
+                      contents: [
+                        {
+                          type: "text" as const,
+                          text: "출석 확인하기",
+                          size: "15px" as any,
+                          weight: "bold" as const,
+                          color: "#000000",
+                          align: "center" as const,
+                        },
+                      ],
                     },
-                    backgroundColor: "#F5F5F5",
-                    cornerRadius: "8px",
-                    paddingAll: "14px",
-                    justifyContent: "center" as const,
-                    alignItems: "center" as const,
-                    contents: [
-                      {
-                        type: "text" as const,
-                        text: "출석 확인하기",
-                        size: "15px" as any,
-                        weight: "bold" as const,
-                        color: "#000000",
-                        align: "center" as const,
+                  ]
+                : [
+                    {
+                      type: "box" as const,
+                      layout: "vertical" as const,
+                      action: {
+                        type: "uri" as const,
+                        label: "내 기록 등록하기",
+                        uri: "https://line.me/R/nv/cameraRoll/single",
+                      },
+                      backgroundColor: "#F5F5F5",
+                      cornerRadius: "8px",
+                      paddingAll: "14px",
+                      justifyContent: "center" as const,
+                      alignItems: "center" as const,
+                      contents: [
+                        {
+                          type: "text" as const,
+                          text: "내 기록 등록하기",
+                          size: "15px" as any,
+                          weight: "bold" as const,
+                          color: "#000000",
+                          align: "center" as const,
                       },
                     ],
                   },
-                ]
-              : [
+                ]),
+              {
+                type: "box" as const,
+                layout: "vertical" as const,
+                action: {
+                  type: "uri" as const,
+                  label: "상품 확인하기",
+                  uri: "https://giftshop-tw.line.me/voucher/322460139",
+                },
+                backgroundColor: "#FFFFFF",
+                cornerRadius: "8px",
+                paddingAll: "14px",
+                justifyContent: "center" as const,
+                alignItems: "center" as const,
+                contents: [
                   {
-                    type: "box" as const,
-                    layout: "vertical" as const,
-                    action: {
-                      type: "uri" as const,
-                      label: "내 기록 등록하기",
-                      uri: "https://line.me/R/nv/cameraRoll/single",
-                    },
-                    backgroundColor: "#F5F5F5",
-                    cornerRadius: "8px",
-                    paddingAll: "14px",
-                    justifyContent: "center" as const,
-                    alignItems: "center" as const,
-                    contents: [
-                      {
-                        type: "text" as const,
-                        text: "내 기록 등록하기",
-                        size: "15px" as any,
-                        weight: "bold" as const,
-                        color: "#000000",
-                        align: "center" as const,
-                      },
-                    ],
+                    type: "text" as const,
+                    text: "상품 확인하기",
+                    size: "15px" as any,
+                    weight: "bold" as const,
+                    color: "#000000",
+                    align: "center" as const,
                   },
                 ],
+              },
+            ],
           },
         }
       : {}),
