@@ -12,6 +12,7 @@ import {
   getActiveEvent,
 } from "../services/event";
 import { buildRankingCard, buildEmptyRankingCard } from "../flex/rankingCard";
+import { buildAttendanceCard } from "../flex/attendanceCard";
 import { buildEventAnnouncementCard, buildEventResultCard } from "../flex/eventCard";
 import { pendingRecords } from "./state";
 import { buildConfirmCard } from "../flex/confirmCard";
@@ -231,18 +232,24 @@ async function handleAttendance(
   const weekStart = getWeekStartDate(new Date());
   const attendance = await getWeeklyAttendance(userId, groupId, weekStart);
 
-  const dayLabels = ["월", "화", "수", "목", "금", "토", "일"];
-  const dayStr = attendance.days
-    .map((d, i) => (d ? `✅${dayLabels[i]}` : `⬜${dayLabels[i]}`))
-    .join(" ");
+  let displayName = "Unknown";
+  try {
+    const src = event.source as any;
+    if (src.type === "group" && src.groupId) {
+      const p = await client.getGroupMemberProfile(src.groupId, userId);
+      displayName = p.displayName;
+    } else {
+      const p = await client.getProfile(userId);
+      displayName = p.displayName;
+    }
+  } catch {}
 
-  const remaining = 7 - attendance.totalDays;
-
-  await client.replyMessage(event.replyToken, {
-    type: "text",
-    text: `📋 이번 주 출석 현황\n\n${dayStr}\n\n출석: ${attendance.totalDays}/7일` +
-      (remaining > 0 ? `\n개근까지 ${remaining}일 남았습니다! 💪` : `\n🎉 7일 개근 달성! 축하합니다!`),
-  });
+  const attendanceCard = buildAttendanceCard(
+    displayName,
+    attendance.days,
+    attendance.totalDays
+  );
+  await client.replyMessage(event.replyToken, attendanceCard);
 }
 
 async function handleEventInfo(

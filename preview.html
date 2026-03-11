@@ -211,6 +211,44 @@
     .correction-footer {
       padding: 0 16px 16px;
     }
+    /* === 출석 카드 === */
+    .attendance-body {
+      padding: 16px;
+    }
+    .day-circles {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 16px;
+    }
+    .day-circle {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+    }
+    .day-dot {
+      width: 28px;
+      height: 28px;
+      border-radius: 14px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 12px;
+      color: #111111;
+    }
+    .day-dot.checked {
+      background: #A5FF05;
+    }
+    .day-dot.unchecked {
+      background: #F0F0F0;
+    }
+    .day-label {
+      font-size: 11px;
+      color: #AAAAAA;
+    }
+    .day-label.checked {
+      color: #111111;
+    }
   </style>
 </head>
 <body>
@@ -413,6 +451,56 @@
       </div>
       <div class="ranking-footer">
         <button class="btn-primary">내 기록 등록하기</button>
+        <button class="btn-link">상품 확인하기</button>
+      </div>
+    </div>
+  </div>
+  <!-- 출석 카드 (진행 중) -->
+  <div class="phone">
+    <div class="label">출석 (진행 중)</div>
+    <div class="bubble">
+      <div class="attendance-body">
+        <div class="ranking-title">Weekly Attendance</div>
+        <div class="rank-title" style="line-height:1.35;letter-spacing:-0.1px">Kay이<br>3일째 달리는 중!</div>
+        <div class="ranking-sub" style="margin-top:4px">출석 3/7일</div>
+        <div class="day-circles">
+          <div class="day-circle"><div class="day-dot" style="background:#A5FF05">✓</div><span class="day-label" style="color:#111111">월</span></div>
+          <div class="day-circle"><div class="day-dot" style="background:#A5FF05">✓</div><span class="day-label" style="color:#111111">화</span></div>
+          <div class="day-circle"><div class="day-dot" style="background:#A5FF05">✓</div><span class="day-label" style="color:#111111">수</span></div>
+          <div class="day-circle"><div class="day-dot unchecked"></div><span class="day-label">목</span></div>
+          <div class="day-circle"><div class="day-dot unchecked"></div><span class="day-label">금</span></div>
+          <div class="day-circle"><div class="day-dot unchecked"></div><span class="day-label">토</span></div>
+          <div class="day-circle"><div class="day-dot unchecked"></div><span class="day-label">일</span></div>
+        </div>
+        <div style="font-size:13px;color:#999999;text-align:center;margin-top:12px">개근까지 4일 남았어요</div>
+      </div>
+      <div class="ranking-footer">
+        <button class="btn-primary">내 랭킹 확인하기</button>
+        <button class="btn-link">상품 확인하기</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 출석 카드 (개근 달성) -->
+  <div class="phone">
+    <div class="label">출석 (개근 달성)</div>
+    <div class="bubble">
+      <div class="attendance-body">
+        <div class="ranking-title">Weekly Attendance</div>
+        <div class="rank-title" style="line-height:1.35;letter-spacing:-0.1px">Kay이<br>7일 개근 달성!</div>
+        <div class="ranking-sub" style="margin-top:4px">출석 7/7일</div>
+        <div class="day-circles">
+          <div class="day-circle"><div class="day-dot" style="background:#A5FF05">✓</div><span class="day-label" style="color:#111111">월</span></div>
+          <div class="day-circle"><div class="day-dot" style="background:#A5FF05">✓</div><span class="day-label" style="color:#111111">화</span></div>
+          <div class="day-circle"><div class="day-dot" style="background:#A5FF05">✓</div><span class="day-label" style="color:#111111">수</span></div>
+          <div class="day-circle"><div class="day-dot" style="background:#A5FF05">✓</div><span class="day-label" style="color:#111111">목</span></div>
+          <div class="day-circle"><div class="day-dot" style="background:#A5FF05">✓</div><span class="day-label" style="color:#111111">금</span></div>
+          <div class="day-circle"><div class="day-dot" style="background:#A5FF05">✓</div><span class="day-label" style="color:#111111">토</span></div>
+          <div class="day-circle"><div class="day-dot" style="background:#A5FF05">✓</div><span class="day-label" style="color:#111111">일</span></div>
+        </div>
+      </div>
+      <div class="ranking-footer">
+        <button class="btn-primary">내 랭킹 확인하기</button>
         <button class="btn-link">상품 확인하기</button>
       </div>
     </div>
