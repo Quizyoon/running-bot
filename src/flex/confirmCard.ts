@@ -26,9 +26,18 @@ export function buildConfirmCard(
         }))
       : [];
 
+  const CONFIRM_HERO_URL = "https://raw.githubusercontent.com/Quizyoon/running-bot/main/img/confirm-hero.jpg";
+
   const bubble: FlexBubble = {
     type: "bubble",
     size: "kilo",
+    hero: {
+      type: "image",
+      url: CONFIRM_HERO_URL,
+      size: "full",
+      aspectRatio: "4:3",
+      aspectMode: "cover",
+    },
     body: {
       type: "box",
       layout: "vertical",

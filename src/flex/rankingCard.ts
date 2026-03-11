@@ -21,7 +21,7 @@ function buildRankRow(entry: RankingEntry): any {
             type: "image" as const,
             url: entry.profileUrl,
             size: "full" as const,
-            aspectRatio: "1:1",
+            aspectRatio: "4:3",
             aspectMode: "cover" as const,
           },
         ]
@@ -93,7 +93,7 @@ export function buildEmptyRankingCard(displayName?: string): FlexMessage {
       type: "image",
       url: RANKING_HERO_URL,
       size: "full",
-      aspectRatio: "1:1",
+      aspectRatio: "4:3",
       aspectMode: "cover",
     },
     body: {
@@ -205,7 +205,7 @@ export function buildRankingCard(
   options?: { headerTitle?: string }
 ): FlexMessage {
   const { week, year } = getWeekRange();
-  const top5 = ranking.slice(0, 5);
+  const top5 = ranking.slice(0, 3);
 
   const rows: any[] = [];
   top5.forEach((entry) => {
@@ -213,10 +213,10 @@ export function buildRankingCard(
   });
 
   // 본인이 5위 밖인 경우 추가 표시
-  const userInTop5 = userId ? top5.some((e) => e.userId === userId) : true;
+  const userInTop3 = userId ? top5.some((e) => e.userId === userId) : true;
   const userEntry = userId ? ranking.find((e) => e.userId === userId) : undefined;
 
-  if (!userInTop5 && userEntry) {
+  if (!userInTop3 && userEntry) {
     rows.push(buildRankRow(userEntry));
   }
 
@@ -232,7 +232,7 @@ export function buildRankingCard(
       type: "image",
       url: RANKING_HERO_URL,
       size: "full",
-      aspectRatio: "1:1",
+      aspectRatio: "4:3",
       aspectMode: "cover",
     },
     body: {
