@@ -34,7 +34,7 @@ function buildRankRow(entry: RankingEntry): any {
     layout: "horizontal" as const,
     alignItems: "center" as const,
     spacing: "4px" as any,
-    paddingAll: "6px" as any,
+    paddingAll: "8px" as any,
     paddingStart: "4px" as any,
     contents: [
       {
