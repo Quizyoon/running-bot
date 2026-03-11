@@ -87,7 +87,7 @@ export function buildConfirmCard(
             data: `action=confirm&id=${confirmId}`,
           },
           style: "secondary",
-          height: "md",
+          height: "sm",
         },
         {
           type: "button",
@@ -154,7 +154,7 @@ export function buildDuplicateCard(displayName: string): FlexMessage {
             data: "action=command&cmd=ranking",
           },
           style: "secondary",
-          height: "md",
+          height: "sm",
         },
         {
           type: "button",
@@ -244,7 +244,7 @@ export function buildDateErrorCard(
             uri: "https://line.me/R/nv/cameraRoll/single",
           },
           style: "secondary",
-          height: "md",
+          height: "sm",
         },
       ],
     },
