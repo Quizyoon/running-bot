@@ -291,7 +291,7 @@ export function buildDateErrorCard(
       layout: "vertical",
       paddingAll: "16px",
       paddingTop: "0px",
-      paddingBottom: "10px",
+      paddingBottom: "16px",
       contents: [
         buildBoxButton(retryBtn, {
           type: "uri",
