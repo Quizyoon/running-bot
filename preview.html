@@ -291,6 +291,20 @@
         <div class="title">Today's Running Log</div>
         <div class="alert-title" style="margin-top:4px">오늘 기록은<br>이미 등록되어 있어요.</div>
         <div class="alert-desc" style="color:#FF0000">동일 날짜에는 1건만 인정됩니다.</div>
+        <div class="rows">
+          <div class="row">
+            <span class="row-label">거리</span>
+            <span class="row-value">5.2km</span>
+          </div>
+          <div class="row">
+            <span class="row-label">시간</span>
+            <span class="row-value">28:14</span>
+          </div>
+          <div class="row">
+            <span class="row-label">페이스</span>
+            <span class="row-value">5'26"/km</span>
+          </div>
+        </div>
       </div>
       <div class="alert-footer">
         <button class="btn-primary">내 랭킹 확인하기</button>
@@ -455,9 +469,9 @@
       </div>
     </div>
   </div>
-  <!-- 출석 카드 (진행 중) -->
+  <!-- 출석 카드 (오늘 출석 완료) -->
   <div class="phone">
-    <div class="label">출석 (진행 중)</div>
+    <div class="label">출석 (오늘 출석 O)</div>
     <div class="bubble">
       <div class="attendance-body">
         <div class="ranking-title">Weekly Attendance</div>
@@ -468,14 +482,41 @@
           <div class="day-circle"><div class="day-dot unchecked" style="color:#999999">✕</div><span class="day-label">화</span></div>
           <div class="day-circle"><div class="day-dot" style="background:#A5FF05">✓</div><span class="day-label" style="color:#111111">수</span></div>
           <div class="day-circle"><div class="day-dot" style="background:#A5FF05">✓</div><span class="day-label" style="color:#111111">목</span></div>
-          <div class="day-circle"><div class="day-dot" style="background:#A5FF05">✓</div><span class="day-label" style="color:#111111">금</span></div>
+          <div class="day-circle"><div class="day-dot unchecked"></div><span class="day-label">금</span></div>
           <div class="day-circle"><div class="day-dot unchecked"></div><span class="day-label">토</span></div>
           <div class="day-circle"><div class="day-dot unchecked"></div><span class="day-label">일</span></div>
         </div>
-        <div style="font-size:13px;color:#999999;text-align:center;margin-top:12px">개근까지 2일 남았어요</div>
+        <div style="font-size:13px;color:#999999;text-align:center;margin-top:12px">개근까지 4일 남았어요</div>
       </div>
       <div class="ranking-footer">
         <button class="btn-primary">내 랭킹 확인하기</button>
+        <button class="btn-link">상품 확인하기</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 출석 카드 (오늘 미출석) -->
+  <div class="phone">
+    <div class="label">출석 (오늘 출석 X)</div>
+    <div class="bubble">
+      <div class="attendance-body">
+        <div class="ranking-title">Weekly Attendance</div>
+        <div class="rank-title" style="line-height:1.35;letter-spacing:-0.1px">Kay이<br>2일째 달리는 중!</div>
+        <div class="ranking-sub" style="margin-top:4px">출석 2/7일</div>
+        <div class="day-circles">
+          <div class="day-circle"><div class="day-dot" style="background:#A5FF05">✓</div><span class="day-label" style="color:#111111">월</span></div>
+          <div class="day-circle"><div class="day-dot unchecked" style="color:#999999">✕</div><span class="day-label">화</span></div>
+          <div class="day-circle"><div class="day-dot" style="background:#A5FF05">✓</div><span class="day-label" style="color:#111111">수</span></div>
+          <div class="day-circle"><div class="day-dot unchecked"></div><span class="day-label">목</span></div>
+          <div class="day-circle"><div class="day-dot unchecked"></div><span class="day-label">금</span></div>
+          <div class="day-circle"><div class="day-dot unchecked"></div><span class="day-label">토</span></div>
+          <div class="day-circle"><div class="day-dot unchecked"></div><span class="day-label">일</span></div>
+        </div>
+        <div style="font-size:13px;color:#999999;text-align:center;margin-top:12px">개근까지 5일 남았어요</div>
+      </div>
+      <div class="ranking-footer">
+        <button class="btn-primary">내 기록 등록하기</button>
+        <button class="btn-link">내 랭킹 확인하기</button>
         <button class="btn-link">상품 확인하기</button>
       </div>
     </div>

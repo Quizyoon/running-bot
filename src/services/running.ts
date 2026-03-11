@@ -61,17 +61,30 @@ export interface SessionInput {
   eventId?: string;
 }
 
+export interface DuplicateRecord {
+  distanceKm: number;
+  durationSec: number;
+  paceMinPerKm: number;
+}
+
 export async function checkDuplicate(
   userId: string,
   groupId: string,
   runDate: string
-): Promise<boolean> {
+): Promise<DuplicateRecord | null> {
   const result = await pool.query(
-    `SELECT COUNT(*) FROM running_sessions
-     WHERE user_id = $1 AND group_id = $2 AND run_date = $3`,
+    `SELECT distance_km, duration_sec, pace_min_per_km FROM running_sessions
+     WHERE user_id = $1 AND group_id = $2 AND run_date = $3
+     LIMIT 1`,
     [userId, groupId, runDate]
   );
-  return parseInt(result.rows[0].count) > 0;
+  if (result.rows.length === 0) return null;
+  const row = result.rows[0];
+  return {
+    distanceKm: parseFloat(row.distance_km),
+    durationSec: parseInt(row.duration_sec),
+    paceMinPerKm: parseFloat(row.pace_min_per_km),
+  };
 }
 
 export async function saveSession(input: SessionInput): Promise<string> {

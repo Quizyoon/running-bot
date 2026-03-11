@@ -1,4 +1,5 @@
 import { OcrResult } from "../ocr/claude";
+import { Lang } from "../i18n";
 
 export interface PendingRecord {
   userId: string;
@@ -7,6 +8,7 @@ export interface PendingRecord {
   data: OcrResult;
   imageMessageId: string;
   eventId?: string;
+  lang?: Lang;
   // 수정 모드용
   correctionField?: "distance" | "duration" | "pace" | "date";
 }

@@ -1,11 +1,13 @@
 import { FlexMessage, FlexBubble } from "@line/bot-sdk";
+import { Lang, t } from "../i18n";
 
 export function buildAttendanceCard(
   displayName: string,
   days: boolean[],
-  totalDays: number
+  totalDays: number,
+  lang: Lang = "ko"
 ): FlexMessage {
-  const dayLabels = ["월", "화", "수", "목", "금", "토", "일"];
+  const dayLabels: string[] = t("dayLabels", lang);
   const remaining = 7 - totalDays;
 
   // 오늘이 이번 주 몇 번째 날인지 (0=월 ~ 6=일)
@@ -66,8 +68,14 @@ export function buildAttendanceCard(
   });
 
   const titleText = remaining > 0
-    ? `${displayName}이\n${totalDays}일째 달리는 중!`
-    : `${displayName}이\n7일 개근 달성!`;
+    ? (t("runningStreak", lang) as (name: string, days: number) => string)(displayName, totalDays)
+    : (t("perfectAttendance", lang) as (name: string) => string)(displayName);
+
+  const countText = (t("attendanceCount", lang) as (total: number) => string)(totalDays);
+  const registerLabel = t("registerMyRecord", lang) as string;
+  const checkRanking = t("checkMyRanking", lang) as string;
+  const checkPrize = t("checkPrizes", lang) as string;
+  const todayChecked = days[todayDow] === true;
 
   const bubble: FlexBubble = {
     type: "bubble",
@@ -97,7 +105,7 @@ export function buildAttendanceCard(
         },
         {
           type: "text",
-          text: `출석 ${totalDays}/7일`,
+          text: countText,
           size: "12px" as any,
           color: "#AAAAAA",
           margin: "4px" as any,
@@ -113,7 +121,7 @@ export function buildAttendanceCard(
           ? [
               {
                 type: "text" as const,
-                text: `개근까지 ${remaining}일 남았어요`,
+                text: (t("daysRemaining", lang) as (n: number) => string)(remaining),
                 size: "13px" as any,
                 color: "#999999",
                 margin: "12px" as any,
@@ -130,62 +138,137 @@ export function buildAttendanceCard(
       paddingAll: "16px",
       paddingTop: "0px",
       paddingBottom: "10px",
-      contents: [
-        {
-          type: "box" as const,
-          layout: "vertical" as const,
-          action: {
-            type: "postback" as const,
-            label: "내 랭킹 확인하기",
-            data: "action=command&cmd=ranking",
-          },
-          backgroundColor: "#111111",
-          cornerRadius: "8px",
-          paddingAll: "14px",
-          justifyContent: "center" as const,
-          alignItems: "center" as const,
-          contents: [
+      contents: todayChecked
+        ? [
             {
-              type: "text" as const,
-              text: "내 랭킹 확인하기",
-              size: "15px" as any,
-              weight: "bold" as const,
-              color: "#FFFFFF",
-              align: "center" as const,
+              type: "box" as const,
+              layout: "vertical" as const,
+              action: {
+                type: "postback" as const,
+                label: checkRanking,
+                data: "action=command&cmd=ranking",
+              },
+              backgroundColor: "#111111",
+              cornerRadius: "8px",
+              paddingAll: "14px",
+              justifyContent: "center" as const,
+              alignItems: "center" as const,
+              contents: [
+                {
+                  type: "text" as const,
+                  text: checkRanking,
+                  size: "15px" as any,
+                  weight: "bold" as const,
+                  color: "#FFFFFF",
+                  align: "center" as const,
+                },
+              ],
+            },
+            {
+              type: "box" as const,
+              layout: "vertical" as const,
+              action: {
+                type: "uri" as const,
+                label: checkPrize,
+                uri: "https://giftshop-tw.line.me/voucher/322460139",
+              },
+              backgroundColor: "#FFFFFF",
+              cornerRadius: "8px",
+              paddingAll: "14px",
+              justifyContent: "center" as const,
+              alignItems: "center" as const,
+              contents: [
+                {
+                  type: "text" as const,
+                  text: checkPrize,
+                  size: "15px" as any,
+                  weight: "bold" as const,
+                  color: "#000000",
+                  align: "center" as const,
+                },
+              ],
+            },
+          ]
+        : [
+            {
+              type: "box" as const,
+              layout: "vertical" as const,
+              action: {
+                type: "uri" as const,
+                label: registerLabel,
+                uri: "https://line.me/R/nv/cameraRoll/single",
+              },
+              backgroundColor: "#111111",
+              cornerRadius: "8px",
+              paddingAll: "14px",
+              justifyContent: "center" as const,
+              alignItems: "center" as const,
+              contents: [
+                {
+                  type: "text" as const,
+                  text: registerLabel,
+                  size: "15px" as any,
+                  weight: "bold" as const,
+                  color: "#FFFFFF",
+                  align: "center" as const,
+                },
+              ],
+            },
+            {
+              type: "box" as const,
+              layout: "vertical" as const,
+              action: {
+                type: "postback" as const,
+                label: checkRanking,
+                data: "action=command&cmd=ranking",
+              },
+              backgroundColor: "#FFFFFF",
+              cornerRadius: "8px",
+              paddingAll: "14px",
+              justifyContent: "center" as const,
+              alignItems: "center" as const,
+              contents: [
+                {
+                  type: "text" as const,
+                  text: checkRanking,
+                  size: "15px" as any,
+                  weight: "bold" as const,
+                  color: "#000000",
+                  align: "center" as const,
+                },
+              ],
+            },
+            {
+              type: "box" as const,
+              layout: "vertical" as const,
+              action: {
+                type: "uri" as const,
+                label: checkPrize,
+                uri: "https://giftshop-tw.line.me/voucher/322460139",
+              },
+              backgroundColor: "#FFFFFF",
+              cornerRadius: "8px",
+              paddingAll: "14px",
+              justifyContent: "center" as const,
+              alignItems: "center" as const,
+              contents: [
+                {
+                  type: "text" as const,
+                  text: checkPrize,
+                  size: "15px" as any,
+                  weight: "bold" as const,
+                  color: "#000000",
+                  align: "center" as const,
+                },
+              ],
             },
           ],
-        },
-        {
-          type: "box" as const,
-          layout: "vertical" as const,
-          action: {
-            type: "uri" as const,
-            label: "상품 확인하기",
-            uri: "https://giftshop-tw.line.me/voucher/322460139",
-          },
-          backgroundColor: "#FFFFFF",
-          cornerRadius: "8px",
-          paddingAll: "14px",
-          justifyContent: "center" as const,
-          alignItems: "center" as const,
-          contents: [
-            {
-              type: "text" as const,
-              text: "상품 확인하기",
-              size: "15px" as any,
-              weight: "bold" as const,
-              color: "#000000",
-              align: "center" as const,
-            },
-          ],
-        },
-      ],
     },
   };
 
   return {
     type: "flex",
-    altText: `출석 현황: ${totalDays}/7일`,
+    altText: (t("attendanceAlt", lang) as (total: number) => string)(totalDays),
     contents: bubble,
   };
 }

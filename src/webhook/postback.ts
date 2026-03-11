@@ -6,6 +6,7 @@ import { buildCorrectionPrompt } from "../flex/confirmCard";
 import { getWeeklyRanking } from "../services/ranking";
 import { buildRankingCard, buildEmptyRankingCard } from "../flex/rankingCard";
 import { buildAttendanceCard } from "../flex/attendanceCard";
+import { t } from "../i18n";
 
 export async function handlePostback(
   client: Client,
@@ -14,7 +15,6 @@ export async function handlePostback(
   const params = new URLSearchParams(event.postback.data);
   const action = params.get("action");
 
-  // 카드 버튼에서 호출하는 커맨드 처리 (confirmId 불필요)
   if (action === "command") {
     await handleCommand(client, event, params.get("cmd") || "");
     return;
@@ -27,12 +27,11 @@ export async function handlePostback(
   if (!record) {
     await client.replyMessage(event.replyToken, {
       type: "text",
-      text: "⏰ 확인 시간이 만료되었습니다. 이미지를 다시 업로드해주세요.",
+      text: t("confirmExpired", "ko") as string,
     });
     return;
   }
 
-  // 본인만 확인/취소 가능
   if (event.source.userId !== record.userId) return;
 
   switch (action) {
@@ -40,10 +39,10 @@ export async function handlePostback(
       await handleConfirm(client, event, confirmId, record);
       break;
     case "reject":
-      await handleReject(client, event, confirmId);
+      await handleReject(client, event, confirmId, record);
       break;
     case "correct":
-      await handleCorrectSelect(client, event, confirmId, params.get("field") || "");
+      await handleCorrectSelect(client, event, confirmId, params.get("field") || "", record);
       break;
     default:
       break;
@@ -57,11 +56,11 @@ async function handleConfirm(
   record: typeof pendingRecords extends Map<string, infer V> ? V : never
 ): Promise<void> {
   pendingRecords.delete(confirmId);
+  const lang = record.lang ?? "ko";
 
   const data = record.data;
   const runDate = data.runDate ?? new Date().toISOString().split("T")[0];
 
-  // DB 저장
   await saveSession({
     userId: record.userId,
     groupId: record.groupId,
@@ -74,18 +73,15 @@ async function handleConfirm(
     eventId: record.eventId,
   });
 
-  // 출석 + 배지 업데이트
   await updateMemberStats(record.userId, record.groupId, record.displayName);
 
-  // 랭킹 카드 전송
   const ranking = await getWeeklyRanking(record.groupId);
 
   if (ranking.length === 0) {
-    await client.replyMessage(event.replyToken, buildEmptyRankingCard(record.displayName));
+    await client.replyMessage(event.replyToken, buildEmptyRankingCard(record.displayName, lang));
     return;
   }
 
-  // 프로필 이미지 가져오기
   await Promise.all(
     ranking.map(async (entry) => {
       try {
@@ -103,6 +99,7 @@ async function handleConfirm(
 
   const rankingCard = buildRankingCard(ranking, record.userId, record.displayName, {
     headerTitle: "Today's Run Complete!",
+    lang,
   });
   await client.replyMessage(event.replyToken, rankingCard);
 }
@@ -110,10 +107,11 @@ async function handleConfirm(
 async function handleReject(
   client: Client,
   event: PostbackEvent,
-  confirmId: string
+  confirmId: string,
+  record: typeof pendingRecords extends Map<string, infer V> ? V : never
 ): Promise<void> {
-  // 수정 항목 선택 프롬프트 전송
-  const correctionPrompt = buildCorrectionPrompt(confirmId);
+  const lang = record.lang ?? "ko";
+  const correctionPrompt = buildCorrectionPrompt(confirmId, lang);
   await client.replyMessage(event.replyToken, correctionPrompt);
 }
 
@@ -121,24 +119,19 @@ async function handleCorrectSelect(
   client: Client,
   event: PostbackEvent,
   confirmId: string,
-  field: string
+  field: string,
+  record: typeof pendingRecords extends Map<string, infer V> ? V : never
 ): Promise<void> {
-  const record = pendingRecords.get(confirmId);
-  if (!record) return;
-
-  const fieldNames: Record<string, string> = {
-    distance: "거리 (예: 5.2)",
-    duration: "시간 (예: 28:14 또는 1:28:14)",
-    pace: "페이스 (예: 5:30)",
-    date: "날짜 (예: 2025-03-10)",
-  };
+  const lang = record.lang ?? "ko";
+  const fieldNames = t("correctionInput", lang) as Record<string, string>;
 
   record.correctionField = field as any;
   pendingRecords.set(confirmId, record);
 
+  const prompt = (t("correctionInputPrompt", lang) as (field: string) => string)(fieldNames[field] || field);
   await client.replyMessage(event.replyToken, {
     type: "text",
-    text: `✏️ 올바른 ${fieldNames[field] || field}을(를) 입력해주세요.`,
+    text: prompt,
   });
 }
 
@@ -170,7 +163,6 @@ async function handleCommand(
         } catch {}
         await client.replyMessage(event.replyToken, buildEmptyRankingCard(name));
       } else {
-        // 프로필 이미지 가져오기
         await Promise.all(
           ranking.map(async (entry) => {
             try {

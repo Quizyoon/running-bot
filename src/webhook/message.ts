@@ -17,6 +17,7 @@ import { buildEventAnnouncementCard, buildEventResultCard } from "../flex/eventC
 import { pendingRecords } from "./state";
 import { buildConfirmCard } from "../flex/confirmCard";
 import { validateRunData } from "../services/running";
+import { Lang, t } from "../i18n";
 
 // 관리자 목록 (환경변수에서 설정 가능)
 const ADMIN_IDS = new Set((process.env.ADMIN_USER_IDS || "").split(",").filter(Boolean));
@@ -42,31 +43,55 @@ export async function handleTextMessage(
   const correctionHandled = await handleCorrectionInput(client, event, userId, text);
   if (correctionHandled) return;
 
-  // 명령어 처리
+  // 명령어 처리 (영어 명령어 → en, 한국어 → ko)
   switch (true) {
-    case text === "/랭킹" || text === "/ranking":
-      await handleRanking(client, event, userId, groupId);
+    case text === "/랭킹":
+      await handleRanking(client, event, userId, groupId, "ko");
       break;
-    case text === "/내기록" || text === "/mystats":
-      await handleMyStats(client, event, userId, groupId);
+    case text === "/ranking":
+      await handleRanking(client, event, userId, groupId, "en");
       break;
-    case text === "/출석" || text === "/attendance":
-      await handleAttendance(client, event, userId, groupId);
+    case text === "/내기록":
+      await handleMyStats(client, event, userId, groupId, "ko");
       break;
-    case text === "/이벤트" || text === "/event":
-      await handleEventInfo(client, event, groupId);
+    case text === "/mystats":
+      await handleMyStats(client, event, userId, groupId, "en");
       break;
-    case text === "/도움말" || text === "/help":
-      await handleHelp(client, event);
+    case text === "/출석":
+      await handleAttendance(client, event, userId, groupId, "ko");
       break;
-    case text.startsWith("/이벤트생성") || text.startsWith("/createevent"):
-      await handleCreateEvent(client, event, userId, groupId, text);
+    case text === "/attendance":
+      await handleAttendance(client, event, userId, groupId, "en");
       break;
-    case text === "/이벤트취소" || text === "/cancelevent":
-      await handleCancelEvent(client, event, userId, groupId);
+    case text === "/이벤트":
+      await handleEventInfo(client, event, groupId, "ko");
       break;
-    case text === "/이벤트현황" || text === "/eventstatus":
-      await handleEventStatus(client, event, groupId);
+    case text === "/event":
+      await handleEventInfo(client, event, groupId, "en");
+      break;
+    case text === "/도움말":
+      await handleHelp(client, event, "ko");
+      break;
+    case text === "/help":
+      await handleHelp(client, event, "en");
+      break;
+    case text.startsWith("/이벤트생성"):
+      await handleCreateEvent(client, event, userId, groupId, text, "ko");
+      break;
+    case text.startsWith("/createevent"):
+      await handleCreateEvent(client, event, userId, groupId, text, "en");
+      break;
+    case text === "/이벤트취소":
+      await handleCancelEvent(client, event, userId, groupId, "ko");
+      break;
+    case text === "/cancelevent":
+      await handleCancelEvent(client, event, userId, groupId, "en");
+      break;
+    case text === "/이벤트현황":
+      await handleEventStatus(client, event, groupId, "ko");
+      break;
+    case text === "/eventstatus":
+      await handleEventStatus(client, event, groupId, "en");
       break;
     default:
       break;
@@ -134,7 +159,8 @@ async function handleRanking(
   client: Client,
   event: MessageEvent,
   userId: string,
-  groupId: string
+  groupId: string,
+  lang: Lang
 ): Promise<void> {
   const ranking = await getWeeklyRanking(groupId);
 
@@ -150,14 +176,12 @@ async function handleRanking(
         name = p.displayName;
       }
     } catch {}
-    await client.replyMessage(event.replyToken, buildEmptyRankingCard(name));
+    await client.replyMessage(event.replyToken, buildEmptyRankingCard(name, lang));
     return;
   }
 
-  // 프로필 이미지 가져오기
   await fillProfileUrls(client, event.source, ranking);
 
-  // 유저 이름 가져오기
   let displayName = "Unknown";
   try {
     const source = event.source as any;
@@ -170,7 +194,7 @@ async function handleRanking(
     }
   } catch {}
 
-  const rankingCard = buildRankingCard(ranking, userId, displayName);
+  const rankingCard = buildRankingCard(ranking, userId, displayName, { lang });
   await client.replyMessage(event.replyToken, rankingCard);
 }
 
@@ -200,7 +224,8 @@ async function handleMyStats(
   client: Client,
   event: MessageEvent,
   userId: string,
-  groupId: string
+  groupId: string,
+  lang: Lang
 ): Promise<void> {
   const now = new Date();
   const stats = await getPersonalStats(userId, groupId, now.getFullYear(), now.getMonth() + 1);
@@ -208,18 +233,20 @@ async function handleMyStats(
   if (!stats) {
     await client.replyMessage(event.replyToken, {
       type: "text",
-      text: "📊 이번 달 기록이 없습니다. 러닝 스크린샷을 업로드해보세요!",
+      text: t("noStatsThisMonth", lang) as string,
     });
     return;
   }
 
+  const title = (t("myStatsTitle", lang) as (y: number, m: number) => string)(now.getFullYear(), now.getMonth() + 1);
+  const dist = (t("totalDistance", lang) as (d: string) => string)(stats.totalDistance.toFixed(1));
+  const paceStr = (t("avgPace", lang) as (p: string) => string)(formatPace(stats.avgPace));
+  const runs = (t("runCount", lang) as (n: number) => string)(stats.runCount);
+  const attend = (t("attendDays", lang) as (n: number) => string)(stats.attendDays);
+
   await client.replyMessage(event.replyToken, {
     type: "text",
-    text: `📊 ${now.getFullYear()}년 ${now.getMonth() + 1}월 내 기록\n\n` +
-      `📏 총 거리: ${stats.totalDistance.toFixed(1)} km\n` +
-      `🏃 평균 페이스: ${formatPace(stats.avgPace)}/km\n` +
-      `🔢 러닝 횟수: ${stats.runCount}회\n` +
-      `📅 출석 일수: ${stats.attendDays}일`,
+    text: `${title}\n\n${dist}\n${paceStr}\n${runs}\n${attend}`,
   });
 }
 
@@ -227,7 +254,8 @@ async function handleAttendance(
   client: Client,
   event: MessageEvent,
   userId: string,
-  groupId: string
+  groupId: string,
+  lang: Lang
 ): Promise<void> {
   const weekStart = getWeekStartDate(new Date());
   const attendance = await getWeeklyAttendance(userId, groupId, weekStart);
@@ -247,7 +275,8 @@ async function handleAttendance(
   const attendanceCard = buildAttendanceCard(
     displayName,
     attendance.days,
-    attendance.totalDays
+    attendance.totalDays,
+    lang
   );
   await client.replyMessage(event.replyToken, attendanceCard);
 }
@@ -255,51 +284,45 @@ async function handleAttendance(
 async function handleEventInfo(
   client: Client,
   event: MessageEvent,
-  groupId: string
+  groupId: string,
+  lang: Lang
 ): Promise<void> {
   const upcoming = await getUpcomingEvents(groupId);
 
   if (upcoming.length === 0) {
     await client.replyMessage(event.replyToken, {
       type: "text",
-      text: "📢 현재 예정된 이벤트가 없습니다.\n\n🗓 매주 진행되는 주간 개근 챌린지는 항상 진행 중!\n7일 모두 러닝 인증하면 선물을 받을 수 있어요.",
+      text: t("noEvents", lang) as string,
     });
     return;
   }
 
+  const paceLabel = t("dailyPaceRanking", lang) as string;
   const eventList = upcoming
     .map((e) => {
       const daysUntil = Math.ceil(
         (new Date(e.eventDate!).getTime() - Date.now()) / 86400000
       );
-      return `⚡ ${e.eventDate} (D-${daysUntil}) - 하루 페이스 랭킹`;
+      return `⚡ ${e.eventDate} (D-${daysUntil}) - ${paceLabel}`;
     })
     .join("\n");
 
+  const title = t("upcomingEvents", lang) as string;
+  const challenge = t("weeklyChallenge", lang) as string;
   await client.replyMessage(event.replyToken, {
     type: "text",
-    text: `📢 예정된 이벤트\n\n${eventList}\n\n🗓 주간 개근 챌린지도 진행 중!`,
+    text: `${title}\n\n${eventList}\n\n${challenge}`,
   });
 }
 
 async function handleHelp(
   client: Client,
-  event: MessageEvent
+  event: MessageEvent,
+  lang: Lang
 ): Promise<void> {
   await client.replyMessage(event.replyToken, {
     type: "text",
-    text:
-      `📖 러닝 챗봇 명령어 안내\n\n` +
-      `📸 스크린샷 업로드 → 러닝 인증 + 출석\n` +
-      `/내기록 → 개인 월간 통계\n` +
-      `/랭킹 → 이번 달 전체 랭킹\n` +
-      `/출석 → 이번 주 출석 현황\n` +
-      `/이벤트 → 진행 중인 이벤트 안내\n` +
-      `/도움말 → 이 메시지\n\n` +
-      `👑 관리자 전용\n` +
-      `/이벤트생성 [날짜] → 하루 랭킹 이벤트 생성\n` +
-      `/이벤트취소 → 예약 이벤트 취소\n` +
-      `/이벤트현황 → 당일 실시간 랭킹`,
+    text: t("helpText", lang) as string,
   });
 }
 
@@ -308,12 +331,13 @@ async function handleCreateEvent(
   event: MessageEvent,
   userId: string,
   groupId: string,
-  text: string
+  text: string,
+  lang: Lang
 ): Promise<void> {
   if (!isAdmin(userId)) {
     await client.replyMessage(event.replyToken, {
       type: "text",
-      text: "⚠️ 관리자만 이벤트를 생성할 수 있습니다.",
+      text: t("adminOnly", lang) as string,
     });
     return;
   }
@@ -322,7 +346,7 @@ async function handleCreateEvent(
   if (!dateMatch) {
     await client.replyMessage(event.replyToken, {
       type: "text",
-      text: "📅 날짜를 YYYY-MM-DD 형식으로 입력해주세요.\n예: /이벤트생성 2025-03-15",
+      text: t("dateFormat", lang) as string,
     });
     return;
   }
@@ -348,12 +372,13 @@ async function handleCancelEvent(
   client: Client,
   event: MessageEvent,
   userId: string,
-  groupId: string
+  groupId: string,
+  lang: Lang
 ): Promise<void> {
   if (!isAdmin(userId)) {
     await client.replyMessage(event.replyToken, {
       type: "text",
-      text: "⚠️ 관리자만 이벤트를 취소할 수 있습니다.",
+      text: t("adminOnlyCancel", lang) as string,
     });
     return;
   }
@@ -362,15 +387,16 @@ async function handleCancelEvent(
   await client.replyMessage(event.replyToken, {
     type: "text",
     text: cancelled
-      ? "✅ 가장 가까운 예약 이벤트가 취소되었습니다."
-      : "⚠️ 취소할 예약 이벤트가 없습니다.",
+      ? t("eventCancelled", lang) as string
+      : t("noEventToCancel", lang) as string,
   });
 }
 
 async function handleEventStatus(
   client: Client,
   event: MessageEvent,
-  groupId: string
+  groupId: string,
+  lang: Lang
 ): Promise<void> {
   const today = new Date().toISOString().split("T")[0];
   const activeEvent = await getActiveEvent(groupId, today);
@@ -378,7 +404,7 @@ async function handleEventStatus(
   if (!activeEvent) {
     await client.replyMessage(event.replyToken, {
       type: "text",
-      text: "📊 오늘은 하루 랭킹 이벤트가 없습니다.",
+      text: t("noEventToday", lang) as string,
     });
     return;
   }
@@ -388,7 +414,7 @@ async function handleEventStatus(
   if (ranking.length === 0) {
     await client.replyMessage(event.replyToken, {
       type: "text",
-      text: "📊 아직 참가자가 없습니다. 스크린샷을 업로드하여 참여하세요!",
+      text: t("noParticipants", lang) as string,
     });
     return;
   }

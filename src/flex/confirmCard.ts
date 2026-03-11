@@ -1,5 +1,8 @@
 import { FlexMessage, FlexBubble } from "@line/bot-sdk";
 import { OcrResult } from "../ocr/claude";
+import { DuplicateRecord } from "../services/running";
+import { formatPace } from "../services/ranking";
+import { Lang, t } from "../i18n";
 
 function formatTimestamp(): string {
   const now = new Date();
@@ -10,9 +13,15 @@ export function buildConfirmCard(
   confirmId: string,
   displayName: string,
   data: OcrResult,
-  warnings: string[]
+  warnings: string[],
+  lang: Lang = "ko"
 ): FlexMessage {
   const timestamp = formatTimestamp();
+  const distLabel = t("distance", lang) as string;
+  const timeLabel = t("duration", lang) as string;
+  const paceLabel = t("pace", lang) as string;
+  const registerBtn = t("register", lang) as string;
+  const editBtn = t("edit", lang) as string;
 
   const warningTexts =
     warnings.length > 0
@@ -72,9 +81,9 @@ export function buildConfirmCard(
           spacing: "6px" as any,
           margin: "12px" as any,
           contents: [
-            buildInfoRow("거리", data.distanceKm ? `${data.distanceKm}km` : "-"),
-            buildInfoRow("시간", data.durationDisplay ?? "-"),
-            buildInfoRow("페이스", data.paceDisplay ? `${data.paceDisplay}/km` : "-"),
+            buildInfoRow(distLabel, data.distanceKm ? `${data.distanceKm}km` : "-"),
+            buildInfoRow(timeLabel, data.durationDisplay ?? "-"),
+            buildInfoRow(paceLabel, data.paceDisplay ? `${data.paceDisplay}/km` : "-"),
             ...warningTexts,
           ],
         },
@@ -88,14 +97,14 @@ export function buildConfirmCard(
       paddingTop: "0px",
       paddingBottom: "10px",
       contents: [
-        buildBoxButton("등록하기", {
+        buildBoxButton(registerBtn, {
           type: "postback",
-          label: "등록하기",
+          label: registerBtn,
           data: `action=confirm&id=${confirmId}`,
         }, "15px", "#111111"),
-        buildBoxButton("수정하기", {
+        buildBoxButton(editBtn, {
           type: "postback",
-          label: "수정하기",
+          label: editBtn,
           data: `action=reject&id=${confirmId}`,
         }, "15px", undefined),
       ],
@@ -104,13 +113,44 @@ export function buildConfirmCard(
 
   return {
     type: "flex",
-    altText: `${displayName}님의 러닝 기록: ${data.distanceKm ?? 0}km`,
+    altText: (t("confirmAlt", lang) as (name: string, km: number) => string)(displayName, data.distanceKm ?? 0),
     contents: bubble,
   };
 }
 
 /** 중복 등록 시 카드 */
-export function buildDuplicateCard(displayName: string): FlexMessage {
+export function buildDuplicateCard(displayName: string, lang: Lang = "ko", record?: DuplicateRecord): FlexMessage {
+  const rankingBtn = t("checkMyRanking", lang) as string;
+  const attendBtn = t("checkAttendance", lang) as string;
+  const distLabel = t("distance", lang) as string;
+  const timeLabel = t("duration", lang) as string;
+  const paceLabel = t("pace", lang) as string;
+
+  const fmtDuration = (sec: number) => {
+    const h = Math.floor(sec / 3600);
+    const m = Math.floor((sec % 3600) / 60);
+    const s = sec % 60;
+    const mm = String(m).padStart(2, "0");
+    const ss = String(s).padStart(2, "0");
+    return h > 0 ? `${h}:${mm}:${ss}` : `${m}:${ss}`;
+  };
+
+  const recordRows: any[] = record
+    ? [
+        {
+          type: "box" as const,
+          layout: "vertical" as const,
+          spacing: "6px" as any,
+          margin: "12px" as any,
+          contents: [
+            buildInfoRow(distLabel, `${record.distanceKm}km`),
+            buildInfoRow(timeLabel, fmtDuration(record.durationSec)),
+            buildInfoRow(paceLabel, `${formatPace(record.paceMinPerKm)}/km`),
+          ],
+        },
+      ]
+    : [];
+
   const bubble: FlexBubble = {
     type: "bubble",
     size: "kilo",
@@ -130,7 +170,7 @@ export function buildDuplicateCard(displayName: string): FlexMessage {
         },
         {
           type: "text",
-          text: `오늘 기록은\n이미 등록되어 있어요.`,
+          text: t("duplicateTitle", lang) as string,
           size: "20px" as any,
           weight: "bold",
           color: "#111111",
@@ -140,11 +180,12 @@ export function buildDuplicateCard(displayName: string): FlexMessage {
         },
         {
           type: "text",
-          text: "동일 날짜에는 1건만 인정됩니다.",
+          text: t("duplicateDesc", lang) as string,
           size: "13px" as any,
           color: "#FF0000",
           margin: "8px" as any,
         },
+        ...recordRows,
       ],
     },
     footer: {
@@ -155,14 +196,14 @@ export function buildDuplicateCard(displayName: string): FlexMessage {
       paddingTop: "0px",
       paddingBottom: "10px",
       contents: [
-        buildBoxButton("내 랭킹 확인하기", {
+        buildBoxButton(rankingBtn, {
           type: "postback",
-          label: "내 랭킹 확인하기",
+          label: rankingBtn,
           data: "action=command&cmd=ranking",
         }, "15px", "#111111"),
-        buildBoxButton("출석 확인하기", {
+        buildBoxButton(attendBtn, {
           type: "postback",
-          label: "출석 확인하기",
+          label: attendBtn,
           data: "action=command&cmd=attendance",
         }, "15px", undefined),
       ],
@@ -171,7 +212,7 @@ export function buildDuplicateCard(displayName: string): FlexMessage {
 
   return {
     type: "flex",
-    altText: "오늘 기록은 이미 등록되어 있어요.",
+    altText: t("duplicateAlt", lang) as string,
     contents: bubble,
   };
 }
@@ -180,8 +221,14 @@ export function buildDuplicateCard(displayName: string): FlexMessage {
 export function buildDateErrorCard(
   displayName: string,
   data: OcrResult,
-  runDateTimestamp: string
+  runDateTimestamp: string,
+  lang: Lang = "ko"
 ): FlexMessage {
+  const distLabel = t("distance", lang) as string;
+  const timeLabel = t("duration", lang) as string;
+  const paceLabel = t("pace", lang) as string;
+  const retryBtn = t("registerAgain", lang) as string;
+
   const DATEERROR_HERO_URL = "https://raw.githubusercontent.com/Quizyoon/running-bot/main/img/dateerror-hero.png";
 
   const bubble: FlexBubble = {
@@ -218,7 +265,7 @@ export function buildDateErrorCard(
         },
         {
           type: "text",
-          text: `오늘의 기록만 등록할 수 있어요.\n${runDateTimestamp}`,
+          text: (t("dateErrorDesc", lang) as (ts: string) => string)(runDateTimestamp),
           size: "13px" as any,
           color: "#FF0000",
           wrap: true,
@@ -230,9 +277,9 @@ export function buildDateErrorCard(
           spacing: "6px" as any,
           margin: "12px" as any,
           contents: [
-            buildInfoRow("거리", data.distanceKm ? `${data.distanceKm}km` : "-"),
-            buildInfoRow("시간", data.durationDisplay ?? "-"),
-            buildInfoRow("페이스", data.paceDisplay ? `${data.paceDisplay}/km` : "-"),
+            buildInfoRow(distLabel, data.distanceKm ? `${data.distanceKm}km` : "-"),
+            buildInfoRow(timeLabel, data.durationDisplay ?? "-"),
+            buildInfoRow(paceLabel, data.paceDisplay ? `${data.paceDisplay}/km` : "-"),
           ],
         },
       ],
@@ -244,9 +291,9 @@ export function buildDateErrorCard(
       paddingTop: "0px",
       paddingBottom: "10px",
       contents: [
-        buildBoxButton("다시 등록하기", {
+        buildBoxButton(retryBtn, {
           type: "uri",
-          label: "다시 등록하기",
+          label: retryBtn,
           uri: "https://line.me/R/nv/cameraRoll/single",
         }, "15px", "#111111"),
       ],
@@ -255,7 +302,7 @@ export function buildDateErrorCard(
 
   return {
     type: "flex",
-    altText: "오늘의 기록만 등록할 수 있어요.",
+    altText: t("dateErrorAlt", lang) as string,
     contents: bubble,
   };
 }
@@ -312,7 +359,13 @@ function buildInfoRow(label: string, value: string) {
   };
 }
 
-export function buildCorrectionPrompt(confirmId: string): FlexMessage {
+export function buildCorrectionPrompt(confirmId: string, lang: Lang = "ko"): FlexMessage {
+  const titleText = t("correctionTitle", lang) as string;
+  const promptText = t("correctionPrompt", lang) as string;
+  const distLabel = t("distance", lang) as string;
+  const timeLabel = t("duration", lang) as string;
+  const paceLabel = t("pace", lang) as string;
+
   const bubble: FlexBubble = {
     type: "bubble",
     size: "kilo",
@@ -325,14 +378,14 @@ export function buildCorrectionPrompt(confirmId: string): FlexMessage {
       contents: [
         {
           type: "text",
-          text: "기록 수정",
+          text: titleText,
           weight: "bold",
           size: "14px" as any,
           color: "#333333",
         },
         {
           type: "text",
-          text: "어떤 항목을 수정할까요?",
+          text: promptText,
           weight: "bold",
           size: "20px" as any,
           color: "#111111",
@@ -348,19 +401,19 @@ export function buildCorrectionPrompt(confirmId: string): FlexMessage {
       paddingTop: "0px",
       paddingBottom: "16px",
       contents: [
-        buildBoxButton("거리", {
+        buildBoxButton(distLabel, {
           type: "postback",
-          label: "거리",
+          label: distLabel,
           data: `action=correct&id=${confirmId}&field=distance`,
         }, "15px", "#F5F5F5"),
-        buildBoxButton("시간", {
+        buildBoxButton(timeLabel, {
           type: "postback",
-          label: "시간",
+          label: timeLabel,
           data: `action=correct&id=${confirmId}&field=duration`,
         }, "15px", "#F5F5F5"),
-        buildBoxButton("페이스", {
+        buildBoxButton(paceLabel, {
           type: "postback",
-          label: "페이스",
+          label: paceLabel,
           data: `action=correct&id=${confirmId}&field=pace`,
         }, "15px", "#F5F5F5"),
       ],
@@ -369,7 +422,7 @@ export function buildCorrectionPrompt(confirmId: string): FlexMessage {
 
   return {
     type: "flex",
-    altText: "수정할 항목을 선택해주세요",
+    altText: t("correctionAlt", lang) as string,
     contents: bubble,
   };
 }

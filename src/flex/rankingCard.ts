@@ -1,5 +1,6 @@
 import { FlexMessage, FlexBubble } from "@line/bot-sdk";
 import { RankingEntry, getWeekRange } from "../services/ranking";
+import { Lang, t } from "../i18n";
 
 function ordinal(n: number): string {
   const s = ["th", "st", "nd", "rd"];
@@ -81,8 +82,10 @@ function buildRankRow(entry: RankingEntry): any {
   };
 }
 
-export function buildEmptyRankingCard(displayName?: string): FlexMessage {
+export function buildEmptyRankingCard(displayName?: string, lang: Lang = "ko"): FlexMessage {
   const { week, year } = getWeekRange();
+  const registerLabel = t("registerMyRecord", lang) as string;
+  const prizeLabel = t("checkPrizes", lang) as string;
 
   const RANKING_HERO_URL = "https://raw.githubusercontent.com/Quizyoon/running-bot/main/img/ranking-hero.jpg";
 
@@ -113,8 +116,8 @@ export function buildEmptyRankingCard(displayName?: string): FlexMessage {
         {
           type: "text",
           text: displayName
-            ? `${displayName}님,\n지금 등록하면 1등이에요!`
-            : "아직 등록된 기록이 없어요.",
+            ? (t("emptyRankingTitle", lang) as (name: string) => string)(displayName)
+            : t("noRecordsYet", lang) as string,
           size: "20px" as any,
           weight: "bold",
           color: "#111111",
@@ -144,7 +147,7 @@ export function buildEmptyRankingCard(displayName?: string): FlexMessage {
           layout: "vertical" as const,
           action: {
             type: "uri" as const,
-            label: "내 기록 등록하기",
+            label: registerLabel,
             uri: "https://line.me/R/nv/cameraRoll/single",
           },
           backgroundColor: "#111111",
@@ -155,7 +158,7 @@ export function buildEmptyRankingCard(displayName?: string): FlexMessage {
           contents: [
             {
               type: "text" as const,
-              text: "내 기록 등록하기",
+              text: registerLabel,
               size: "15px" as any,
               weight: "bold" as const,
               color: "#FFFFFF",
@@ -168,7 +171,7 @@ export function buildEmptyRankingCard(displayName?: string): FlexMessage {
           layout: "vertical" as const,
           action: {
             type: "uri" as const,
-            label: "상품 확인하기",
+            label: prizeLabel,
             uri: "https://giftshop-tw.line.me/voucher/322460139",
           },
           backgroundColor: "#FFFFFF",
@@ -179,7 +182,7 @@ export function buildEmptyRankingCard(displayName?: string): FlexMessage {
           contents: [
             {
               type: "text" as const,
-              text: "상품 확인하기",
+              text: prizeLabel,
               size: "15px" as any,
               weight: "bold" as const,
               color: "#000000",
@@ -193,7 +196,7 @@ export function buildEmptyRankingCard(displayName?: string): FlexMessage {
 
   return {
     type: "flex",
-    altText: "Weekly Ranking - 아직 기록이 없어요",
+    altText: t("emptyRankingAlt", lang) as string,
     contents: bubble,
   };
 }
@@ -202,8 +205,9 @@ export function buildRankingCard(
   ranking: RankingEntry[],
   userId?: string,
   displayName?: string,
-  options?: { headerTitle?: string }
+  options?: { headerTitle?: string; lang?: Lang }
 ): FlexMessage {
+  const lang = options?.lang ?? "ko";
   const { week, year } = getWeekRange();
   const top5 = ranking.slice(0, 3);
 
@@ -212,7 +216,6 @@ export function buildRankingCard(
     rows.push(buildRankRow(entry));
   });
 
-  // 본인이 5위 밖인 경우 추가 표시
   const userInTop3 = userId ? top5.some((e) => e.userId === userId) : true;
   const userEntry = userId ? ranking.find((e) => e.userId === userId) : undefined;
 
@@ -220,8 +223,10 @@ export function buildRankingCard(
     rows.push(buildRankRow(userEntry));
   }
 
-  // 등록 전: "내 기록 등록하기", 등록 후: "출석 확인하기"
   const hasFooter = !!userId;
+  const attendLabel = t("checkAttendance", lang) as string;
+  const registerLabel = t("registerMyRecord", lang) as string;
+  const prizeLabel = t("checkPrizes", lang) as string;
 
   const RANKING_HERO_URL = "https://raw.githubusercontent.com/Quizyoon/running-bot/main/img/ranking-hero.jpg";
 
@@ -253,7 +258,7 @@ export function buildRankingCard(
           ? [
               {
                 type: "text" as const,
-                text: `오늘 ${displayName}${userEntry.rank <= 3 ? "이" : "은"}\n${userEntry.rank}위에요`,
+                text: (t("rankTitle", lang) as (name: string, rank: number) => string)(displayName, userEntry.rank),
                 size: "20px" as any,
                 weight: "bold" as const,
                 color: "#111111",
@@ -266,7 +271,7 @@ export function buildRankingCard(
           ? [
               {
                 type: "text" as const,
-                text: `${displayName}님,\n기록을 등록해보세요!`,
+                text: (t("registerPrompt", lang) as (name: string) => string)(displayName),
                 size: "20px" as any,
                 weight: "bold" as const,
                 color: "#111111",
@@ -308,7 +313,7 @@ export function buildRankingCard(
                       layout: "vertical" as const,
                       action: {
                         type: "postback" as const,
-                        label: "출석 확인하기",
+                        label: attendLabel,
                         data: "action=command&cmd=attendance",
                       },
                       backgroundColor: "#111111",
@@ -319,7 +324,7 @@ export function buildRankingCard(
                       contents: [
                         {
                           type: "text" as const,
-                          text: "출석 확인하기",
+                          text: attendLabel,
                           size: "15px" as any,
                           weight: "bold" as const,
                           color: "#FFFFFF",
@@ -334,7 +339,7 @@ export function buildRankingCard(
                       layout: "vertical" as const,
                       action: {
                         type: "uri" as const,
-                        label: "내 기록 등록하기",
+                        label: registerLabel,
                         uri: "https://line.me/R/nv/cameraRoll/single",
                       },
                       backgroundColor: "#111111",
@@ -345,7 +350,7 @@ export function buildRankingCard(
                       contents: [
                         {
                           type: "text" as const,
-                          text: "내 기록 등록하기",
+                          text: registerLabel,
                           size: "15px" as any,
                           weight: "bold" as const,
                           color: "#FFFFFF",
@@ -359,7 +364,7 @@ export function buildRankingCard(
                 layout: "vertical" as const,
                 action: {
                   type: "uri" as const,
-                  label: "상품 확인하기",
+                  label: prizeLabel,
                   uri: "https://giftshop-tw.line.me/voucher/322460139",
                 },
                 backgroundColor: "#FFFFFF",
@@ -370,7 +375,7 @@ export function buildRankingCard(
                 contents: [
                   {
                     type: "text" as const,
-                    text: "상품 확인하기",
+                    text: prizeLabel,
                     size: "15px" as any,
                     weight: "bold" as const,
                     color: "#000000",

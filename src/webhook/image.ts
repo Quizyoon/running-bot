@@ -4,10 +4,12 @@ import { validateRunData, checkDuplicate } from "../services/running";
 import { getActiveEvent } from "../services/event";
 import { buildConfirmCard, buildDuplicateCard, buildDateErrorCard } from "../flex/confirmCard";
 import { pendingRecords, PendingRecord } from "./state";
+import { Lang } from "../i18n";
 
 export async function handleImageMessage(
   client: Client,
-  event: MessageEvent
+  event: MessageEvent,
+  lang: Lang = "ko"
 ): Promise<void> {
   const source = event.source;
   if (!source.userId) return;
@@ -42,15 +44,15 @@ export async function handleImageMessage(
     const runDateTimestamp = ocrResult.runDate
       ? ocrResult.runDate.replace(/-/g, ".")
       : runDate.replace(/-/g, ".");
-    const dateErrorCard = buildDateErrorCard(displayName, ocrResult, runDateTimestamp);
+    const dateErrorCard = buildDateErrorCard(displayName, ocrResult, runDateTimestamp, lang);
     await client.replyMessage(event.replyToken, dateErrorCard);
     return;
   }
 
   // 중복 체크
-  const isDuplicate = await checkDuplicate(source.userId, groupId, runDate);
-  if (isDuplicate) {
-    const duplicateCard = buildDuplicateCard(displayName);
+  const existingRecord = await checkDuplicate(source.userId, groupId, runDate);
+  if (existingRecord) {
+    const duplicateCard = buildDuplicateCard(displayName, lang, existingRecord);
     await client.replyMessage(event.replyToken, duplicateCard);
     return;
   }
@@ -67,6 +69,7 @@ export async function handleImageMessage(
     data: ocrResult,
     imageMessageId: event.message.id,
     eventId: activeEvent?.eventId,
+    lang,
   };
   pendingRecords.set(confirmId, pending);
 
@@ -78,7 +81,8 @@ export async function handleImageMessage(
     confirmId,
     displayName,
     ocrResult,
-    validation.warnings
+    validation.warnings,
+    lang
   );
 
   await client.replyMessage(event.replyToken, confirmMessage);
