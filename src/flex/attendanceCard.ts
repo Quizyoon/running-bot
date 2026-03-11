@@ -110,7 +110,7 @@ export function buildAttendanceCard(
             : countText,
           size: "12px" as any,
           color: "#AAAAAA",
-          margin: "4px" as any,
+          margin: "8px" as any,
         },
         {
           type: "box",

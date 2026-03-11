@@ -130,7 +130,7 @@ export function buildEmptyRankingCard(displayName?: string, lang: Lang = "ko"): 
           text: `${ordinal(week)} week ${year}`,
           size: "12px" as any,
           color: "#AAAAAA",
-          margin: "4px" as any,
+          margin: "8px" as any,
         },
       ],
     },
@@ -286,7 +286,7 @@ export function buildRankingCard(
           text: `${ordinal(week)} week ${year}`,
           size: "12px" as any,
           color: "#AAAAAA",
-          margin: "4px" as any,
+          margin: "8px" as any,
         },
         {
           type: "box",
