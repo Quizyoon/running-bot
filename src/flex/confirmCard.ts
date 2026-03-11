@@ -70,7 +70,7 @@ export function buildConfirmCard(
           type: "box",
           layout: "vertical",
           spacing: "6px" as any,
-          margin: "16px" as any,
+          margin: "12px" as any,
           contents: [
             buildInfoRow("거리", data.distanceKm ? `${data.distanceKm}km` : "-"),
             buildInfoRow("시간", data.durationDisplay ?? "-"),
@@ -92,7 +92,7 @@ export function buildConfirmCard(
           type: "postback",
           label: "등록하기",
           data: `action=confirm&id=${confirmId}`,
-        }, "15px", "#F5F5F5"),
+        }, "15px", "#111111"),
         buildBoxButton("수정하기", {
           type: "postback",
           label: "수정하기",
@@ -158,7 +158,7 @@ export function buildDuplicateCard(displayName: string): FlexMessage {
           type: "postback",
           label: "내 랭킹 확인하기",
           data: "action=command&cmd=ranking",
-        }, "15px", "#F5F5F5"),
+        }, "15px", "#111111"),
         buildBoxButton("출석 확인하기", {
           type: "postback",
           label: "출석 확인하기",
@@ -181,9 +181,18 @@ export function buildDateErrorCard(
   data: OcrResult,
   runDateTimestamp: string
 ): FlexMessage {
+  const DATEERROR_HERO_URL = "https://raw.githubusercontent.com/Quizyoon/running-bot/main/img/dateerror-hero.png";
+
   const bubble: FlexBubble = {
     type: "bubble",
     size: "kilo",
+    hero: {
+      type: "image",
+      url: DATEERROR_HERO_URL,
+      size: "full",
+      aspectRatio: "4:3",
+      aspectMode: "cover",
+    },
     body: {
       type: "box",
       layout: "vertical",
@@ -218,7 +227,7 @@ export function buildDateErrorCard(
           type: "box",
           layout: "vertical",
           spacing: "6px" as any,
-          margin: "16px" as any,
+          margin: "12px" as any,
           contents: [
             buildInfoRow("거리", data.distanceKm ? `${data.distanceKm}km` : "-"),
             buildInfoRow("시간", data.durationDisplay ?? "-"),
@@ -238,7 +247,7 @@ export function buildDateErrorCard(
           type: "uri",
           label: "다시 등록하기",
           uri: "https://line.me/R/nv/cameraRoll/single",
-        }, "15px", "#F5F5F5"),
+        }, "15px", "#111111"),
       ],
     },
   };
@@ -272,7 +281,7 @@ function buildBoxButton(
         text,
         size: fontSize as any,
         weight: "bold" as const,
-        color: "#000000",
+        color: bgColor === "#111111" ? "#FFFFFF" : "#000000",
         align: "center" as const,
       },
     ],
