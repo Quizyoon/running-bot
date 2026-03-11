@@ -12,7 +12,7 @@ function buildRankRow(entry: RankingEntry): any {
     ? {
         type: "image" as const,
         url: entry.profileUrl,
-        size: "40px" as any,
+        size: "36px" as any,
         aspectRatio: "1:1",
         aspectMode: "cover",
         flex: 0,
@@ -20,10 +20,10 @@ function buildRankRow(entry: RankingEntry): any {
     : {
         type: "box" as const,
         layout: "vertical" as const,
-        width: "40px",
-        height: "40px",
+        width: "36px",
+        height: "36px",
         backgroundColor: "#CCCCCC",
-        cornerRadius: "20px",
+        cornerRadius: "18px",
         flex: 0,
         contents: [] as any[],
       };
@@ -32,7 +32,7 @@ function buildRankRow(entry: RankingEntry): any {
     type: "box" as const,
     layout: "horizontal" as const,
     alignItems: "center" as const,
-    spacing: "12px" as any,
+    spacing: "10px" as any,
     paddingAll: "10px" as any,
     paddingStart: "4px" as any,
     contents: [
@@ -56,6 +56,7 @@ function buildRankRow(entry: RankingEntry): any {
             size: "15px" as any,
             weight: "bold" as const,
             color: "#111111",
+            wrap: true,
           },
           {
             type: "text" as const,
@@ -99,7 +100,7 @@ export function buildRankingCard(
 
   const bubble: FlexBubble = {
     type: "bubble",
-    size: "mega",
+    size: "kilo",
     body: {
       type: "box",
       layout: "vertical",
