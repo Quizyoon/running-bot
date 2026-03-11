@@ -78,6 +78,7 @@ export function buildConfirmCard(
       spacing: "8px" as any,
       paddingAll: "16px",
       paddingTop: "0px",
+      paddingBottom: "12px",
       contents: [
         buildBoxButton("등록하기", {
           type: "postback",
@@ -134,6 +135,7 @@ export function buildDuplicateCard(displayName: string): FlexMessage {
       spacing: "8px" as any,
       paddingAll: "16px",
       paddingTop: "0px",
+      paddingBottom: "12px",
       contents: [
         buildBoxButton("내 랭킹 확인하기", {
           type: "postback",
