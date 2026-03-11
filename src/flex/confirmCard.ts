@@ -83,7 +83,7 @@ export function buildConfirmCard(
           type: "postback",
           label: "등록하기",
           data: `action=confirm&id=${confirmId}`,
-        }, "15px", "#F5F5F5"),
+        }, "14px", "#F5F5F5"),
         buildBoxButton("수정하기", {
           type: "postback",
           label: "수정하기",
@@ -140,7 +140,7 @@ export function buildDuplicateCard(displayName: string): FlexMessage {
           type: "postback",
           label: "내 랭킹 확인하기",
           data: "action=command&cmd=ranking",
-        }, "15px", "#F5F5F5"),
+        }, "14px", "#F5F5F5"),
         buildBoxButton("출석체크 하기", {
           type: "postback",
           label: "출석체크 하기",
@@ -220,7 +220,7 @@ export function buildDateErrorCard(
           type: "uri",
           label: "다시 등록하기",
           uri: "https://line.me/R/nv/cameraRoll/single",
-        }, "15px", "#F5F5F5"),
+        }, "14px", "#F5F5F5"),
       ],
     },
   };
