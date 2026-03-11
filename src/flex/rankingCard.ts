@@ -21,7 +21,7 @@ function buildRankRow(entry: RankingEntry): any {
             type: "image" as const,
             url: entry.profileUrl,
             size: "full" as const,
-            aspectRatio: "4:3",
+            aspectRatio: "1:1",
             aspectMode: "cover" as const,
           },
         ]
