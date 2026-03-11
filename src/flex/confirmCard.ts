@@ -83,12 +83,12 @@ export function buildConfirmCard(
           type: "postback",
           label: "등록하기",
           data: `action=confirm&id=${confirmId}`,
-        }, "14px", "#F5F5F5"),
+        }, "15px", "#F5F5F5"),
         buildBoxButton("수정하기", {
           type: "postback",
           label: "수정하기",
           data: `action=reject&id=${confirmId}`,
-        }, "14px", undefined),
+        }, "15px", undefined),
       ],
     },
   };
@@ -120,7 +120,7 @@ export function buildDuplicateCard(displayName: string): FlexMessage {
         },
         {
           type: "text",
-          text: `오늘 ${displayName}님의 기록은\n등록되어 있어요.`,
+          text: `오늘 기록은\n등록되어 있어요.`,
           size: "20px" as any,
           weight: "bold",
           color: "#111111",
@@ -149,19 +149,19 @@ export function buildDuplicateCard(displayName: string): FlexMessage {
           type: "postback",
           label: "내 랭킹 확인하기",
           data: "action=command&cmd=ranking",
-        }, "14px", "#F5F5F5"),
+        }, "15px", "#F5F5F5"),
         buildBoxButton("출석체크 하기", {
           type: "postback",
           label: "출석체크 하기",
           data: "action=command&cmd=attendance",
-        }, "14px", undefined),
+        }, "15px", undefined),
       ],
     },
   };
 
   return {
     type: "flex",
-    altText: `오늘 ${displayName}님의 기록은 이미 등록되어 있습니다.`,
+    altText: "오늘 기록은 등록되어 있어요.",
     contents: bubble,
   };
 }
@@ -229,7 +229,7 @@ export function buildDateErrorCard(
           type: "uri",
           label: "다시 등록하기",
           uri: "https://line.me/R/nv/cameraRoll/single",
-        }, "14px", "#F5F5F5"),
+        }, "15px", "#F5F5F5"),
       ],
     },
   };

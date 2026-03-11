@@ -34,7 +34,7 @@ function buildRankRow(entry: RankingEntry): any {
     layout: "horizontal" as const,
     alignItems: "center" as const,
     spacing: "4px" as any,
-    paddingAll: "10px" as any,
+    paddingAll: "6px" as any,
     paddingStart: "4px" as any,
     contents: [
       {
@@ -91,6 +91,7 @@ export function buildEmptyRankingCard(displayName?: string): FlexMessage {
       type: "box",
       layout: "vertical",
       paddingAll: "20px",
+      paddingBottom: "16px",
       backgroundColor: "#FFFFFF",
       contents: [
         {
@@ -110,6 +111,7 @@ export function buildEmptyRankingCard(displayName?: string): FlexMessage {
           color: "#111111",
           margin: "4px" as any,
           wrap: true,
+          lineSpacing: "7px" as any,
         },
         {
           type: "text",
@@ -170,10 +172,7 @@ export function buildRankingCard(
   const top5 = ranking.slice(0, 5);
 
   const rows: any[] = [];
-  top5.forEach((entry, i) => {
-    if (i > 0) {
-      rows.push({ type: "separator" as const, color: "#F0F0F0" });
-    }
+  top5.forEach((entry) => {
     rows.push(buildRankRow(entry));
   });
 
@@ -182,7 +181,6 @@ export function buildRankingCard(
   const userEntry = userId ? ranking.find((e) => e.userId === userId) : undefined;
 
   if (!userInTop5 && userEntry) {
-    rows.push({ type: "separator" as const, color: "#F0F0F0" });
     rows.push(buildRankRow(userEntry));
   }
 
@@ -210,12 +208,13 @@ export function buildRankingCard(
           ? [
               {
                 type: "text" as const,
-                text: `${displayName}님은 ${userEntry.rank}위에요`,
+                text: `오늘 ${displayName}님은\n${userEntry.rank}위에요`,
                 size: "20px" as any,
                 weight: "bold" as const,
                 color: "#111111",
                 margin: "4px" as any,
                 wrap: true,
+                lineSpacing: "7px" as any,
               },
             ]
           : !userEntry && displayName
@@ -228,6 +227,7 @@ export function buildRankingCard(
                 color: "#111111",
                 margin: "4px" as any,
                 wrap: true,
+                lineSpacing: "7px" as any,
               },
             ]
           : []),
@@ -241,7 +241,7 @@ export function buildRankingCard(
         {
           type: "box",
           layout: "vertical",
-          margin: "16px" as any,
+          margin: "10px" as any,
           contents: rows,
         },
       ],
@@ -271,7 +271,7 @@ export function buildRankingCard(
                   {
                     type: "text" as const,
                     text: "내 기록 등록하기",
-                    size: "14px" as any,
+                    size: "15px" as any,
                     weight: "bold" as const,
                     color: "#000000",
                     align: "center" as const,
