@@ -150,9 +150,9 @@ export function buildDuplicateCard(displayName: string): FlexMessage {
           label: "내 랭킹 확인하기",
           data: "action=command&cmd=ranking",
         }, "15px", "#F5F5F5"),
-        buildBoxButton("출석체크 하기", {
+        buildBoxButton("출석 확인하기", {
           type: "postback",
-          label: "출석체크 하기",
+          label: "출석 확인하기",
           data: "action=command&cmd=attendance",
         }, "15px", undefined),
       ],

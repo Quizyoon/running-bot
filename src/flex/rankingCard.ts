@@ -184,8 +184,8 @@ export function buildRankingCard(
     rows.push(buildRankRow(userEntry));
   }
 
-  // 등록 전이면 버튼 추가
-  const hasFooter = userId && !userEntry;
+  // 등록 전: "내 기록 등록하기", 등록 후: "출석 확인하기"
+  const hasFooter = !!userId;
 
   const bubble: FlexBubble = {
     type: "bubble",
@@ -253,32 +253,60 @@ export function buildRankingCard(
             layout: "vertical" as const,
             paddingAll: "16px",
             paddingTop: "0px",
-            contents: [
-              {
-                type: "box" as const,
-                layout: "vertical" as const,
-                action: {
-                  type: "uri" as const,
-                  label: "내 기록 등록하기",
-                  uri: "https://line.me/R/nv/cameraRoll/single",
-                },
-                backgroundColor: "#F5F5F5",
-                cornerRadius: "8px",
-                paddingAll: "14px",
-                justifyContent: "center" as const,
-                alignItems: "center" as const,
-                contents: [
+            paddingBottom: userEntry ? "16px" : "10px",
+            contents: userEntry
+              ? [
                   {
-                    type: "text" as const,
-                    text: "내 기록 등록하기",
-                    size: "15px" as any,
-                    weight: "bold" as const,
-                    color: "#000000",
-                    align: "center" as const,
+                    type: "box" as const,
+                    layout: "vertical" as const,
+                    action: {
+                      type: "postback" as const,
+                      label: "출석 확인하기",
+                      data: "action=command&cmd=attendance",
+                    },
+                    backgroundColor: "#F5F5F5",
+                    cornerRadius: "8px",
+                    paddingAll: "14px",
+                    justifyContent: "center" as const,
+                    alignItems: "center" as const,
+                    contents: [
+                      {
+                        type: "text" as const,
+                        text: "출석 확인하기",
+                        size: "15px" as any,
+                        weight: "bold" as const,
+                        color: "#000000",
+                        align: "center" as const,
+                      },
+                    ],
+                  },
+                ]
+              : [
+                  {
+                    type: "box" as const,
+                    layout: "vertical" as const,
+                    action: {
+                      type: "uri" as const,
+                      label: "내 기록 등록하기",
+                      uri: "https://line.me/R/nv/cameraRoll/single",
+                    },
+                    backgroundColor: "#F5F5F5",
+                    cornerRadius: "8px",
+                    paddingAll: "14px",
+                    justifyContent: "center" as const,
+                    alignItems: "center" as const,
+                    contents: [
+                      {
+                        type: "text" as const,
+                        text: "내 기록 등록하기",
+                        size: "15px" as any,
+                        weight: "bold" as const,
+                        color: "#000000",
+                        align: "center" as const,
+                      },
+                    ],
                   },
                 ],
-              },
-            ],
           },
         }
       : {}),
