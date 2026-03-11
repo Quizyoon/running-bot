@@ -11,7 +11,7 @@ import {
   getUpcomingEvents,
   getActiveEvent,
 } from "../services/event";
-import { buildRankingCard } from "../flex/rankingCard";
+import { buildRankingCard, buildEmptyRankingCard } from "../flex/rankingCard";
 import { buildEventAnnouncementCard, buildEventResultCard } from "../flex/eventCard";
 import { pendingRecords } from "./state";
 import { buildConfirmCard } from "../flex/confirmCard";
@@ -138,10 +138,18 @@ async function handleRanking(
   const ranking = await getWeeklyRanking(groupId);
 
   if (ranking.length === 0) {
-    await client.replyMessage(event.replyToken, {
-      type: "text",
-      text: "📊 이번 주 랭킹\n\n아직 기록이 없습니다. 스크린샷을 업로드해서 첫 기록을 남겨보세요! 🏃",
-    });
+    let name = "Unknown";
+    try {
+      const src = event.source as any;
+      if (src.type === "group" && src.groupId) {
+        const p = await client.getGroupMemberProfile(src.groupId, userId);
+        name = p.displayName;
+      } else {
+        const p = await client.getProfile(userId);
+        name = p.displayName;
+      }
+    } catch {}
+    await client.replyMessage(event.replyToken, buildEmptyRankingCard(name));
     return;
   }
 

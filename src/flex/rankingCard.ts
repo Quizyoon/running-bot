@@ -81,6 +81,86 @@ function buildRankRow(entry: RankingEntry): any {
   };
 }
 
+export function buildEmptyRankingCard(displayName?: string): FlexMessage {
+  const { week, year } = getWeekRange();
+
+  const bubble: FlexBubble = {
+    type: "bubble",
+    size: "kilo",
+    body: {
+      type: "box",
+      layout: "vertical",
+      paddingAll: "20px",
+      backgroundColor: "#FFFFFF",
+      contents: [
+        {
+          type: "text",
+          text: "Weekly Ranking",
+          size: "14px" as any,
+          weight: "bold",
+          color: "#333333",
+        },
+        {
+          type: "text",
+          text: displayName
+            ? `${displayName}님,\n지금 등록하면 1등이에요!`
+            : "아직 등록된 기록이 없어요.",
+          size: "20px" as any,
+          weight: "bold",
+          color: "#111111",
+          margin: "4px" as any,
+          wrap: true,
+        },
+        {
+          type: "text",
+          text: `${ordinal(week)} week ${year}`,
+          size: "12px" as any,
+          color: "#AAAAAA",
+          margin: "4px" as any,
+        },
+      ],
+    },
+    footer: {
+      type: "box",
+      layout: "vertical",
+      paddingAll: "16px",
+      paddingTop: "0px",
+      contents: [
+        {
+          type: "box" as const,
+          layout: "vertical" as const,
+          action: {
+            type: "uri" as const,
+            label: "내 기록 등록하기",
+            uri: "https://line.me/R/nv/cameraRoll/single",
+          },
+          backgroundColor: "#F5F5F5",
+          cornerRadius: "8px",
+          paddingAll: "14px",
+          justifyContent: "center" as const,
+          alignItems: "center" as const,
+          contents: [
+            {
+              type: "text" as const,
+              text: "내 기록 등록하기",
+              size: "14px" as any,
+              weight: "bold" as const,
+              color: "#000000",
+              align: "center" as const,
+            },
+          ],
+        },
+      ],
+    },
+  };
+
+  return {
+    type: "flex",
+    altText: "Weekly Ranking - 아직 기록이 없어요",
+    contents: bubble,
+  };
+}
+
 export function buildRankingCard(
   ranking: RankingEntry[],
   userId?: string,
@@ -116,7 +196,7 @@ export function buildRankingCard(
       type: "box",
       layout: "vertical",
       paddingAll: "20px",
-      paddingBottom: "6px",
+      paddingBottom: "16px",
       backgroundColor: "#FFFFFF",
       contents: [
         {
@@ -126,13 +206,6 @@ export function buildRankingCard(
           weight: "bold",
           color: "#333333",
         },
-        {
-          type: "text",
-          text: `${ordinal(week)} week ${year}`,
-          size: "12px" as any,
-          color: "#AAAAAA",
-          margin: "4px" as any,
-        },
         ...(userEntry && displayName
           ? [
               {
@@ -141,7 +214,7 @@ export function buildRankingCard(
                 size: "20px" as any,
                 weight: "bold" as const,
                 color: "#111111",
-                margin: "12px" as any,
+                margin: "4px" as any,
                 wrap: true,
               },
             ]
@@ -149,19 +222,26 @@ export function buildRankingCard(
           ? [
               {
                 type: "text" as const,
-                text: `${displayName}님, 기록을 등록해보세요!`,
+                text: `${displayName}님,\n기록을 등록해보세요!`,
                 size: "20px" as any,
                 weight: "bold" as const,
                 color: "#111111",
-                margin: "12px" as any,
+                margin: "4px" as any,
                 wrap: true,
               },
             ]
           : []),
         {
+          type: "text",
+          text: `${ordinal(week)} week ${year}`,
+          size: "12px" as any,
+          color: "#AAAAAA",
+          margin: "4px" as any,
+        },
+        {
           type: "box",
           layout: "vertical",
-          margin: "6px" as any,
+          margin: "16px" as any,
           contents: rows,
         },
       ],

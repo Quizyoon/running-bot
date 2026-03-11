@@ -5,7 +5,7 @@ import { updateMemberStats, computeBadges, getWeeklyAttendance, getWeekStartDate
 import { buildResultCard } from "../flex/resultCard";
 import { buildCorrectionPrompt } from "../flex/confirmCard";
 import { getWeeklyRanking } from "../services/ranking";
-import { buildRankingCard } from "../flex/rankingCard";
+import { buildRankingCard, buildEmptyRankingCard } from "../flex/rankingCard";
 
 export async function handlePostback(
   client: Client,
@@ -141,10 +141,18 @@ async function handleCommand(
     case "ranking": {
       const ranking = await getWeeklyRanking(groupId);
       if (ranking.length === 0) {
-        await client.replyMessage(event.replyToken, {
-          type: "text",
-          text: "📊 이번 주 랭킹\n\n아직 기록이 없습니다.",
-        });
+        let name = "Unknown";
+        try {
+          const s = event.source as any;
+          if (s.type === "group" && s.groupId) {
+            const p = await client.getGroupMemberProfile(s.groupId, userId);
+            name = p.displayName;
+          } else {
+            const p = await client.getProfile(userId);
+            name = p.displayName;
+          }
+        } catch {}
+        await client.replyMessage(event.replyToken, buildEmptyRankingCard(name));
       } else {
         let displayName = "Unknown";
         try {

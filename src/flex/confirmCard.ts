@@ -77,7 +77,7 @@ export function buildConfirmCard(
       spacing: "8px" as any,
       paddingAll: "16px",
       paddingTop: "0px",
-      paddingBottom: "12px",
+      paddingBottom: "10px",
       contents: [
         buildBoxButton("등록하기", {
           type: "postback",
@@ -113,12 +113,20 @@ export function buildDuplicateCard(displayName: string): FlexMessage {
       contents: [
         {
           type: "text",
+          text: "Today's Run",
+          size: "14px" as any,
+          weight: "bold",
+          color: "#333333",
+        },
+        {
+          type: "text",
           text: `오늘 ${displayName}님의 기록은\n등록되어 있어요.`,
           size: "20px" as any,
           weight: "bold",
           color: "#111111",
           wrap: true,
           lineSpacing: "7px" as any,
+          margin: "4px" as any,
         },
         {
           type: "text",
@@ -135,7 +143,7 @@ export function buildDuplicateCard(displayName: string): FlexMessage {
       spacing: "8px" as any,
       paddingAll: "16px",
       paddingTop: "0px",
-      paddingBottom: "12px",
+      paddingBottom: "10px",
       contents: [
         buildBoxButton("내 랭킹 확인하기", {
           type: "postback",
