@@ -8,25 +8,26 @@ function ordinal(n: number): string {
 }
 
 function buildRankRow(entry: RankingEntry): any {
-  const profileImage = entry.profileUrl
-    ? {
-        type: "image" as const,
-        url: entry.profileUrl,
-        size: "36px" as any,
-        aspectRatio: "1:1",
-        aspectMode: "cover",
-        flex: 0,
-      }
-    : {
-        type: "box" as const,
-        layout: "vertical" as const,
-        width: "36px",
-        height: "36px",
-        backgroundColor: "#CCCCCC",
-        cornerRadius: "18px",
-        flex: 0,
-        contents: [] as any[],
-      };
+  const profileImage = {
+    type: "box" as const,
+    layout: "vertical" as const,
+    width: "36px",
+    height: "36px",
+    cornerRadius: "18px",
+    flex: 0,
+    contents: entry.profileUrl
+      ? [
+          {
+            type: "image" as const,
+            url: entry.profileUrl,
+            size: "full" as const,
+            aspectRatio: "1:1",
+            aspectMode: "cover" as const,
+          },
+        ]
+      : ([] as any[]),
+    backgroundColor: entry.profileUrl ? undefined : "#CCCCCC",
+  };
 
   return {
     type: "box" as const,
