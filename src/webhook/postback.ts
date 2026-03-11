@@ -6,7 +6,7 @@ import { buildCorrectionPrompt } from "../flex/confirmCard";
 import { getWeeklyRanking } from "../services/ranking";
 import { buildRankingCard, buildEmptyRankingCard } from "../flex/rankingCard";
 import { buildAttendanceCard } from "../flex/attendanceCard";
-import { t } from "../i18n";
+import { Lang, t } from "../i18n";
 
 export async function handlePostback(
   client: Client,
@@ -16,7 +16,8 @@ export async function handlePostback(
   const action = params.get("action");
 
   if (action === "command") {
-    await handleCommand(client, event, params.get("cmd") || "");
+    const lang = (params.get("lang") as Lang) || "ko";
+    await handleCommand(client, event, params.get("cmd") || "", lang);
     return;
   }
 
@@ -138,7 +139,8 @@ async function handleCorrectSelect(
 async function handleCommand(
   client: Client,
   event: PostbackEvent,
-  cmd: string
+  cmd: string,
+  lang: Lang = "ko"
 ): Promise<void> {
   const userId = event.source.userId;
   if (!userId) return;
@@ -161,7 +163,7 @@ async function handleCommand(
             name = p.displayName;
           }
         } catch {}
-        await client.replyMessage(event.replyToken, buildEmptyRankingCard(name));
+        await client.replyMessage(event.replyToken, buildEmptyRankingCard(name, lang));
       } else {
         await Promise.all(
           ranking.map(async (entry) => {
@@ -189,7 +191,7 @@ async function handleCommand(
             displayName = p.displayName;
           }
         } catch {}
-        const rankingCard = buildRankingCard(ranking, userId, displayName);
+        const rankingCard = buildRankingCard(ranking, userId, displayName, { lang });
         await client.replyMessage(event.replyToken, rankingCard);
       }
       break;
@@ -213,7 +215,8 @@ async function handleCommand(
       const attendanceCard = buildAttendanceCard(
         displayName,
         attendance.days,
-        attendance.totalDays
+        attendance.totalDays,
+        lang
       );
       await client.replyMessage(event.replyToken, attendanceCard);
       break;

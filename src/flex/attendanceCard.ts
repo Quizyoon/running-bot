@@ -136,7 +136,7 @@ export function buildAttendanceCard(
               action: {
                 type: "postback" as const,
                 label: checkRanking,
-                data: "action=command&cmd=ranking",
+                data: `action=command&cmd=ranking&lang=${lang}`,
               },
               backgroundColor: "#111111",
               cornerRadius: "8px",
@@ -210,7 +210,7 @@ export function buildAttendanceCard(
               action: {
                 type: "postback" as const,
                 label: checkRanking,
-                data: "action=command&cmd=ranking",
+                data: `action=command&cmd=ranking&lang=${lang}`,
               },
               backgroundColor: "#FFFFFF",
               cornerRadius: "8px",

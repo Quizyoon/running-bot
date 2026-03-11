@@ -8,8 +8,7 @@ import { Lang } from "../i18n";
 
 export async function handleImageMessage(
   client: Client,
-  event: MessageEvent,
-  lang: Lang = "ko"
+  event: MessageEvent
 ): Promise<void> {
   const source = event.source;
   if (!source.userId) return;
@@ -30,6 +29,8 @@ export async function handleImageMessage(
 
   // 러닝 데이터가 아닌 이미지는 무시
   if (!ocrResult.distanceKm) return;
+
+  const lang: Lang = ocrResult.lang === "en" ? "en" : "ko";
 
   // 이상치 검증
   const validation = validateRunData(ocrResult);

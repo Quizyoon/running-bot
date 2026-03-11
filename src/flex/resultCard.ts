@@ -1,5 +1,6 @@
 import { FlexMessage, FlexBubble } from "@line/bot-sdk";
 import { formatPace, formatDuration } from "../services/ranking";
+import { Lang, t } from "../i18n";
 
 function buildInfoRow(label: string, value: string) {
   return {
@@ -30,9 +31,12 @@ export function buildResultCard(
   durationSec: number,
   paceMinPerKm: number,
   runDate: string,
-  badges: string[]
+  badges: string[],
+  lang: Lang = "ko"
 ): FlexMessage {
   const badgeStr = badges.length > 0 ? ` ${badges.join("")}` : "";
+  const checkRanking = t("checkMyRanking", lang) as string;
+  const checkAttend = t("checkAttendance", lang) as string;
 
   const bubble: FlexBubble = {
     type: "bubble",
@@ -82,8 +86,8 @@ export function buildResultCard(
           layout: "vertical" as const,
           action: {
             type: "postback" as const,
-            label: "내 랭킹 확인하기",
-            data: "action=command&cmd=ranking",
+            label: checkRanking,
+            data: `action=command&cmd=ranking&lang=${lang}`,
           },
           backgroundColor: "#F5F5F5",
           cornerRadius: "8px",
@@ -93,7 +97,7 @@ export function buildResultCard(
           contents: [
             {
               type: "text" as const,
-              text: "내 랭킹 확인하기",
+              text: checkRanking,
               size: "15px" as any,
               weight: "bold" as const,
               color: "#000000",
@@ -106,8 +110,8 @@ export function buildResultCard(
           layout: "vertical" as const,
           action: {
             type: "postback" as const,
-            label: "출석 확인하기",
-            data: "action=command&cmd=attendance",
+            label: checkAttend,
+            data: `action=command&cmd=attendance&lang=${lang}`,
           },
           backgroundColor: "#FFFFFF",
           cornerRadius: "8px",
@@ -117,7 +121,7 @@ export function buildResultCard(
           contents: [
             {
               type: "text" as const,
-              text: "출석 확인하기",
+              text: checkAttend,
               size: "15px" as any,
               weight: "bold" as const,
               color: "#000000",

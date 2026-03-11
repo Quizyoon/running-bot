@@ -314,7 +314,7 @@ export function buildRankingCard(
                       action: {
                         type: "postback" as const,
                         label: attendLabel,
-                        data: "action=command&cmd=attendance",
+                        data: `action=command&cmd=attendance&lang=${lang}`,
                       },
                       backgroundColor: "#111111",
                       cornerRadius: "8px",

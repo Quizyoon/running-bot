@@ -9,6 +9,7 @@ export interface OcrResult {
   paceMinPerKm: number | null;
   paceDisplay: string | null;
   runDate: string | null;
+  lang?: "ko" | "en";
 }
 
 export async function extractRunDataFromImage(
@@ -46,7 +47,8 @@ export async function extractRunDataFromImage(
   "durationDisplay": "HH:MM:SS" 또는 "MM:SS" 형식 문자열,
   "paceMinPerKm": 숫자 (페이스를 분 단위 소수로, 예: 5분30초 = 5.5),
   "paceDisplay": "M'SS\\"" 형식 문자열 (예: 5'30"),
-  "runDate": "YYYY-MM-DD" 형식 문자열
+  "runDate": "YYYY-MM-DD" 형식 문자열,
+  "lang": "ko" 또는 "en" (스크린샷의 UI 언어가 한국어면 "ko", 영어면 "en")
 }
 
 정보를 찾을 수 없으면 해당 필드를 null로 설정하세요.

@@ -200,12 +200,12 @@ export function buildDuplicateCard(displayName: string, lang: Lang = "ko", recor
         buildBoxButton(rankingBtn, {
           type: "postback",
           label: rankingBtn,
-          data: "action=command&cmd=ranking",
+          data: `action=command&cmd=ranking&lang=${lang}`,
         }, "15px", "#111111"),
         buildBoxButton(attendBtn, {
           type: "postback",
           label: attendBtn,
-          data: "action=command&cmd=attendance",
+          data: `action=command&cmd=attendance&lang=${lang}`,
         }, "15px", undefined),
       ],
     },
