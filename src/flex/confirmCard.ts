@@ -37,7 +37,7 @@ export function buildConfirmCard(
       contents: [
         {
           type: "text",
-          text: "Today's Run",
+          text: "Today's Running Log",
           size: "14px" as any,
           weight: "bold",
           color: "#333333",
@@ -113,7 +113,7 @@ export function buildDuplicateCard(displayName: string): FlexMessage {
       contents: [
         {
           type: "text",
-          text: "Today's Run",
+          text: "Today's Running Log",
           size: "14px" as any,
           weight: "bold",
           color: "#333333",
@@ -125,14 +125,14 @@ export function buildDuplicateCard(displayName: string): FlexMessage {
           weight: "bold",
           color: "#111111",
           wrap: true,
-          lineSpacing: "7px" as any,
+          lineSpacing: "2px" as any,
           margin: "4px" as any,
         },
         {
           type: "text",
           text: "동일 날짜에는 1건만 인정됩니다.",
-          size: "14px" as any,
-          color: "#999999",
+          size: "13px" as any,
+          color: "#FF0000",
           margin: "8px" as any,
         },
       ],
@@ -184,7 +184,7 @@ export function buildDateErrorCard(
       contents: [
         {
           type: "text",
-          text: "Today's Run",
+          text: "Today's Running Log",
           size: "14px" as any,
           weight: "bold",
           color: "#333333",
@@ -300,54 +300,50 @@ export function buildCorrectionPrompt(confirmId: string): FlexMessage {
     body: {
       type: "box",
       layout: "vertical",
-      spacing: "md",
       paddingAll: "20px",
+      paddingBottom: "16px",
+      backgroundColor: "#FFFFFF",
       contents: [
+        {
+          type: "text",
+          text: "기록 수정",
+          weight: "bold",
+          size: "14px" as any,
+          color: "#333333",
+        },
         {
           type: "text",
           text: "어떤 항목을 수정할까요?",
           weight: "bold",
-          size: "md",
-          color: "#333333",
+          size: "20px" as any,
+          color: "#111111",
+          margin: "4px" as any,
         },
       ],
     },
     footer: {
       type: "box",
       layout: "vertical",
-      spacing: "sm",
+      spacing: "8px" as any,
       paddingAll: "16px",
+      paddingTop: "0px",
+      paddingBottom: "16px",
       contents: [
-        {
-          type: "button",
-          action: {
-            type: "postback",
-            label: "거리",
-            data: `action=correct&id=${confirmId}&field=distance`,
-          },
-          style: "secondary",
-          height: "sm",
-        },
-        {
-          type: "button",
-          action: {
-            type: "postback",
-            label: "시간",
-            data: `action=correct&id=${confirmId}&field=duration`,
-          },
-          style: "secondary",
-          height: "sm",
-        },
-        {
-          type: "button",
-          action: {
-            type: "postback",
-            label: "페이스",
-            data: `action=correct&id=${confirmId}&field=pace`,
-          },
-          style: "secondary",
-          height: "sm",
-        },
+        buildBoxButton("거리", {
+          type: "postback",
+          label: "거리",
+          data: `action=correct&id=${confirmId}&field=distance`,
+        }, "15px", "#F5F5F5"),
+        buildBoxButton("시간", {
+          type: "postback",
+          label: "시간",
+          data: `action=correct&id=${confirmId}&field=duration`,
+        }, "15px", "#F5F5F5"),
+        buildBoxButton("페이스", {
+          type: "postback",
+          label: "페이스",
+          data: `action=correct&id=${confirmId}&field=pace`,
+        }, "15px", "#F5F5F5"),
       ],
     },
   };

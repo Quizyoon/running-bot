@@ -111,7 +111,7 @@ export function buildEmptyRankingCard(displayName?: string): FlexMessage {
           color: "#111111",
           margin: "4px" as any,
           wrap: true,
-          lineSpacing: "7px" as any,
+          lineSpacing: "2px" as any,
         },
         {
           type: "text",
@@ -214,7 +214,7 @@ export function buildRankingCard(
                 color: "#111111",
                 margin: "4px" as any,
                 wrap: true,
-                lineSpacing: "7px" as any,
+                lineSpacing: "2px" as any,
               },
             ]
           : !userEntry && displayName
@@ -227,7 +227,7 @@ export function buildRankingCard(
                 color: "#111111",
                 margin: "4px" as any,
                 wrap: true,
-                lineSpacing: "7px" as any,
+                lineSpacing: "2px" as any,
               },
             ]
           : []),
