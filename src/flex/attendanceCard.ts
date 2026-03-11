@@ -8,43 +8,62 @@ export function buildAttendanceCard(
   const dayLabels = ["월", "화", "수", "목", "금", "토", "일"];
   const remaining = 7 - totalDays;
 
-  const dayCircles = days.map((checked, i) => ({
-    type: "box" as const,
-    layout: "vertical" as const,
-    width: "28px",
-    alignItems: "center" as const,
-    spacing: "4px" as any,
-    contents: [
-      {
-        type: "box" as const,
-        layout: "vertical" as const,
-        width: "28px",
-        height: "28px",
-        cornerRadius: "14px",
-        backgroundColor: checked ? "#A5FF05" : "#F0F0F0",
-        justifyContent: "center" as const,
-        alignItems: "center" as const,
-        contents: checked
-          ? [
-              {
-                type: "text" as const,
-                text: "✓",
-                size: "12px" as any,
-                color: "#111111",
-                align: "center" as const,
-              },
-            ]
-          : ([] as any[]),
-      },
-      {
-        type: "text" as const,
-        text: dayLabels[i],
-        size: "11px" as any,
-        color: checked ? "#111111" : "#AAAAAA",
-        align: "center" as const,
-      },
-    ],
-  }));
+  // 오늘이 이번 주 몇 번째 날인지 (0=월 ~ 6=일)
+  const now = new Date();
+  const todayDow = now.getDay() === 0 ? 6 : now.getDay() - 1;
+
+  const dayCircles = days.map((checked, i) => {
+    const isPast = i < todayDow;
+    const missed = !checked && isPast;
+
+    return {
+      type: "box" as const,
+      layout: "vertical" as const,
+      width: "28px",
+      alignItems: "center" as const,
+      spacing: "4px" as any,
+      contents: [
+        {
+          type: "box" as const,
+          layout: "vertical" as const,
+          width: "28px",
+          height: "28px",
+          cornerRadius: "14px",
+          backgroundColor: checked ? "#A5FF05" : "#F0F0F0",
+          justifyContent: "center" as const,
+          alignItems: "center" as const,
+          contents: checked
+            ? [
+                {
+                  type: "text" as const,
+                  text: "✓",
+                  size: "12px" as any,
+                  color: "#111111",
+                  align: "center" as const,
+                },
+              ]
+            : missed
+            ? [
+                {
+                  type: "text" as const,
+                  text: "✕",
+                  size: "12px" as any,
+                  color: "#CCCCCC",
+                  align: "center" as const,
+                },
+              ]
+            : ([] as any[]),
+        },
+        {
+          type: "text" as const,
+          text: dayLabels[i],
+          size: "11px" as any,
+          color: checked ? "#111111" : "#AAAAAA",
+          align: "center" as const,
+        },
+      ],
+    };
+  });
 
   const titleText = remaining > 0
     ? `${displayName}이\n${totalDays}일째 달리는 중!`

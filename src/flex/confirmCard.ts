@@ -117,7 +117,7 @@ export function buildDuplicateCard(displayName: string): FlexMessage {
     body: {
       type: "box",
       layout: "vertical",
-      paddingAll: "20px",
+      paddingAll: "16px",
       paddingBottom: "16px",
       backgroundColor: "#FFFFFF",
       contents: [
@@ -319,7 +319,7 @@ export function buildCorrectionPrompt(confirmId: string): FlexMessage {
     body: {
       type: "box",
       layout: "vertical",
-      paddingAll: "20px",
+      paddingAll: "16px",
       paddingBottom: "16px",
       backgroundColor: "#FFFFFF",
       contents: [
