@@ -57,6 +57,7 @@ export function buildResultCard(
           weight: "bold",
           color: "#111111",
           margin: "4px" as any,
+          maxLines: 1,
         },
         {
           type: "text",

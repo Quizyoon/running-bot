@@ -94,6 +94,7 @@ export function buildEventResultCard(
           text: `${medal} ${entry.displayName}`,
           size: "sm" as const,
           flex: 4,
+          maxLines: 1,
         },
         {
           type: "text" as const,

@@ -67,7 +67,7 @@ function buildRankRow(entry: RankingEntry): any {
             size: "14px" as any,
             weight: "bold" as const,
             color: "#111111",
-            wrap: true,
+            maxLines: 1,
           },
           {
             type: "text" as const,
