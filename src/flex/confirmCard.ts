@@ -124,8 +124,8 @@ export function buildDuplicateCard(displayName: string): FlexMessage {
       contents: [
         {
           type: "text",
-          text: `오늘 ${displayName}님의 기록은\n등록되어 있어요.`,
-          size: "xl",
+          text: `오늘 ${displayName}님의\n기록은 등록되어 있어요.`,
+          size: "lg",
           weight: "bold",
           color: "#111111",
           wrap: true,
@@ -133,7 +133,7 @@ export function buildDuplicateCard(displayName: string): FlexMessage {
         {
           type: "text",
           text: "동일 날짜에는 1건만 인정됩니다.",
-          size: "sm",
+          size: "xs",
           color: "#999999",
           margin: "sm",
         },
