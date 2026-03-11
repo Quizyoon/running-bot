@@ -79,27 +79,16 @@ export function buildConfirmCard(
       paddingAll: "16px",
       paddingTop: "0px",
       contents: [
-        {
-          type: "button",
-          action: {
-            type: "postback",
-            label: "등록하기",
-            data: `action=confirm&id=${confirmId}`,
-          },
-          style: "secondary",
-          height: "sm",
-        },
-        {
-          type: "button",
-          action: {
-            type: "postback",
-            label: "수정하기",
-            data: `action=reject&id=${confirmId}`,
-          },
-          style: "link",
-          color: "#000000",
-          height: "sm",
-        },
+        buildBoxButton("등록하기", {
+          type: "postback",
+          label: "등록하기",
+          data: `action=confirm&id=${confirmId}`,
+        }, "15px", "#F5F5F5"),
+        buildBoxButton("수정하기", {
+          type: "postback",
+          label: "수정하기",
+          data: `action=reject&id=${confirmId}`,
+        }, "14px", undefined),
       ],
     },
   };
@@ -146,27 +135,16 @@ export function buildDuplicateCard(displayName: string): FlexMessage {
       paddingAll: "16px",
       paddingTop: "0px",
       contents: [
-        {
-          type: "button",
-          action: {
-            type: "postback",
-            label: "내 랭킹 확인하기",
-            data: "action=command&cmd=ranking",
-          },
-          style: "secondary",
-          height: "sm",
-        },
-        {
-          type: "button",
-          action: {
-            type: "postback",
-            label: "출석체크 하기",
-            data: "action=command&cmd=attendance",
-          },
-          style: "link",
-          color: "#000000",
-          height: "sm",
-        },
+        buildBoxButton("내 랭킹 확인하기", {
+          type: "postback",
+          label: "내 랭킹 확인하기",
+          data: "action=command&cmd=ranking",
+        }, "15px", "#F5F5F5"),
+        buildBoxButton("출석체크 하기", {
+          type: "postback",
+          label: "출석체크 하기",
+          data: "action=command&cmd=attendance",
+        }, "14px", undefined),
       ],
     },
   };
@@ -237,16 +215,11 @@ export function buildDateErrorCard(
       paddingTop: "0px",
       paddingBottom: "16px",
       contents: [
-        {
-          type: "button",
-          action: {
-            type: "uri",
-            label: "다시 등록하기",
-            uri: "https://line.me/R/nv/cameraRoll/single",
-          },
-          style: "secondary",
-          height: "sm",
-        },
+        buildBoxButton("다시 등록하기", {
+          type: "uri",
+          label: "다시 등록하기",
+          uri: "https://line.me/R/nv/cameraRoll/single",
+        }, "15px", "#F5F5F5"),
       ],
     },
   };
@@ -255,6 +228,35 @@ export function buildDateErrorCard(
     type: "flex",
     altText: "오늘의 기록만 등록할 수 있어요.",
     contents: bubble,
+  };
+}
+
+/** box + text로 만든 커스텀 버튼 (폰트 사이즈 지정 가능) */
+function buildBoxButton(
+  text: string,
+  action: any,
+  fontSize: string,
+  bgColor: string | undefined
+) {
+  return {
+    type: "box" as const,
+    layout: "vertical" as const,
+    action,
+    backgroundColor: bgColor || "#FFFFFF",
+    cornerRadius: "8px",
+    paddingAll: "14px",
+    justifyContent: "center" as const,
+    alignItems: "center" as const,
+    contents: [
+      {
+        type: "text" as const,
+        text,
+        size: fontSize as any,
+        weight: "bold" as const,
+        color: "#000000",
+        align: "center" as const,
+      },
+    ],
   };
 }
 
