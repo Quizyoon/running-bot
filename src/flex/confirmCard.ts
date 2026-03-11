@@ -46,7 +46,7 @@ export function buildConfirmCard(
         {
           type: "text",
           text: displayName,
-          size: "26px" as any,
+          size: "24px" as any,
           weight: "bold",
           color: "#111111",
           margin: "8px" as any,
@@ -182,7 +182,7 @@ export function buildDateErrorCard(
         {
           type: "text",
           text: displayName,
-          size: "26px" as any,
+          size: "24px" as any,
           weight: "bold",
           color: "#111111",
           margin: "8px" as any,
