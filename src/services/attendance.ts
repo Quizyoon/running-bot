@@ -1,4 +1,5 @@
 import { pool } from "../db/client";
+import { nowKST } from "../utils/date";
 
 export type Badge = "🔥" | "⚡" | "🌟" | "👑";
 
@@ -53,7 +54,7 @@ export async function getStreakDays(
   if (result.rows.length === 0) return 0;
 
   let streak = 0;
-  const today = new Date();
+  const today = nowKST();
   today.setHours(0, 0, 0, 0);
 
   let checkDate = new Date(today);
@@ -101,7 +102,7 @@ export async function computeBadges(
   if (parseInt(result.rows[0].total) >= 30) badges.push("🌟");
 
   // 이번 달 개근 체크
-  const now = new Date();
+  const now = nowKST();
   const year = now.getFullYear();
   const month = now.getMonth() + 1;
   const daysInMonth = new Date(year, month, 0).getDate();
@@ -129,7 +130,7 @@ export async function updateMemberStats(
   groupId: string,
   displayName: string
 ): Promise<void> {
-  const now = new Date();
+  const now = nowKST();
   const year = now.getFullYear();
   const month = now.getMonth() + 1;
 

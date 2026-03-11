@@ -1,4 +1,5 @@
 import { pool } from "../db/client";
+import { nowKST } from "../utils/date";
 
 export interface RankingEntry {
   rank: number;
@@ -14,7 +15,7 @@ export interface RankingEntry {
 
 /** 이번 주 월~일 날짜 범위 반환 */
 export function getWeekRange(): { start: string; end: string; week: number; year: number } {
-  const now = new Date();
+  const now = nowKST();
   const day = now.getDay(); // 0=Sun, 1=Mon, ...
   const diffToMon = day === 0 ? -6 : 1 - day;
   const monday = new Date(now);

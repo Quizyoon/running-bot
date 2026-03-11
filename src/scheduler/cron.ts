@@ -1,6 +1,7 @@
 import cron from "node-cron";
 import { Client } from "@line/bot-sdk";
 import { pool } from "../db/client";
+import { nowKST, todayString } from "../utils/date";
 import {
   getWeekStartDate,
   getGroupWeeklyAttendance,
@@ -20,20 +21,22 @@ import {
 } from "../flex/eventCard";
 
 export function setupScheduler(client: Client): void {
-  // 매일 저녁 8시 - 주간 개근 현황 발송
-  cron.schedule("0 20 * * *", () => sendWeeklyStatus(client));
+  const tz = { timezone: "Asia/Seoul" };
 
-  // 매일 오전 9시 - 이벤트 공지 (D-3, D-1) + 전일 이벤트 결과
-  cron.schedule("0 9 * * *", () => sendEventNotifications(client));
+  // 매일 저녁 8시 (KST) - 주간 개근 현황 발송
+  cron.schedule("0 20 * * *", () => sendWeeklyStatus(client), tz);
 
-  // 매일 자정 - 당일 이벤트 공지
-  cron.schedule("0 0 * * *", () => sendDayOfEventNotice(client));
+  // 매일 오전 9시 (KST) - 이벤트 공지 (D-3, D-1) + 전일 이벤트 결과
+  cron.schedule("0 9 * * *", () => sendEventNotifications(client), tz);
 
-  // 매일 18시 - 이벤트 중간 순위
-  cron.schedule("0 18 * * *", () => sendMidDayRanking(client));
+  // 매일 자정 (KST) - 당일 이벤트 공지
+  cron.schedule("0 0 * * *", () => sendDayOfEventNotice(client), tz);
 
-  // 매주 월요일 오전 9시 - 주간 개근 달성자 발표
-  cron.schedule("0 9 * * 1", () => announceWeeklyWinners(client));
+  // 매일 18시 (KST) - 이벤트 중간 순위
+  cron.schedule("0 18 * * *", () => sendMidDayRanking(client), tz);
+
+  // 매주 월요일 오전 9시 (KST) - 주간 개근 달성자 발표
+  cron.schedule("0 9 * * 1", () => announceWeeklyWinners(client), tz);
 
   console.log("Scheduler initialized");
 }
@@ -48,7 +51,7 @@ async function getAllGroupIds(): Promise<string[]> {
 async function sendWeeklyStatus(client: Client): Promise<void> {
   try {
     const groupIds = await getAllGroupIds();
-    const weekStart = getWeekStartDate(new Date());
+    const weekStart = getWeekStartDate(nowKST());
     const weekEnd = new Date(weekStart);
     weekEnd.setDate(weekEnd.getDate() + 6);
     const weekLabel = `${formatShortDate(weekStart)} 월 ~ ${formatShortDate(weekEnd)} 일`;
@@ -68,7 +71,7 @@ async function sendWeeklyStatus(client: Client): Promise<void> {
 async function sendEventNotifications(client: Client): Promise<void> {
   try {
     const groupIds = await getAllGroupIds();
-    const today = new Date();
+    const today = nowKST();
     today.setHours(0, 0, 0, 0);
 
     for (const groupId of groupIds) {
@@ -91,7 +94,10 @@ async function sendEventNotifications(client: Client): Promise<void> {
       // 전일 이벤트 결과 발표
       const yesterday = new Date(today);
       yesterday.setDate(yesterday.getDate() - 1);
-      const yesterdayStr = yesterday.toISOString().split("T")[0];
+      const yy = yesterday.getFullYear();
+      const ym = String(yesterday.getMonth() + 1).padStart(2, "0");
+      const yd = String(yesterday.getDate()).padStart(2, "0");
+      const yesterdayStr = `${yy}-${ym}-${yd}`;
       const yesterdayEvent = await getActiveEvent(groupId, yesterdayStr);
 
       if (yesterdayEvent && yesterdayEvent.status !== "CLOSED") {
@@ -116,7 +122,7 @@ async function sendEventNotifications(client: Client): Promise<void> {
 async function sendDayOfEventNotice(client: Client): Promise<void> {
   try {
     const groupIds = await getAllGroupIds();
-    const today = new Date().toISOString().split("T")[0];
+    const today = todayString();
 
     for (const groupId of groupIds) {
       const activeEvent = await getActiveEvent(groupId, today);
@@ -139,7 +145,7 @@ async function sendDayOfEventNotice(client: Client): Promise<void> {
 async function sendMidDayRanking(client: Client): Promise<void> {
   try {
     const groupIds = await getAllGroupIds();
-    const today = new Date().toISOString().split("T")[0];
+    const today = todayString();
 
     for (const groupId of groupIds) {
       const activeEvent = await getActiveEvent(groupId, today);
@@ -164,7 +170,7 @@ async function announceWeeklyWinners(client: Client): Promise<void> {
   try {
     const groupIds = await getAllGroupIds();
     // 지난주 월~일
-    const lastWeekStart = getWeekStartDate(new Date());
+    const lastWeekStart = getWeekStartDate(nowKST());
     lastWeekStart.setDate(lastWeekStart.getDate() - 7);
 
     for (const groupId of groupIds) {

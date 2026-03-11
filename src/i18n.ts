@@ -34,8 +34,8 @@ const texts = {
   duplicateAlt: { ko: "오늘 기록은 이미 등록되어 있어요.", en: "Today's record is already registered." },
 
   // 날짜 오류 카드
-  dateErrorDesc: { ko: (ts: string) => `오늘의 기록만 등록할 수 있어요.\n${ts}`, en: (ts: string) => `Only today's record can be registered.\n${ts}` },
-  dateErrorAlt: { ko: "오늘의 기록만 등록할 수 있어요.", en: "Only today's record can be registered." },
+  dateErrorDesc: { ko: (ts: string) => `오늘의 기록만 등록할 수 있어요.\n${ts}`, en: (ts: string) => `Only today's record is accepted.\n${ts}` },
+  dateErrorAlt: { ko: "오늘의 기록만 등록할 수 있어요.", en: "Only today's record is accepted." },
   registerAgain: { ko: "다시 등록하기", en: "Register Again" },
 
   // 수정 카드

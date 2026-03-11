@@ -7,6 +7,7 @@ import { getWeeklyRanking } from "../services/ranking";
 import { buildRankingCard, buildEmptyRankingCard } from "../flex/rankingCard";
 import { buildAttendanceCard } from "../flex/attendanceCard";
 import { Lang, t } from "../i18n";
+import { todayString, nowKST } from "../utils/date";
 
 export async function handlePostback(
   client: Client,
@@ -60,7 +61,7 @@ async function handleConfirm(
   const lang = record.lang ?? "ko";
 
   const data = record.data;
-  const runDate = data.runDate ?? new Date().toISOString().split("T")[0];
+  const runDate = data.runDate ?? todayString();
 
   await saveSession({
     userId: record.userId,
@@ -197,7 +198,7 @@ async function handleCommand(
       break;
     }
     case "attendance": {
-      const weekStart = getWeekStartDate(new Date());
+      const weekStart = getWeekStartDate(nowKST());
       const attendance = await getWeeklyAttendance(userId, groupId, weekStart);
 
       let displayName = "Unknown";

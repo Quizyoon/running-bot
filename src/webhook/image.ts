@@ -5,6 +5,7 @@ import { getActiveEvent } from "../services/event";
 import { buildConfirmCard, buildDuplicateCard, buildDateErrorCard } from "../flex/confirmCard";
 import { pendingRecords, PendingRecord } from "./state";
 import { Lang } from "../i18n";
+import { todayString } from "../utils/date";
 
 export async function handleImageMessage(
   client: Client,
@@ -39,7 +40,7 @@ export async function handleImageMessage(
   const displayName = await getDisplayName(client, source);
 
   // 당일 기록만 인정
-  const today = new Date().toISOString().split("T")[0];
+  const today = todayString();
   const runDate = ocrResult.runDate ?? today;
   if (runDate !== today) {
     const runDateTimestamp = ocrResult.runDate

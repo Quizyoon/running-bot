@@ -18,6 +18,7 @@ import { pendingRecords } from "./state";
 import { buildConfirmCard } from "../flex/confirmCard";
 import { validateRunData } from "../services/running";
 import { Lang, t } from "../i18n";
+import { todayString, nowKST } from "../utils/date";
 
 // 관리자 목록 (환경변수에서 설정 가능)
 const ADMIN_IDS = new Set((process.env.ADMIN_USER_IDS || "").split(",").filter(Boolean));
@@ -227,7 +228,7 @@ async function handleMyStats(
   groupId: string,
   lang: Lang
 ): Promise<void> {
-  const now = new Date();
+  const now = nowKST();
   const stats = await getPersonalStats(userId, groupId, now.getFullYear(), now.getMonth() + 1);
 
   if (!stats) {
@@ -257,7 +258,7 @@ async function handleAttendance(
   groupId: string,
   lang: Lang
 ): Promise<void> {
-  const weekStart = getWeekStartDate(new Date());
+  const weekStart = getWeekStartDate(nowKST());
   const attendance = await getWeeklyAttendance(userId, groupId, weekStart);
 
   let displayName = "Unknown";
@@ -398,7 +399,7 @@ async function handleEventStatus(
   groupId: string,
   lang: Lang
 ): Promise<void> {
-  const today = new Date().toISOString().split("T")[0];
+  const today = todayString();
   const activeEvent = await getActiveEvent(groupId, today);
 
   if (!activeEvent) {

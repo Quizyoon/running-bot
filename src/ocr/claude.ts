@@ -1,4 +1,5 @@
 import Anthropic from "@anthropic-ai/sdk";
+import { todayString } from "../utils/date";
 
 const anthropic = new Anthropic();
 
@@ -23,7 +24,7 @@ export async function extractRunDataFromImage(
     | "image/gif"
     | "image/webp";
 
-  const today = new Date().toISOString().split("T")[0];
+  const today = todayString();
 
   const response = await anthropic.messages.create({
     model: "claude-haiku-4-5-20251001",

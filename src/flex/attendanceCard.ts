@@ -1,5 +1,6 @@
 import { FlexMessage, FlexBubble } from "@line/bot-sdk";
 import { Lang, t } from "../i18n";
+import { nowKST } from "../utils/date";
 
 export function buildAttendanceCard(
   displayName: string,
@@ -11,7 +12,7 @@ export function buildAttendanceCard(
   const remaining = 7 - totalDays;
 
   // 오늘이 이번 주 몇 번째 날인지 (0=월 ~ 6=일)
-  const now = new Date();
+  const now = nowKST();
   const todayDow = now.getDay() === 0 ? 6 : now.getDay() - 1;
 
   const dayCircles = days.map((checked, i) => {

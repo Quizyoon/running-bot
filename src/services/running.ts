@@ -1,4 +1,5 @@
 import { pool } from "../db/client";
+import { nowKST } from "../utils/date";
 import { OcrResult } from "../ocr/claude";
 
 export interface ValidationResult {
@@ -29,7 +30,7 @@ export function validateRunData(data: OcrResult): ValidationResult {
 
   if (data.runDate !== null) {
     const runDate = new Date(data.runDate);
-    const now = new Date();
+    const now = nowKST();
     const diffMs = now.getTime() - runDate.getTime();
     const diffHours = diffMs / (1000 * 60 * 60);
     if (diffHours > 24) {
