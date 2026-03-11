@@ -29,7 +29,7 @@ export function buildAttendanceCard(
           width: "28px",
           height: "28px",
           cornerRadius: "14px",
-          backgroundColor: checked ? "#A5FF05" : missed ? "#111111" : "#F0F0F0",
+          backgroundColor: checked ? "#A5FF05" : "#F0F0F0",
           justifyContent: "center" as const,
           alignItems: "center" as const,
           contents: checked
@@ -48,7 +48,7 @@ export function buildAttendanceCard(
                   type: "text" as const,
                   text: "✕",
                   size: "12px" as any,
-                  color: "#FFFFFF",
+                  color: "#999999",
                   align: "center" as const,
                 },
               ]
