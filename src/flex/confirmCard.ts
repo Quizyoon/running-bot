@@ -33,7 +33,6 @@ export function buildConfirmCard(
       type: "box",
       layout: "vertical",
       paddingAll: "16px",
-      paddingBottom: "10px",
       backgroundColor: "#FFFFFF",
       contents: [
         {
