@@ -661,7 +661,6 @@ export function buildEventListCard(
     }
   });
 
-  const challengeText = t("weeklyChallenge", lang) as string;
 
   const bubble: FlexBubble = {
     type: "bubble",
@@ -700,14 +699,6 @@ export function buildEventListCard(
           spacing: "8px" as any,
           margin: "12px" as any,
           contents: rows,
-        },
-        {
-          type: "text",
-          text: challengeText,
-          size: "13px" as any,
-          color: "#999999",
-          margin: "12px" as any,
-          wrap: true,
         },
       ],
     },
