@@ -40,11 +40,12 @@ app.post("/webhook", middleware(middlewareConfig), async (req, res) => {
 // JSON body parser for API routes
 app.use(express.json());
 
-// LIFF page — inject LIFF_ID at runtime
-app.get("/liff/event", (_req, res) => {
+// LIFF page — inject LIFF_ID and groupId at runtime
+app.get("/liff/event/:groupId?", (req, res) => {
   const htmlPath = path.join(__dirname, "../public/liff/event.html");
   let html = fs.readFileSync(htmlPath, "utf-8");
   html = html.replace("__LIFF_ID__", LIFF_ID);
+  html = html.replace("__GROUP_ID__", (req.params as any).groupId || "");
   res.type("html").send(html);
 });
 

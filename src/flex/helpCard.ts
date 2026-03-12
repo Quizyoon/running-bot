@@ -82,7 +82,7 @@ export function buildHelpCard(lang: Lang = "ko", groupId?: string): FlexMessage 
         { label: "랭킹 보기", action: { type: "message", text: "/랭킹" } },
         { label: "출석 확인하기", action: { type: "message", text: "/출석" } },
         { label: "이벤트 확인하기", action: { type: "message", text: "/이벤트" } },
-        { label: "이벤트 만들기", action: { type: "uri", uri: `https://liff.line.me/${process.env.LIFF_ID || ""}${groupId ? `?groupId=${encodeURIComponent(groupId)}` : ""}` } },
+        { label: "이벤트 만들기", action: { type: "uri", uri: `https://liff.line.me/${process.env.LIFF_ID || ""}${groupId ? `/${groupId}` : ""}` } },
       ]
     : [
         { label: "Register Record", action: { type: "uri", uri: "https://line.me/R/nv/cameraRoll/single" } },
@@ -90,7 +90,7 @@ export function buildHelpCard(lang: Lang = "ko", groupId?: string): FlexMessage 
         { label: "View Ranking", action: { type: "message", text: "/ranking" } },
         { label: "Check Attendance", action: { type: "message", text: "/attendance" } },
         { label: "Check Events", action: { type: "message", text: "/event" } },
-        { label: "Create Event", action: { type: "uri", uri: `https://liff.line.me/${process.env.LIFF_ID || ""}${groupId ? `?groupId=${encodeURIComponent(groupId)}` : ""}` } },
+        { label: "Create Event", action: { type: "uri", uri: `https://liff.line.me/${process.env.LIFF_ID || ""}${groupId ? `/${groupId}` : ""}` } },
       ];
 
   const bubble: FlexBubble = {

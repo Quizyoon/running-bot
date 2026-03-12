@@ -244,27 +244,9 @@
       checkForm();
     }
 
-    // URL 파라미터에서 groupId 가져오기 (봇이 전달한 실제 groupId)
-    // LIFF는 추가 쿼리파라미터를 liff.state로 인코딩해서 전달함
-    function getUrlGroupId() {
-      const params = new URLSearchParams(window.location.search);
-      // 직접 쿼리 파라미터
-      if (params.get('groupId')) return params.get('groupId');
-      // LIFF state에서 추출
-      const liffState = params.get('liff.state');
-      if (liffState) {
-        const stateParams = new URLSearchParams(liffState.startsWith('?') ? liffState : '?' + liffState);
-        if (stateParams.get('groupId')) return stateParams.get('groupId');
-      }
-      // URL hash에서도 체크
-      if (window.location.hash) {
-        const hashParams = new URLSearchParams(window.location.hash.replace('#', '?'));
-        if (hashParams.get('groupId')) return hashParams.get('groupId');
-      }
-      return null;
-    }
-
-    const urlGroupId = getUrlGroupId();
+    // 서버에서 주입한 실제 groupId (봇 webhook의 groupId)
+    const SERVER_GROUP_ID = '__GROUP_ID__';
+    const urlGroupId = SERVER_GROUP_ID || null;
 
     // LIFF 초기화
     async function initLiff() {
