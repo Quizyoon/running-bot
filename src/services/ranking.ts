@@ -39,7 +39,7 @@ export async function getWeeklyRanking(
   const result = await pool.query(
     `SELECT
        user_id,
-       display_name,
+       MAX(display_name) AS display_name,
        SUM(distance_km) AS total_distance,
        AVG(pace_min_per_km) AS avg_pace,
        COUNT(*) AS run_count
@@ -47,7 +47,7 @@ export async function getWeeklyRanking(
      WHERE group_id = $1
        AND run_date >= $2
        AND run_date <= $3
-     GROUP BY user_id, display_name
+     GROUP BY user_id
      ORDER BY total_distance DESC`,
     [groupId, start, end]
   );
@@ -90,7 +90,7 @@ export async function getMonthlyRanking(
   const result = await pool.query(
     `SELECT
        user_id,
-       display_name,
+       MAX(display_name) AS display_name,
        SUM(distance_km) AS total_distance,
        AVG(pace_min_per_km) AS avg_pace,
        COUNT(*) AS run_count
@@ -98,7 +98,7 @@ export async function getMonthlyRanking(
      WHERE group_id = $1
        AND EXTRACT(YEAR FROM run_date) = $2
        AND EXTRACT(MONTH FROM run_date) = $3
-     GROUP BY user_id, display_name
+     GROUP BY user_id
      ORDER BY total_distance DESC`,
     [groupId, year, month]
   );

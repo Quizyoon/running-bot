@@ -137,13 +137,13 @@ export async function getWeeklyPerfectAttendees(
   weekEnd.setDate(weekEnd.getDate() + 6);
 
   const result = await pool.query(
-    `SELECT user_id, display_name, COUNT(DISTINCT run_date) AS days
+    `SELECT user_id, MAX(display_name) AS display_name, COUNT(DISTINCT run_date) AS days
      FROM running_sessions
      WHERE group_id = $1
        AND is_attendance = true
        AND run_date >= $2
        AND run_date <= $3
-     GROUP BY user_id, display_name
+     GROUP BY user_id
      HAVING COUNT(DISTINCT run_date) = 7`,
     [groupId, weekStart.toISOString().split("T")[0], weekEnd.toISOString().split("T")[0]]
   );
