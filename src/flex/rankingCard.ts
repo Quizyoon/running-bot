@@ -8,6 +8,45 @@ function ordinal(n: number): string {
   return n + (s[(v - 20) % 10] || s[v] || s[0]);
 }
 
+function nameWithParticle(name: string, particle: string, lang: Lang): any {
+  if (lang === "ko") {
+    return {
+      type: "box" as const,
+      layout: "horizontal" as const,
+      margin: "4px" as any,
+      contents: [
+        {
+          type: "text" as const,
+          text: name,
+          size: "20px" as any,
+          weight: "bold" as const,
+          color: "#111111",
+          maxLines: 1,
+          flex: 0,
+          wrap: false,
+        },
+        {
+          type: "text" as const,
+          text: particle,
+          size: "20px" as any,
+          weight: "bold" as const,
+          color: "#111111",
+          flex: 0,
+        },
+      ],
+    };
+  }
+  return {
+    type: "text" as const,
+    text: `${name},`,
+    size: "20px" as any,
+    weight: "bold" as const,
+    color: "#111111",
+    margin: "4px" as any,
+    maxLines: 1,
+  };
+}
+
 function buildRankRow(entry: RankingEntry): any {
   const profileImage = {
     type: "box" as const,
@@ -115,31 +154,7 @@ export function buildEmptyRankingCard(displayName?: string, lang: Lang = "ko"): 
         },
         ...(displayName
           ? [
-              {
-                type: "box" as const,
-                layout: "horizontal" as const,
-                margin: "4px" as any,
-                contents: [
-                  {
-                    type: "text" as const,
-                    text: displayName,
-                    size: "20px" as any,
-                    weight: "bold" as const,
-                    color: "#111111",
-                    maxLines: 1,
-                    flex: 0,
-                    wrap: false,
-                  },
-                  {
-                    type: "text" as const,
-                    text: lang === "ko" ? "님," : ",",
-                    size: "20px" as any,
-                    weight: "bold" as const,
-                    color: "#111111",
-                    flex: 0,
-                  },
-                ],
-              },
+              nameWithParticle(displayName, "님,", lang),
               {
                 type: "text" as const,
                 text: t("emptyRankingTitle", lang) as string,
@@ -289,31 +304,7 @@ export function buildRankingCard(
         },
         ...(userEntry && displayName
           ? [
-              {
-                type: "box" as const,
-                layout: "horizontal" as const,
-                margin: "4px" as any,
-                contents: [
-                  {
-                    type: "text" as const,
-                    text: displayName,
-                    size: "20px" as any,
-                    weight: "bold" as const,
-                    color: "#111111",
-                    maxLines: 1,
-                    flex: 0,
-                    wrap: false,
-                  },
-                  {
-                    type: "text" as const,
-                    text: lang === "ko" ? "이" : "",
-                    size: "20px" as any,
-                    weight: "bold" as const,
-                    color: "#111111",
-                    flex: 0,
-                  },
-                ],
-              },
+              nameWithParticle(displayName, "이", lang),
               {
                 type: "text" as const,
                 text: (t("rankTitle", lang) as (rank: number) => string)(userEntry.rank),
@@ -324,31 +315,7 @@ export function buildRankingCard(
             ]
           : !userEntry && displayName
           ? [
-              {
-                type: "box" as const,
-                layout: "horizontal" as const,
-                margin: "4px" as any,
-                contents: [
-                  {
-                    type: "text" as const,
-                    text: displayName,
-                    size: "20px" as any,
-                    weight: "bold" as const,
-                    color: "#111111",
-                    maxLines: 1,
-                    flex: 0,
-                    wrap: false,
-                  },
-                  {
-                    type: "text" as const,
-                    text: lang === "ko" ? "님," : ",",
-                    size: "20px" as any,
-                    weight: "bold" as const,
-                    color: "#111111",
-                    flex: 0,
-                  },
-                ],
-              },
+              nameWithParticle(displayName, "님,", lang),
               {
                 type: "text" as const,
                 text: t("registerPrompt", lang) as string,

@@ -109,31 +109,45 @@ export function buildAttendanceCard(
         },
         ...(showName
           ? [
-              {
-                type: "box" as const,
-                layout: "horizontal" as const,
-                margin: "4px" as any,
-                contents: [
-                  {
-                    type: "text" as const,
-                    text: displayName,
-                    size: "20px" as any,
-                    weight: "bold" as const,
-                    color: "#111111",
-                    maxLines: 1,
-                    flex: 0,
-                    wrap: false,
-                  },
-                  {
-                    type: "text" as const,
-                    text: lang === "ko" ? "이" : "",
-                    size: "20px" as any,
-                    weight: "bold" as const,
-                    color: "#111111",
-                    flex: 0,
-                  },
-                ],
-              },
+              ...(lang === "ko"
+                ? [
+                    {
+                      type: "box" as const,
+                      layout: "horizontal" as const,
+                      margin: "4px" as any,
+                      contents: [
+                        {
+                          type: "text" as const,
+                          text: displayName,
+                          size: "20px" as any,
+                          weight: "bold" as const,
+                          color: "#111111",
+                          maxLines: 1,
+                          flex: 0,
+                          wrap: false,
+                        },
+                        {
+                          type: "text" as const,
+                          text: "이",
+                          size: "20px" as any,
+                          weight: "bold" as const,
+                          color: "#111111",
+                          flex: 0,
+                        },
+                      ],
+                    },
+                  ]
+                : [
+                    {
+                      type: "text" as const,
+                      text: displayName,
+                      size: "20px" as any,
+                      weight: "bold" as const,
+                      color: "#111111",
+                      margin: "4px" as any,
+                      maxLines: 1,
+                    },
+                  ]),
               {
                 type: "text" as const,
                 text: titleText,

@@ -252,6 +252,8 @@
   </style>
 </head>
 <body>
+  <!-- ===== 📸 등록 플로우 ===== -->
+
   <!-- 확인 카드 -->
   <div class="phone">
     <div class="label">확인 카드</div>
@@ -283,9 +285,25 @@
     </div>
   </div>
 
+  <!-- 수정하기 카드 -->
+  <div class="phone">
+    <div class="label">수정하기</div>
+    <div class="bubble">
+      <div class="alert-body" style="padding-bottom:16px">
+        <div class="ranking-title">기록 수정</div>
+        <div class="rank-title" style="line-height:1.3;letter-spacing:-0.1px">어떤 항목을 수정할까요?</div>
+      </div>
+      <div class="correction-footer">
+        <button class="btn-secondary" style="margin-bottom:8px">거리</button>
+        <button class="btn-secondary" style="margin-bottom:8px">시간</button>
+        <button class="btn-secondary" style="margin-bottom:0">페이스</button>
+      </div>
+    </div>
+  </div>
+
   <!-- 중복 등록 카드 -->
   <div class="phone">
-    <div class="label">중복 등록 시</div>
+    <div class="label">중복 등록</div>
     <div class="bubble">
       <div class="alert-body">
         <div class="title">Today's Running Log</div>
@@ -315,7 +333,7 @@
 
   <!-- 날짜 오류 카드 -->
   <div class="phone">
-    <div class="label">날짜 오류 시</div>
+    <div class="label">날짜 오류</div>
     <div class="bubble">
       <img src="img/dateerror-hero.png" style="width:100%;aspect-ratio:4/3;object-fit:cover;display:block">
       <div class="body">
@@ -343,25 +361,11 @@
     </div>
   </div>
 
-  <!-- 수정하기 카드 -->
-  <div class="phone">
-    <div class="label">수정하기</div>
-    <div class="bubble">
-      <div class="alert-body" style="padding-bottom:16px">
-        <div class="ranking-title">기록 수정</div>
-        <div class="rank-title" style="line-height:1.3;letter-spacing:-0.1px">어떤 항목을 수정할까요?</div>
-      </div>
-      <div class="correction-footer">
-        <button class="btn-secondary" style="margin-bottom:8px">거리</button>
-        <button class="btn-secondary" style="margin-bottom:8px">시간</button>
-        <button class="btn-secondary" style="margin-bottom:0">페이스</button>
-      </div>
-    </div>
-  </div>
+  <!-- ===== 🏆 랭킹 ===== -->
 
-  <!-- 랭킹 카드 (등록 후, 5위 밖) -->
+  <!-- 랭킹 (등록 후, 5위 밖) -->
   <div class="phone">
-    <div class="label">등록 완료 (5위 밖)</div>
+    <div class="label">랭킹 (등록 후)</div>
     <div class="bubble">
       <img src="img/ranking-hero.jpg" style="width:100%;aspect-ratio:4/3;object-fit:cover;display:block">
       <div class="ranking-body">
@@ -411,7 +415,7 @@
     </div>
   </div>
 
-  <!-- 랭킹 카드 (등록 전) -->
+  <!-- 랭킹 (등록 전) -->
   <div class="phone">
     <div class="label">랭킹 (등록 전)</div>
     <div class="bubble">
@@ -455,7 +459,7 @@
     </div>
   </div>
 
-  <!-- 랭킹 카드 (아무도 등록 안 했을 때) -->
+  <!-- 랭킹 (기록 없음) -->
   <div class="phone">
     <div class="label">랭킹 (기록 없음)</div>
     <div class="bubble">
@@ -472,7 +476,36 @@
       </div>
     </div>
   </div>
-  <!-- 출석 카드 (짧은 닉네임) -->
+
+  <!-- ===== ✅ 출석 ===== -->
+
+  <!-- 출석 (오늘 O · 긴 닉네임) -->
+  <div class="phone">
+    <div class="label">출석 (오늘 O)</div>
+    <div class="bubble">
+      <div class="attendance-body">
+        <div class="ranking-title">Weekly Attendance</div>
+        <div style="display:flex;margin-top:4px"><span style="font-size:20px;font-weight:bold;color:#111111;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:calc(100% - 30px)">kaykaykaykaykaykaykaykaykaykaykaykay</span><span style="font-size:20px;font-weight:bold;color:#111111;flex-shrink:0">이</span></div>
+        <div class="rank-title">3일째 달리는 중!</div>
+        <div class="ranking-sub" style="margin-top:8px">출석 3/7일 · 개근까지 4일 남았어요</div>
+        <div class="day-circles">
+          <div class="day-circle"><div class="day-dot" style="background:#A5FF05">✓</div><span class="day-label" style="color:#111111">월</span></div>
+          <div class="day-circle"><div class="day-dot unchecked" style="color:#999999">✕</div><span class="day-label">화</span></div>
+          <div class="day-circle"><div class="day-dot" style="background:#A5FF05">✓</div><span class="day-label" style="color:#111111">수</span></div>
+          <div class="day-circle"><div class="day-dot" style="background:#A5FF05">✓</div><span class="day-label" style="color:#111111">목</span></div>
+          <div class="day-circle"><div class="day-dot unchecked"></div><span class="day-label">금</span></div>
+          <div class="day-circle"><div class="day-dot unchecked"></div><span class="day-label">토</span></div>
+          <div class="day-circle"><div class="day-dot unchecked"></div><span class="day-label">일</span></div>
+        </div>
+      </div>
+      <div class="ranking-footer">
+        <button class="btn-primary">내 랭킹 확인하기</button>
+        <button class="btn-link">상품 확인하기</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 출석 (오늘 O · 짧은 닉네임) -->
   <div class="phone">
     <div class="label">출석 (짧은 닉네임)</div>
     <div class="bubble">
@@ -498,35 +531,9 @@
     </div>
   </div>
 
-  <!-- 출석 카드 (개근 X · 오늘 출석 O) -->
+  <!-- 출석 (오늘 X) -->
   <div class="phone">
-    <div class="label">출석 (개근 X · 오늘 O)</div>
-    <div class="bubble">
-      <div class="attendance-body">
-        <div class="ranking-title">Weekly Attendance</div>
-        <div style="display:flex;margin-top:4px"><span style="font-size:20px;font-weight:bold;color:#111111;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:calc(100% - 30px)">kaykaykaykaykaykaykaykaykaykaykaykay</span><span style="font-size:20px;font-weight:bold;color:#111111;flex-shrink:0">이</span></div>
-        <div class="rank-title">3일째 달리는 중!</div>
-        <div class="ranking-sub" style="margin-top:8px">출석 3/7일 · 개근까지 4일 남았어요</div>
-        <div class="day-circles">
-          <div class="day-circle"><div class="day-dot" style="background:#A5FF05">✓</div><span class="day-label" style="color:#111111">월</span></div>
-          <div class="day-circle"><div class="day-dot unchecked" style="color:#999999">✕</div><span class="day-label">화</span></div>
-          <div class="day-circle"><div class="day-dot" style="background:#A5FF05">✓</div><span class="day-label" style="color:#111111">수</span></div>
-          <div class="day-circle"><div class="day-dot" style="background:#A5FF05">✓</div><span class="day-label" style="color:#111111">목</span></div>
-          <div class="day-circle"><div class="day-dot unchecked"></div><span class="day-label">금</span></div>
-          <div class="day-circle"><div class="day-dot unchecked"></div><span class="day-label">토</span></div>
-          <div class="day-circle"><div class="day-dot unchecked"></div><span class="day-label">일</span></div>
-        </div>
-      </div>
-      <div class="ranking-footer">
-        <button class="btn-primary">내 랭킹 확인하기</button>
-        <button class="btn-link">상품 확인하기</button>
-      </div>
-    </div>
-  </div>
-
-  <!-- 출석 카드 (개근 X · 오늘 출석 X) -->
-  <div class="phone">
-    <div class="label">출석 (개근 X · 오늘 X)</div>
+    <div class="label">출석 (오늘 X)</div>
     <div class="bubble">
       <div class="attendance-body">
         <div class="ranking-title">Weekly Attendance</div>
@@ -551,34 +558,9 @@
     </div>
   </div>
 
-  <!-- 출석 카드 (7일째 · 개근 X) -->
+  <!-- 출석 (7일 개근) -->
   <div class="phone">
-    <div class="label">7일째 (개근 X)</div>
-    <div class="bubble">
-      <div class="attendance-body">
-        <div class="ranking-title">Weekly Attendance</div>
-        <div class="rank-title" style="line-height:1.35;letter-spacing:-0.1px">이번 주는<br>개근 달성 실패 😢</div>
-        <div class="ranking-sub" style="margin-top:8px">출석 5/7일</div>
-        <div class="day-circles">
-          <div class="day-circle"><div class="day-dot" style="background:#A5FF05">✓</div><span class="day-label" style="color:#111111">월</span></div>
-          <div class="day-circle"><div class="day-dot unchecked" style="color:#999999">✕</div><span class="day-label">화</span></div>
-          <div class="day-circle"><div class="day-dot" style="background:#A5FF05">✓</div><span class="day-label" style="color:#111111">수</span></div>
-          <div class="day-circle"><div class="day-dot" style="background:#A5FF05">✓</div><span class="day-label" style="color:#111111">목</span></div>
-          <div class="day-circle"><div class="day-dot unchecked" style="color:#999999">✕</div><span class="day-label">금</span></div>
-          <div class="day-circle"><div class="day-dot" style="background:#A5FF05">✓</div><span class="day-label" style="color:#111111">토</span></div>
-          <div class="day-circle"><div class="day-dot" style="background:#A5FF05">✓</div><span class="day-label" style="color:#111111">일</span></div>
-        </div>
-      </div>
-      <div class="ranking-footer">
-        <button class="btn-primary">내 랭킹 확인하기</button>
-        <button class="btn-link">상품 확인하기</button>
-      </div>
-    </div>
-  </div>
-
-  <!-- 출석 카드 (개근 O) -->
-  <div class="phone">
-    <div class="label">7일째 (개근 O)</div>
+    <div class="label">출석 (7일 개근)</div>
     <div class="bubble">
       <div class="attendance-body">
         <div class="ranking-title">Weekly Attendance</div>
@@ -602,9 +584,36 @@
     </div>
   </div>
 
-  <!-- 내기록 카드 (주간) -->
+  <!-- 출석 (개근 실패) -->
   <div class="phone">
-    <div class="label">내기록 (데이터 있음)</div>
+    <div class="label">출석 (개근 실패)</div>
+    <div class="bubble">
+      <div class="attendance-body">
+        <div class="ranking-title">Weekly Attendance</div>
+        <div class="rank-title" style="line-height:1.35;letter-spacing:-0.1px">이번 주는<br>개근 달성 실패 😢</div>
+        <div class="ranking-sub" style="margin-top:8px">출석 5/7일</div>
+        <div class="day-circles">
+          <div class="day-circle"><div class="day-dot" style="background:#A5FF05">✓</div><span class="day-label" style="color:#111111">월</span></div>
+          <div class="day-circle"><div class="day-dot unchecked" style="color:#999999">✕</div><span class="day-label">화</span></div>
+          <div class="day-circle"><div class="day-dot" style="background:#A5FF05">✓</div><span class="day-label" style="color:#111111">수</span></div>
+          <div class="day-circle"><div class="day-dot" style="background:#A5FF05">✓</div><span class="day-label" style="color:#111111">목</span></div>
+          <div class="day-circle"><div class="day-dot unchecked" style="color:#999999">✕</div><span class="day-label">금</span></div>
+          <div class="day-circle"><div class="day-dot" style="background:#A5FF05">✓</div><span class="day-label" style="color:#111111">토</span></div>
+          <div class="day-circle"><div class="day-dot" style="background:#A5FF05">✓</div><span class="day-label" style="color:#111111">일</span></div>
+        </div>
+      </div>
+      <div class="ranking-footer">
+        <button class="btn-primary">내 랭킹 확인하기</button>
+        <button class="btn-link">상품 확인하기</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== 📊 내기록 ===== -->
+
+  <!-- 내기록 (데이터 있음) -->
+  <div class="phone">
+    <div class="label">내기록</div>
     <div class="bubble">
       <div class="body">
         <div class="title">My Running Stats</div>
@@ -632,9 +641,9 @@
     </div>
   </div>
 
-  <!-- 내기록 카드 (기록 없음) -->
+  <!-- 내기록 (기록 없음) -->
   <div class="phone">
-    <div class="label">내기록 (기록 없음)</div>
+    <div class="label">내기록 (없음)</div>
     <div class="bubble">
       <div class="body">
         <div class="title">My Running Stats</div>
@@ -647,9 +656,11 @@
     </div>
   </div>
 
-  <!-- 이벤트 카드 (이번 주 이벤트) -->
+  <!-- ===== 📢 이벤트 ===== -->
+
+  <!-- 이벤트 (이번 주) -->
   <div class="phone">
-    <div class="label">이벤트 (이번 주)</div>
+    <div class="label">이벤트</div>
     <div class="bubble">
       <div class="body">
         <div class="title">This Week's Event</div>
@@ -684,9 +695,9 @@
     </div>
   </div>
 
-  <!-- 이벤트 카드 (예정 없음) -->
+  <!-- 이벤트 (없음) -->
   <div class="phone">
-    <div class="label">이벤트 (예정 없음)</div>
+    <div class="label">이벤트 (없음)</div>
     <div class="bubble">
       <div class="body">
         <div class="title">This Week's Event</div>
@@ -699,9 +710,11 @@
     </div>
   </div>
 
-  <!-- 도움말 카드 -->
+  <!-- ===== 📖 명령어 ===== -->
+
+  <!-- 명령어 -->
   <div class="phone">
-    <div class="label">도움말</div>
+    <div class="label">명령어</div>
     <div class="bubble">
       <div class="body">
         <div class="title">Running Bot</div>
@@ -717,13 +730,13 @@
       </div>
       <div class="correction-footer">
         <button class="btn-secondary" style="margin-bottom:8px">기록 등록하기</button>
+        <button class="btn-secondary" style="margin-bottom:8px">내 기록 보기</button>
         <button class="btn-secondary" style="margin-bottom:8px">랭킹 보기</button>
         <button class="btn-secondary" style="margin-bottom:8px">출석 확인하기</button>
         <button class="btn-secondary" style="margin-bottom:0">이벤트 확인하기</button>
       </div>
     </div>
   </div>
-
 
 </body>
 </html>

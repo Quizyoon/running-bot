@@ -87,7 +87,7 @@ const texts = {
   runCountLabel: { ko: "러닝 횟수", en: "Runs" },
   attendDaysLabel: { ko: "출석 일수", en: "Attendance" },
 
-  // 도움말 카드
+  // 명령어 카드
   helpCardTitle: { ko: "명령어 안내", en: "Commands" },
   helpAlt: { ko: "러닝 챗봇 명령어 안내", en: "Running Bot Commands" },
 

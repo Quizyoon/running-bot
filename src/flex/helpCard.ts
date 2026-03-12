@@ -26,15 +26,14 @@ function buildCommandRow(cmd: string, desc: string) {
   };
 }
 
-function buildCommandButton(label: string, messageText: string) {
+function buildCommandButton(label: string, action: { type: "message"; text: string } | { type: "uri"; uri: string }) {
+  const btnAction = action.type === "message"
+    ? { type: "message" as const, label, text: action.text }
+    : { type: "uri" as const, label, uri: action.uri };
   return {
     type: "box" as const,
     layout: "vertical" as const,
-    action: {
-      type: "message" as const,
-      label,
-      text: messageText,
-    },
+    action: btnAction,
     backgroundColor: "#F5F5F5",
     cornerRadius: "8px",
     paddingAll: "14px",
@@ -74,18 +73,20 @@ export function buildHelpCard(lang: Lang = "ko"): FlexMessage {
         { cmd: "/help", desc: "This guide" },
       ];
 
-  const buttons = isKo
+  const buttons: { label: string; action: { type: "message"; text: string } | { type: "uri"; uri: string } }[] = isKo
     ? [
-        { label: "기록 등록하기", msg: "/내기록" },
-        { label: "랭킹 보기", msg: "/랭킹" },
-        { label: "출석 확인하기", msg: "/출석" },
-        { label: "이벤트 확인하기", msg: "/이벤트" },
+        { label: "기록 등록하기", action: { type: "uri", uri: "https://line.me/R/nv/cameraRoll/single" } },
+        { label: "내 기록 보기", action: { type: "message", text: "/내기록" } },
+        { label: "랭킹 보기", action: { type: "message", text: "/랭킹" } },
+        { label: "출석 확인하기", action: { type: "message", text: "/출석" } },
+        { label: "이벤트 확인하기", action: { type: "message", text: "/이벤트" } },
       ]
     : [
-        { label: "Register My Record", msg: "/mystats" },
-        { label: "View Ranking", msg: "/ranking" },
-        { label: "Check Attendance", msg: "/attendance" },
-        { label: "Check Events", msg: "/event" },
+        { label: "Register Record", action: { type: "uri", uri: "https://line.me/R/nv/cameraRoll/single" } },
+        { label: "My Stats", action: { type: "message", text: "/mystats" } },
+        { label: "View Ranking", action: { type: "message", text: "/ranking" } },
+        { label: "Check Attendance", action: { type: "message", text: "/attendance" } },
+        { label: "Check Events", action: { type: "message", text: "/event" } },
       ];
 
   const bubble: FlexBubble = {
@@ -128,7 +129,7 @@ export function buildHelpCard(lang: Lang = "ko"): FlexMessage {
       paddingAll: "16px",
       paddingTop: "0px",
       paddingBottom: "10px",
-      contents: buttons.map((b) => buildCommandButton(b.label, b.msg)),
+      contents: buttons.map((b) => buildCommandButton(b.label, b.action)),
     },
   };
 
