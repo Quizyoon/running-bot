@@ -89,17 +89,14 @@ export function buildEventAnnouncementCard(
         ],
       };
     } else {
-      const prizeText = options.prizePrice
-        ? `${options.prizeInfo} ($${options.prizePrice})`
-        : options.prizeInfo;
-      infoRows.push({
-        type: "box" as const,
-        layout: "horizontal" as const,
-        contents: [
-          { type: "text" as const, text: "상품", size: "14px" as any, color: "#999999", flex: 2 },
-          { type: "text" as const, text: prizeText, size: "14px" as any, color: "#111111", flex: 5, wrap: true },
-        ],
-      });
+      prizeBlock = {
+        type: "text" as const,
+        text: options.prizeInfo,
+        size: "14px" as any,
+        color: "#111111",
+        maxLines: 1,
+        margin: "12px" as any,
+      };
     }
   }
 
@@ -141,9 +138,18 @@ export function buildEventAnnouncementCard(
     contents: infoRows,
   });
 
+  const EVENT_HERO_URL = "https://raw.githubusercontent.com/Quizyoon/running-bot/main/img/event-hero.jpg";
+
   const bubble: FlexBubble = {
     type: "bubble",
     size: "kilo",
+    hero: {
+      type: "image",
+      url: EVENT_HERO_URL,
+      size: "full" as const,
+      aspectRatio: "4:3",
+      aspectMode: "cover" as const,
+    },
     body: {
       type: "box",
       layout: "vertical",
@@ -179,28 +185,6 @@ export function buildEventAnnouncementCard(
               size: "15px" as any,
               weight: "bold" as const,
               color: "#FFFFFF",
-              align: "center" as const,
-            },
-          ],
-        },
-        {
-          type: "box" as const,
-          layout: "vertical" as const,
-          action: {
-            type: "message" as const,
-            label: "랭킹",
-            text: "/랭킹",
-          },
-          paddingAll: "14px",
-          justifyContent: "center" as const,
-          alignItems: "center" as const,
-          contents: [
-            {
-              type: "text" as const,
-              text: "랭킹",
-              size: "15px" as any,
-              weight: "bold" as const,
-              color: "#000000",
               align: "center" as const,
             },
           ],
@@ -527,9 +511,18 @@ export function buildEventCreateCard(lang: Lang = "ko", groupId?: string): FlexM
     : "Create a running event!\nChoose the method and prize.";
   const btnLabel = lang === "ko" ? "이벤트 만들기" : "Create Event";
 
+  const EVENT_HERO_URL = "https://raw.githubusercontent.com/Quizyoon/running-bot/main/img/event-hero.jpg";
+
   const bubble: FlexBubble = {
     type: "bubble",
     size: "kilo",
+    hero: {
+      type: "image",
+      url: EVENT_HERO_URL,
+      size: "full" as const,
+      aspectRatio: "4:3",
+      aspectMode: "cover" as const,
+    },
     body: {
       type: "box",
       layout: "vertical",
@@ -663,12 +656,12 @@ export function buildEventListCard(
         });
       } else {
         rows.push({
-          type: "box" as const,
-          layout: "horizontal" as const,
-          contents: [
-            { type: "text" as const, text: "상품", size: "14px" as any, color: "#999999", flex: 2 },
-            { type: "text" as const, text: e.prizeInfo, size: "14px" as any, color: "#111111", flex: 5 },
-          ],
+          type: "text" as const,
+          text: e.prizeInfo,
+          size: "14px" as any,
+          color: "#111111",
+          maxLines: 1,
+          margin: idx === 0 ? "0px" as any : undefined,
         });
       }
     }
@@ -676,7 +669,7 @@ export function buildEventListCard(
     rows.push({
       type: "box" as const,
       layout: "horizontal" as const,
-      margin: e.prizeInfo && e.prizeImageUrl ? "12px" as any : undefined,
+      margin: e.prizeInfo ? "12px" as any : undefined,
       contents: [
         { type: "text" as const, text: "이벤트", size: "14px" as any, color: "#999999", flex: 2 },
         { type: "text" as const, text: eventName, size: "14px" as any, color: "#111111", flex: 5, maxLines: 1 },
@@ -779,28 +772,6 @@ export function buildEventListCard(
               size: "15px" as any,
               weight: "bold" as const,
               color: "#FFFFFF",
-              align: "center" as const,
-            },
-          ],
-        },
-        {
-          type: "box" as const,
-          layout: "vertical" as const,
-          action: {
-            type: "message" as const,
-            label: lang === "ko" ? "랭킹" : "Ranking",
-            text: lang === "ko" ? "/랭킹" : "/ranking",
-          },
-          paddingAll: "14px",
-          justifyContent: "center" as const,
-          alignItems: "center" as const,
-          contents: [
-            {
-              type: "text" as const,
-              text: lang === "ko" ? "랭킹" : "Ranking",
-              size: "15px" as any,
-              weight: "bold" as const,
-              color: "#000000",
               align: "center" as const,
             },
           ],
@@ -912,28 +883,6 @@ export function buildNoEventsCard(lang: Lang = "ko", groupId?: string): FlexMess
               size: "15px" as any,
               weight: "bold" as const,
               color: "#FFFFFF",
-              align: "center" as const,
-            },
-          ],
-        },
-        {
-          type: "box" as const,
-          layout: "vertical" as const,
-          action: {
-            type: "message" as const,
-            label: lang === "ko" ? "랭킹" : "Ranking",
-            text: lang === "ko" ? "/랭킹" : "/ranking",
-          },
-          paddingAll: "14px",
-          justifyContent: "center" as const,
-          alignItems: "center" as const,
-          contents: [
-            {
-              type: "text" as const,
-              text: lang === "ko" ? "랭킹" : "Ranking",
-              size: "15px" as any,
-              weight: "bold" as const,
-              color: "#000000",
               align: "center" as const,
             },
           ],

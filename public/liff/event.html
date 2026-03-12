@@ -10,7 +10,7 @@
       font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
       background: #FFFFFF;
       color: #111111;
-      padding: 24px 20px;
+      padding: 24px 24px;
       padding-bottom: calc(16px + env(safe-area-inset-bottom, 0px));
     }
     .header { font-size: 20px; font-weight: 700; margin-bottom: 4px; }
@@ -37,8 +37,9 @@
       display: flex; gap: 8px; overflow-x: auto;
       scroll-snap-type: x mandatory;
       -webkit-overflow-scrolling: touch;
-      padding: 4px 24px 8px;
-      margin: 0 -24px;
+      padding: 4px 0 8px;
+      margin-right: -24px;
+      padding-right: 24px;
     }
     .product-carousel::-webkit-scrollbar { display: none; }
     .product-card {
