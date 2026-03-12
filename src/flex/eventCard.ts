@@ -194,8 +194,6 @@ export function buildEventAnnouncementCard(
               return options?.groupId ? `https://liff.line.me/${lid}/${options.groupId}` : `https://liff.line.me/${lid}`;
             })(),
           },
-          backgroundColor: "#F5F5F5",
-          cornerRadius: "8px",
           paddingAll: "14px",
           justifyContent: "center" as const,
           alignItems: "center" as const,
