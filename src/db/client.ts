@@ -41,13 +41,21 @@ CREATE TABLE IF NOT EXISTS events (
   event_id       UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   group_id       VARCHAR NOT NULL,
   event_type     VARCHAR NOT NULL,
+  event_name     VARCHAR,
   event_date     DATE,
+  event_end_date DATE,
   week_start     DATE,
   created_by     VARCHAR NOT NULL,
+  prize_info     VARCHAR,
   status         VARCHAR DEFAULT 'SCHEDULED',
   winner_user_id VARCHAR,
   created_at     TIMESTAMP DEFAULT now()
 );
+
+ALTER TABLE events ADD COLUMN IF NOT EXISTS event_name VARCHAR;
+ALTER TABLE events ADD COLUMN IF NOT EXISTS prize_info VARCHAR;
+ALTER TABLE events ADD COLUMN IF NOT EXISTS event_end_date DATE;
+ALTER TABLE events ADD COLUMN IF NOT EXISTS prize_product_id VARCHAR;
 
 CREATE INDEX IF NOT EXISTS idx_sessions_group_date ON running_sessions(group_id, run_date);
 CREATE INDEX IF NOT EXISTS idx_sessions_user_date ON running_sessions(user_id, run_date);

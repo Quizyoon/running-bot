@@ -4,9 +4,13 @@ export interface EventRecord {
   eventId: string;
   groupId: string;
   eventType: "WEEKLY_ATTENDANCE" | "DAILY_RACE";
+  eventName: string | null;
   eventDate: string | null;
+  eventEndDate: string | null;
   weekStart: string | null;
   createdBy: string;
+  prizeInfo: string | null;
+  prizeProductId: string | null;
   status: string;
   winnerUserId: string | null;
 }
@@ -14,24 +18,28 @@ export interface EventRecord {
 export async function createDailyRaceEvent(
   groupId: string,
   eventDate: string,
-  createdBy: string
+  createdBy: string,
+  options?: { eventName?: string; prizeInfo?: string; eventEndDate?: string; prizeProductId?: string }
 ): Promise<string> {
-  // 같은 날짜에 이미 이벤트가 있는지 확인
+  const endDate = options?.eventEndDate || eventDate;
+
+  // 기간이 겹치는 이벤트가 있는지 확인
   const existing = await pool.query(
     `SELECT event_id FROM events
-     WHERE group_id = $1 AND event_date = $2 AND event_type = 'DAILY_RACE'
-       AND status != 'CANCELLED'`,
-    [groupId, eventDate]
+     WHERE group_id = $1 AND event_type = 'DAILY_RACE'
+       AND status != 'CANCELLED'
+       AND event_date <= $3 AND COALESCE(event_end_date, event_date) >= $2`,
+    [groupId, eventDate, endDate]
   );
   if (existing.rows.length > 0) {
-    throw new Error("해당 날짜에 이미 이벤트가 있습니다.");
+    throw new Error("해당 기간에 이미 이벤트가 있습니다.");
   }
 
   const result = await pool.query(
-    `INSERT INTO events (group_id, event_type, event_date, created_by, status)
-     VALUES ($1, 'DAILY_RACE', $2, $3, 'SCHEDULED')
+    `INSERT INTO events (group_id, event_type, event_name, event_date, event_end_date, created_by, prize_info, prize_product_id, status)
+     VALUES ($1, 'DAILY_RACE', $2, $3, $4, $5, $6, $7, 'SCHEDULED')
      RETURNING event_id`,
-    [groupId, eventDate, createdBy]
+    [groupId, options?.eventName || null, eventDate, endDate, createdBy, options?.prizeInfo || null, options?.prizeProductId || null]
   );
   return result.rows[0].event_id;
 }
@@ -67,9 +75,11 @@ export async function getActiveEvent(
 ): Promise<EventRecord | null> {
   const result = await pool.query(
     `SELECT * FROM events
-     WHERE group_id = $1 AND event_date = $2
+     WHERE group_id = $1
        AND event_type = 'DAILY_RACE'
        AND status IN ('SCHEDULED', 'ACTIVE')
+       AND event_date <= $2
+       AND COALESCE(event_end_date, event_date) >= $2
      LIMIT 1`,
     [groupId, date]
   );
@@ -83,8 +93,8 @@ export async function getUpcomingEvents(
 ): Promise<EventRecord[]> {
   const result = await pool.query(
     `SELECT * FROM events
-     WHERE group_id = $1 AND status = 'SCHEDULED'
-       AND event_date >= CURRENT_DATE
+     WHERE group_id = $1 AND status IN ('SCHEDULED', 'ACTIVE')
+       AND COALESCE(event_end_date, event_date) >= CURRENT_DATE
      ORDER BY event_date ASC
      LIMIT 5`,
     [groupId]
@@ -159,13 +169,19 @@ function mapEventRow(row: any): EventRecord {
     eventId: row.event_id,
     groupId: row.group_id,
     eventType: row.event_type,
+    eventName: row.event_name || null,
     eventDate: row.event_date
       ? new Date(row.event_date).toISOString().split("T")[0]
+      : null,
+    eventEndDate: row.event_end_date
+      ? new Date(row.event_end_date).toISOString().split("T")[0]
       : null,
     weekStart: row.week_start
       ? new Date(row.week_start).toISOString().split("T")[0]
       : null,
     createdBy: row.created_by,
+    prizeInfo: row.prize_info || null,
+    prizeProductId: row.prize_product_id || null,
     status: row.status,
     winnerUserId: row.winner_user_id,
   };

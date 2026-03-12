@@ -8,6 +8,7 @@ import { initDatabase } from "./db/client";
 import { setupScheduler } from "./scheduler/cron";
 import { createDailyRaceEvent } from "./services/event";
 import { buildEventAnnouncementCard } from "./flex/eventCard";
+import { fetchBrandProducts } from "./services/giftshop";
 
 const middlewareConfig: MiddlewareConfig = {
   channelSecret: process.env.LINE_CHANNEL_SECRET!,
@@ -50,30 +51,51 @@ app.get("/liff/event", (_req, res) => {
 // API: Create event from LIFF
 app.post("/api/event/create", async (req, res) => {
   try {
-    const { groupId, eventDate, userId } = req.body;
+    const { groupId, eventDate, eventEndDate, userId, eventName, prizeInfo, prizeProductId } = req.body;
+    console.log(`[LIFF] Event create: groupId=${groupId} date=${eventDate}~${eventEndDate} user=${userId} name=${eventName} prize=${prizeProductId}`);
 
     if (!groupId || !eventDate || !userId) {
       res.status(400).json({ error: "필수 항목이 누락되었습니다" });
       return;
     }
 
-    const eventId = await createDailyRaceEvent(groupId, eventDate, userId);
+    const eventId = await createDailyRaceEvent(groupId, eventDate, userId, {
+      eventName: eventName || undefined,
+      prizeInfo: prizeInfo || undefined,
+      prizeProductId: prizeProductId || undefined,
+      eventEndDate: eventEndDate || undefined,
+    });
 
     // 그룹에 이벤트 공지 푸시 (실패해도 이벤트 생성은 유지)
     try {
       const daysUntil = Math.ceil(
         (new Date(eventDate).getTime() - Date.now()) / 86400000
       );
-      const announcement = buildEventAnnouncementCard(eventDate, daysUntil);
+      const announcement = buildEventAnnouncementCard(eventDate, daysUntil, {
+        eventName: eventName || undefined,
+        prizeInfo: prizeInfo || undefined,
+      });
       await client.pushMessage(groupId, announcement);
-    } catch (pushErr) {
-      console.error("Event push notification failed:", pushErr);
+    } catch (pushErr: any) {
+      console.error("Event push failed:", pushErr?.message);
     }
 
     res.json({ ok: true, eventId });
   } catch (err: any) {
-    console.error("Event create error:", err);
+    console.error("Event create error:", err?.message);
     res.status(409).json({ error: err.message });
+  }
+});
+
+// API: Gift shop products
+app.get("/api/gifts/products", async (req, res) => {
+  try {
+    const brandId = (req.query.brand as string) || "10000340";
+    const products = await fetchBrandProducts(brandId);
+    res.json({ ok: true, products });
+  } catch (err: any) {
+    console.error("Gift fetch error:", err?.message);
+    res.status(500).json({ error: "상품 목록을 가져올 수 없습니다" });
   }
 });
 

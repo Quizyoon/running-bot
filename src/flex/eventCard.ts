@@ -4,7 +4,8 @@ import { Lang, t } from "../i18n";
 
 export function buildEventAnnouncementCard(
   eventDate: string,
-  daysUntil: number
+  daysUntil: number,
+  options?: { eventName?: string; prizeInfo?: string }
 ): FlexMessage {
   let emoji: string;
   let title: string;
@@ -60,6 +61,16 @@ export function buildEventAnnouncementCard(
           size: "sm",
           color: "#666666",
         },
+        ...(options?.prizeInfo
+          ? [
+              {
+                type: "text" as const,
+                text: `🎁 상품: ${options.prizeInfo}`,
+                size: "sm" as const,
+                color: "#666666",
+              },
+            ]
+          : []),
         {
           type: "text",
           text: "📱 러닝 앱 스크린샷으로 자동 참여",
@@ -72,7 +83,7 @@ export function buildEventAnnouncementCard(
 
   return {
     type: "flex",
-    altText: `${emoji} ${title}`,
+    altText: `${emoji} ${options?.eventName || title}`,
     contents: bubble,
   };
 }
@@ -392,33 +403,46 @@ function formatDateKr(dateStr: string): string {
 }
 
 export function buildEventListCard(
-  events: { eventDate: string; daysUntil: number }[],
+  events: { eventDate: string; daysUntil: number; eventName?: string | null; prizeInfo?: string | null }[],
   lang: Lang = "ko"
 ): FlexMessage {
   const registerLabel = t("registerMyRecord", lang) as string;
   const paceLabel = t("dailyPaceRanking", lang) as string;
 
-  const rows = events.map((e) => ({
-    type: "box" as const,
-    layout: "horizontal" as const,
-    contents: [
-      {
+  const rows: any[] = [];
+  events.forEach((e) => {
+    rows.push({
+      type: "box" as const,
+      layout: "horizontal" as const,
+      contents: [
+        {
+          type: "text" as const,
+          text: `⚡ ${e.eventName || e.eventDate}`,
+          size: "14px" as any,
+          flex: 4,
+          color: "#111111",
+          maxLines: 1,
+        },
+        {
+          type: "text" as const,
+          text: e.daysUntil === 0 ? "TODAY" : `D-${e.daysUntil}`,
+          size: "14px" as any,
+          flex: 1,
+          color: e.daysUntil === 0 ? "#FF6B35" : "#999999",
+          align: "end" as const,
+        },
+      ],
+    });
+    if (e.eventName) {
+      rows.push({
         type: "text" as const,
-        text: `⚡ ${e.eventDate}`,
-        size: "14px" as any,
-        flex: 4,
-        color: "#111111",
-      },
-      {
-        type: "text" as const,
-        text: `D-${e.daysUntil}`,
-        size: "14px" as any,
-        flex: 1,
-        color: "#999999",
-        align: "end" as const,
-      },
-    ],
-  }));
+        text: `📅 ${e.eventDate}${e.prizeInfo ? ` · 🎁 ${e.prizeInfo}` : ""}`,
+        size: "12px" as any,
+        color: "#AAAAAA",
+        margin: "2px" as any,
+      });
+    }
+  });
 
   const challengeText = t("weeklyChallenge", lang) as string;
 

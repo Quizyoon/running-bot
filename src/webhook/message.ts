@@ -322,7 +322,7 @@ async function handleEventInfo(
     const eventTime = new Date(e.eventDate!).getTime();
     const todayStart = new Date(now.getFullYear(), now.getMonth(), now.getDate()).getTime();
     const daysUntil = Math.ceil((eventTime - todayStart) / 86400000);
-    return { eventDate: e.eventDate!, daysUntil };
+    return { eventDate: e.eventDate!, daysUntil, eventName: e.eventName, prizeInfo: e.prizeInfo };
   });
 
   await client.replyMessage(event.replyToken, buildEventListCard(events, lang));
