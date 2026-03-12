@@ -336,7 +336,7 @@ export function buildEventCreateCard(lang: Lang = "ko", groupId?: string): FlexM
       spacing: "8px" as any,
       paddingAll: "16px",
       paddingTop: "0px",
-      paddingBottom: "10px",
+      paddingBottom: "16px",
       contents: [
         {
           type: "box" as const,
