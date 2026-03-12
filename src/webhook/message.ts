@@ -6,14 +6,13 @@ import {
   getWeekStartDate,
 } from "../services/attendance";
 import {
-  createDailyRaceEvent,
   cancelEvent,
   getUpcomingEvents,
   getActiveEvent,
 } from "../services/event";
 import { buildRankingCard, buildEmptyRankingCard } from "../flex/rankingCard";
 import { buildAttendanceCard } from "../flex/attendanceCard";
-import { buildEventAnnouncementCard, buildEventResultCard, buildEventListCard, buildNoEventsCard } from "../flex/eventCard";
+import { buildEventAnnouncementCard, buildEventResultCard, buildEventListCard, buildNoEventsCard, buildEventCreateCard } from "../flex/eventCard";
 import { buildStatsCard, buildEmptyStatsCard } from "../flex/statsCard";
 import { buildHelpCard } from "../flex/helpCard";
 import { pendingRecords } from "./state";
@@ -79,11 +78,11 @@ export async function handleTextMessage(
     case text === "/help":
       await handleHelp(client, event, "en");
       break;
-    case text.startsWith("/이벤트생성"):
-      await handleCreateEvent(client, event, userId, groupId, text, "ko");
+    case text === "/이벤트만들기":
+      await handleEventCreate(client, event, "ko");
       break;
-    case text.startsWith("/createevent"):
-      await handleCreateEvent(client, event, userId, groupId, text, "en");
+    case text === "/createevent":
+      await handleEventCreate(client, event, "en");
       break;
     case text === "/이벤트취소":
       await handleCancelEvent(client, event, userId, groupId, "ko");
@@ -337,46 +336,12 @@ async function handleHelp(
   await client.replyMessage(event.replyToken, buildHelpCard(lang));
 }
 
-async function handleCreateEvent(
+async function handleEventCreate(
   client: Client,
   event: MessageEvent,
-  userId: string,
-  groupId: string,
-  text: string,
   lang: Lang
 ): Promise<void> {
-  if (!isAdmin(userId)) {
-    await client.replyMessage(event.replyToken, {
-      type: "text",
-      text: t("adminOnly", lang) as string,
-    });
-    return;
-  }
-
-  const dateMatch = text.match(/\d{4}-\d{2}-\d{2}/);
-  if (!dateMatch) {
-    await client.replyMessage(event.replyToken, {
-      type: "text",
-      text: t("dateFormat", lang) as string,
-    });
-    return;
-  }
-
-  const eventDate = dateMatch[0];
-  try {
-    await createDailyRaceEvent(groupId, eventDate, userId);
-
-    const daysUntil = Math.ceil(
-      (new Date(eventDate).getTime() - Date.now()) / 86400000
-    );
-    const announcement = buildEventAnnouncementCard(eventDate, daysUntil);
-    await client.replyMessage(event.replyToken, announcement);
-  } catch (err: any) {
-    await client.replyMessage(event.replyToken, {
-      type: "text",
-      text: `⚠️ ${err.message}`,
-    });
-  }
+  await client.replyMessage(event.replyToken, buildEventCreateCard(lang));
 }
 
 async function handleCancelEvent(

@@ -62,6 +62,7 @@ export function buildHelpCard(lang: Lang = "ko"): FlexMessage {
         { cmd: "/랭킹", desc: "주간 랭킹" },
         { cmd: "/출석", desc: "이번 주 출석 현황" },
         { cmd: "/이벤트", desc: "진행 중인 이벤트" },
+        { cmd: "/이벤트만들기", desc: "이벤트 생성" },
         { cmd: "/명령어", desc: "명령어 안내" },
       ]
     : [
@@ -70,6 +71,7 @@ export function buildHelpCard(lang: Lang = "ko"): FlexMessage {
         { cmd: "/ranking", desc: "Weekly ranking" },
         { cmd: "/attendance", desc: "Weekly attendance" },
         { cmd: "/event", desc: "Upcoming events" },
+        { cmd: "/createevent", desc: "Create event" },
         { cmd: "/help", desc: "This guide" },
       ];
 
@@ -80,6 +82,7 @@ export function buildHelpCard(lang: Lang = "ko"): FlexMessage {
         { label: "랭킹 보기", action: { type: "message", text: "/랭킹" } },
         { label: "출석 확인하기", action: { type: "message", text: "/출석" } },
         { label: "이벤트 확인하기", action: { type: "message", text: "/이벤트" } },
+        { label: "이벤트 만들기", action: { type: "uri", uri: `https://liff.line.me/${process.env.LIFF_ID || ""}` } },
       ]
     : [
         { label: "Register Record", action: { type: "uri", uri: "https://line.me/R/nv/cameraRoll/single" } },
@@ -87,6 +90,7 @@ export function buildHelpCard(lang: Lang = "ko"): FlexMessage {
         { label: "View Ranking", action: { type: "message", text: "/ranking" } },
         { label: "Check Attendance", action: { type: "message", text: "/attendance" } },
         { label: "Check Events", action: { type: "message", text: "/event" } },
+        { label: "Create Event", action: { type: "uri", uri: `https://liff.line.me/${process.env.LIFF_ID || ""}` } },
       ];
 
   const bubble: FlexBubble = {

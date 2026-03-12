@@ -272,6 +272,119 @@ export function buildWeeklyWinnersCard(
   };
 }
 
+export function buildEventCreateCard(lang: Lang = "ko"): FlexMessage {
+  const liffId = process.env.LIFF_ID || "";
+  const liffUrl = `https://liff.line.me/${liffId}`;
+
+  const title = lang === "ko" ? "새 이벤트 만들기" : "Create New Event";
+  const desc = lang === "ko"
+    ? "하루 페이스 랭킹 이벤트를 만들어보세요!\n당일 가장 빠른 페이스 1위가 우승합니다."
+    : "Create a daily pace ranking event!\nThe fastest pace on the day wins.";
+  const btnLabel = lang === "ko" ? "이벤트 만들기" : "Create Event";
+  const cancelLabel = lang === "ko" ? "이벤트 취소하기" : "Cancel Event";
+
+  const bubble: FlexBubble = {
+    type: "bubble",
+    size: "kilo",
+    body: {
+      type: "box",
+      layout: "vertical",
+      paddingAll: "16px",
+      backgroundColor: "#FFFFFF",
+      contents: [
+        {
+          type: "text",
+          text: "Events",
+          size: "14px" as any,
+          weight: "bold",
+          color: "#333333",
+        },
+        {
+          type: "text",
+          text: title,
+          size: "20px" as any,
+          weight: "bold",
+          color: "#111111",
+          margin: "4px" as any,
+        },
+        {
+          type: "text",
+          text: desc,
+          size: "13px" as any,
+          color: "#999999",
+          margin: "8px" as any,
+          wrap: true,
+          lineSpacing: "2px" as any,
+        },
+      ],
+    },
+    footer: {
+      type: "box",
+      layout: "vertical",
+      spacing: "8px" as any,
+      paddingAll: "16px",
+      paddingTop: "0px",
+      paddingBottom: "10px",
+      contents: [
+        {
+          type: "box" as const,
+          layout: "vertical" as const,
+          action: {
+            type: "uri" as const,
+            label: btnLabel,
+            uri: liffUrl,
+          },
+          backgroundColor: "#111111",
+          cornerRadius: "8px",
+          paddingAll: "14px",
+          justifyContent: "center" as const,
+          alignItems: "center" as const,
+          contents: [
+            {
+              type: "text" as const,
+              text: btnLabel,
+              size: "15px" as any,
+              weight: "bold" as const,
+              color: "#FFFFFF",
+              align: "center" as const,
+            },
+          ],
+        },
+        {
+          type: "box" as const,
+          layout: "vertical" as const,
+          action: {
+            type: "message" as const,
+            label: cancelLabel,
+            text: lang === "ko" ? "/이벤트취소" : "/cancelevent",
+          },
+          backgroundColor: "#FFFFFF",
+          cornerRadius: "8px",
+          paddingAll: "14px",
+          justifyContent: "center" as const,
+          alignItems: "center" as const,
+          contents: [
+            {
+              type: "text" as const,
+              text: cancelLabel,
+              size: "15px" as any,
+              weight: "bold" as const,
+              color: "#000000",
+              align: "center" as const,
+            },
+          ],
+        },
+      ],
+    },
+  };
+
+  return {
+    type: "flex",
+    altText: lang === "ko" ? "이벤트 만들기" : "Create Event",
+    contents: bubble,
+  };
+}
+
 function formatDateKr(dateStr: string): string {
   const d = new Date(dateStr);
   const days = ["일", "월", "화", "수", "목", "금", "토"];
