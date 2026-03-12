@@ -79,6 +79,23 @@ export async function getActiveEvent(
   return mapEventRow(result.rows[0]);
 }
 
+/** 종료일이 지난 이벤트 찾기 (아직 CLOSED 아닌 것) */
+export async function getExpiredEvents(
+  groupId: string,
+  todayDate: string
+): Promise<EventRecord[]> {
+  const result = await pool.query(
+    `SELECT * FROM events
+     WHERE group_id = $1
+       AND event_type = 'DAILY_RACE'
+       AND status IN ('SCHEDULED', 'ACTIVE')
+       AND COALESCE(event_end_date, event_date) < $2
+     ORDER BY event_date ASC`,
+    [groupId, todayDate]
+  );
+  return result.rows.map(mapEventRow);
+}
+
 export async function getUpcomingEvents(
   groupId: string
 ): Promise<EventRecord[]> {
