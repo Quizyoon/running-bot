@@ -292,7 +292,6 @@ export function buildEventCreateCard(lang: Lang = "ko"): FlexMessage {
     ? "하루 페이스 랭킹 이벤트를 만들어보세요!\n당일 가장 빠른 페이스 1위가 우승합니다."
     : "Create a daily pace ranking event!\nThe fastest pace on the day wins.";
   const btnLabel = lang === "ko" ? "이벤트 만들기" : "Create Event";
-  const cancelLabel = lang === "ko" ? "이벤트 취소하기" : "Cancel Event";
 
   const bubble: FlexBubble = {
     type: "bubble",
@@ -357,30 +356,6 @@ export function buildEventCreateCard(lang: Lang = "ko"): FlexMessage {
               size: "15px" as any,
               weight: "bold" as const,
               color: "#FFFFFF",
-              align: "center" as const,
-            },
-          ],
-        },
-        {
-          type: "box" as const,
-          layout: "vertical" as const,
-          action: {
-            type: "message" as const,
-            label: cancelLabel,
-            text: lang === "ko" ? "/이벤트취소" : "/cancelevent",
-          },
-          backgroundColor: "#FFFFFF",
-          cornerRadius: "8px",
-          paddingAll: "14px",
-          justifyContent: "center" as const,
-          alignItems: "center" as const,
-          contents: [
-            {
-              type: "text" as const,
-              text: cancelLabel,
-              size: "15px" as any,
-              weight: "bold" as const,
-              color: "#000000",
               align: "center" as const,
             },
           ],

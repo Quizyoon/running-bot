@@ -36,10 +36,9 @@ export async function handleTextMessage(
   const text = message.text.trim();
   const source = event.source;
   const userId = source.userId;
-  console.log(`[MSG] userId=${userId} text="${text}" sourceType=${source.type}`);
-  if (!userId) return;
-
   const groupId = getGroupId(source);
+  console.log(`[MSG] userId=${userId} groupId=${groupId} text="${text}" sourceType=${source.type}`);
+  if (!userId) return;
   if (!groupId) return;
 
   // 수정 모드 입력 처리
