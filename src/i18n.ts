@@ -3,20 +3,21 @@ export type Lang = "ko" | "en";
 const texts = {
   // 출석 카드
   dayLabels: { ko: ["월", "화", "수", "목", "금", "토", "일"], en: ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"] },
-  runningStreak: { ko: (name: string, days: number) => `${name}이\n${days}일째 달리는 중!`, en: (name: string, days: number) => `${name} is on\na ${days}-day streak!` },
-  perfectAttendance: { ko: (name: string) => `${name}이\n7일 개근 달성!`, en: (name: string) => `${name}\n7-day perfect!` },
+  runningStreak: { ko: (days: number) => `${days}일째 달리는 중!`, en: (days: number) => `On a ${days}-day streak!` },
+  perfectAttendance: { ko: "7일 개근 달성!", en: "7-day perfect!" },
   attendanceCount: { ko: (total: number) => `출석 ${total}/7일`, en: (total: number) => `Attendance ${total}/7 days` },
   daysRemaining: { ko: (n: number) => `개근까지 ${n}일 남았어요`, en: (n: number) => `${n} days left for perfect attendance` },
+  attendanceFailed: { ko: "이번 주는\n개근 달성 실패 😢", en: "Perfect attendance\nnot achieved 😢" },
   checkMyRanking: { ko: "내 랭킹 확인하기", en: "Check My Ranking" },
   checkPrizes: { ko: "상품 확인하기", en: "Check Prizes" },
   attendanceAlt: { ko: (total: number) => `출석 현황: ${total}/7일`, en: (total: number) => `Attendance: ${total}/7 days` },
 
   // 랭킹 카드
-  emptyRankingTitle: { ko: (name: string) => `${name}님,\n지금 등록하면 1등이에요!`, en: (name: string) => `${name},\nRegister now to be #1!` },
+  emptyRankingTitle: { ko: "지금 등록하면 1등이에요!", en: "Register now to be #1!" },
   noRecordsYet: { ko: "아직 등록된 기록이 없어요.", en: "No records yet." },
   emptyRankingAlt: { ko: "Weekly Ranking - 아직 기록이 없어요", en: "Weekly Ranking - No records yet" },
-  rankTitle: { ko: (name: string, rank: number) => `오늘 ${name}${rank <= 3 ? "이" : "은"}\n${rank}위에요`, en: (name: string, rank: number) => `${name} is\n#${rank} today` },
-  registerPrompt: { ko: (name: string) => `${name}님,\n기록을 등록해보세요!`, en: (name: string) => `${name},\nRegister your record!` },
+  rankTitle: { ko: (rank: number) => `오늘 ${rank}위에요`, en: (rank: number) => `#${rank} today` },
+  registerPrompt: { ko: "기록을 등록해보세요!", en: "Register your record!" },
   checkAttendance: { ko: "출석 확인하기", en: "Check Attendance" },
   registerMyRecord: { ko: "내 기록 등록하기", en: "Register My Record" },
 
@@ -76,11 +77,11 @@ const texts = {
   correctionInputPrompt: { ko: (field: string) => `✏️ 올바른 ${field}을(를) 입력해주세요.`, en: (field: string) => `✏️ Please enter the correct ${field}.` },
 
   // 내기록 카드
-  myStatsCardTitle: { ko: (y: number, m: number) => `${y}년 ${m}월 기록`, en: (y: number, m: number) => `${y}/${m} Stats` },
-  noStatsTitle: { ko: "이번 달 기록이\n아직 없어요.", en: "No records\nthis month yet." },
+  myStatsCardTitle: { ko: (weekLabel: string) => `${weekLabel} 기록`, en: (weekLabel: string) => `${weekLabel} Stats` },
+  noStatsTitle: { ko: "이번 주 기록이\n아직 없어요.", en: "No records\nthis week yet." },
   noStatsDesc: { ko: "러닝 스크린샷을 업로드해보세요!", en: "Upload a running screenshot!" },
-  noStatsAlt: { ko: "이번 달 기록이 없습니다", en: "No records this month" },
-  myStatsAlt: { ko: (y: number, m: number) => `${y}년 ${m}월 내 기록`, en: (y: number, m: number) => `My Stats — ${y}/${m}` },
+  noStatsAlt: { ko: "이번 주 기록이 없습니다", en: "No records this week" },
+  myStatsAlt: { ko: (weekLabel: string) => `${weekLabel} 내 기록`, en: (weekLabel: string) => `My Stats — ${weekLabel}` },
   totalDistanceLabel: { ko: "총 거리", en: "Total Distance" },
   avgPaceLabel: { ko: "평균 페이스", en: "Avg Pace" },
   runCountLabel: { ko: "러닝 횟수", en: "Runs" },

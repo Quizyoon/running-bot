@@ -113,18 +113,51 @@ export function buildEmptyRankingCard(displayName?: string, lang: Lang = "ko"): 
           weight: "bold",
           color: "#333333",
         },
-        {
-          type: "text",
-          text: displayName
-            ? (t("emptyRankingTitle", lang) as (name: string) => string)(displayName)
-            : t("noRecordsYet", lang) as string,
-          size: "20px" as any,
-          weight: "bold",
-          color: "#111111",
-          margin: "4px" as any,
-          wrap: true,
-          lineSpacing: "2px" as any,
-        },
+        ...(displayName
+          ? [
+              {
+                type: "box" as const,
+                layout: "horizontal" as const,
+                margin: "4px" as any,
+                contents: [
+                  {
+                    type: "text" as const,
+                    text: displayName,
+                    size: "20px" as any,
+                    weight: "bold" as const,
+                    color: "#111111",
+                    maxLines: 1,
+                    flex: 0,
+                    wrap: false,
+                  },
+                  {
+                    type: "text" as const,
+                    text: lang === "ko" ? "님," : ",",
+                    size: "20px" as any,
+                    weight: "bold" as const,
+                    color: "#111111",
+                    flex: 0,
+                  },
+                ],
+              },
+              {
+                type: "text" as const,
+                text: t("emptyRankingTitle", lang) as string,
+                size: "20px" as any,
+                weight: "bold" as const,
+                color: "#111111",
+              },
+            ]
+          : [
+              {
+                type: "text" as const,
+                text: t("noRecordsYet", lang) as string,
+                size: "20px" as any,
+                weight: "bold" as const,
+                color: "#111111",
+                margin: "4px" as any,
+              },
+            ]),
         {
           type: "text",
           text: `${ordinal(week)} week ${year}`,
@@ -257,27 +290,71 @@ export function buildRankingCard(
         ...(userEntry && displayName
           ? [
               {
+                type: "box" as const,
+                layout: "horizontal" as const,
+                margin: "4px" as any,
+                contents: [
+                  {
+                    type: "text" as const,
+                    text: displayName,
+                    size: "20px" as any,
+                    weight: "bold" as const,
+                    color: "#111111",
+                    maxLines: 1,
+                    flex: 0,
+                    wrap: false,
+                  },
+                  {
+                    type: "text" as const,
+                    text: lang === "ko" ? "이" : "",
+                    size: "20px" as any,
+                    weight: "bold" as const,
+                    color: "#111111",
+                    flex: 0,
+                  },
+                ],
+              },
+              {
                 type: "text" as const,
-                text: (t("rankTitle", lang) as (name: string, rank: number) => string)(displayName, userEntry.rank),
+                text: (t("rankTitle", lang) as (rank: number) => string)(userEntry.rank),
                 size: "20px" as any,
                 weight: "bold" as const,
                 color: "#111111",
-                margin: "4px" as any,
-                wrap: true,
-                lineSpacing: "2px" as any,
               },
             ]
           : !userEntry && displayName
           ? [
               {
+                type: "box" as const,
+                layout: "horizontal" as const,
+                margin: "4px" as any,
+                contents: [
+                  {
+                    type: "text" as const,
+                    text: displayName,
+                    size: "20px" as any,
+                    weight: "bold" as const,
+                    color: "#111111",
+                    maxLines: 1,
+                    flex: 0,
+                    wrap: false,
+                  },
+                  {
+                    type: "text" as const,
+                    text: lang === "ko" ? "님," : ",",
+                    size: "20px" as any,
+                    weight: "bold" as const,
+                    color: "#111111",
+                    flex: 0,
+                  },
+                ],
+              },
+              {
                 type: "text" as const,
-                text: (t("registerPrompt", lang) as (name: string) => string)(displayName),
+                text: t("registerPrompt", lang) as string,
                 size: "20px" as any,
                 weight: "bold" as const,
                 color: "#111111",
-                margin: "4px" as any,
-                wrap: true,
-                lineSpacing: "2px" as any,
               },
             ]
           : []),

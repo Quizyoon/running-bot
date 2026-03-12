@@ -4,7 +4,6 @@ import { Lang, t } from "../i18n";
 interface StatsData {
   totalDistance: number;
   avgPace: string;
-  runCount: number;
   attendDays: number;
 }
 
@@ -33,15 +32,13 @@ function buildInfoRow(label: string, value: string) {
 
 export function buildStatsCard(
   displayName: string,
-  year: number,
-  month: number,
+  weekLabel: string,
   stats: StatsData,
   lang: Lang = "ko"
 ): FlexMessage {
-  const subtitle = (t("myStatsCardTitle", lang) as (y: number, m: number) => string)(year, month);
+  const subtitle = (t("myStatsCardTitle", lang) as (w: string) => string)(weekLabel);
   const distLabel = t("totalDistanceLabel", lang) as string;
   const paceLabel = t("avgPaceLabel", lang) as string;
-  const runsLabel = t("runCountLabel", lang) as string;
   const attendLabel = t("attendDaysLabel", lang) as string;
   const checkRanking = t("checkMyRanking", lang) as string;
   const checkAttend = t("checkAttendance", lang) as string;
@@ -86,8 +83,7 @@ export function buildStatsCard(
           contents: [
             buildInfoRow(distLabel, `${stats.totalDistance.toFixed(1)} km`),
             buildInfoRow(paceLabel, `${stats.avgPace}/km`),
-            buildInfoRow(runsLabel, lang === "ko" ? `${stats.runCount}회` : `${stats.runCount}`),
-            buildInfoRow(attendLabel, lang === "ko" ? `${stats.attendDays}일` : `${stats.attendDays} days`),
+            buildInfoRow(attendLabel, `${stats.attendDays}/7`),
           ],
         },
       ],
@@ -154,7 +150,7 @@ export function buildStatsCard(
 
   return {
     type: "flex",
-    altText: (t("myStatsAlt", lang) as (y: number, m: number) => string)(year, month),
+    altText: (t("myStatsAlt", lang) as (w: string) => string)(weekLabel),
     contents: bubble,
   };
 }

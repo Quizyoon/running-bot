@@ -143,3 +143,42 @@ export async function getPersonalStats(
     attendDays: parseInt(row.attend_days),
   };
 }
+
+export async function getWeeklyPersonalStats(
+  userId: string,
+  groupId: string,
+  weekStart: Date
+): Promise<{
+  totalDistance: number;
+  avgPace: number;
+  runCount: number;
+  attendDays: number;
+} | null> {
+  const weekEnd = new Date(weekStart);
+  weekEnd.setDate(weekEnd.getDate() + 6);
+
+  const startStr = weekStart.toISOString().split("T")[0];
+  const endStr = weekEnd.toISOString().split("T")[0];
+
+  const result = await pool.query(
+    `SELECT
+       COALESCE(SUM(distance_km), 0) AS total_distance,
+       AVG(pace_min_per_km) AS avg_pace,
+       COUNT(*) AS run_count,
+       COUNT(DISTINCT run_date) FILTER (WHERE is_attendance = true) AS attend_days
+     FROM running_sessions
+     WHERE user_id = $1 AND group_id = $2
+       AND run_date >= $3 AND run_date <= $4`,
+    [userId, groupId, startStr, endStr]
+  );
+
+  const row = result.rows[0];
+  if (parseInt(row.run_count) === 0) return null;
+
+  return {
+    totalDistance: parseFloat(row.total_distance),
+    avgPace: parseFloat(row.avg_pace),
+    runCount: parseInt(row.run_count),
+    attendDays: parseInt(row.attend_days),
+  };
+}

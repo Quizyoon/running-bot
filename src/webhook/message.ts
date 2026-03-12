@@ -1,6 +1,6 @@
 import { Client, MessageEvent, TextEventMessage } from "@line/bot-sdk";
 import { getWeeklyRanking, getMonthlyRanking, getDailyPaceRanking, formatPace } from "../services/ranking";
-import { getPersonalStats } from "../services/running";
+import { getWeeklyPersonalStats } from "../services/running";
 import {
   getWeeklyAttendance,
   getWeekStartDate,
@@ -232,8 +232,16 @@ async function handleMyStats(
   lang: Lang
 ): Promise<void> {
   const now = nowKST();
-  const year = now.getFullYear();
-  const month = now.getMonth() + 1;
+  const weekStart = getWeekStartDate(now);
+  const weekEnd = new Date(weekStart);
+  weekEnd.setDate(weekEnd.getDate() + 6);
+  const startM = weekStart.getMonth() + 1;
+  const startD = weekStart.getDate();
+  const endM = weekEnd.getMonth() + 1;
+  const endD = weekEnd.getDate();
+  const weekLabel = lang === "ko"
+    ? `${startM}/${startD}~${endM}/${endD}`
+    : `${startM}/${startD}–${endM}/${endD}`;
 
   let displayName = "Unknown";
   try {
@@ -247,7 +255,7 @@ async function handleMyStats(
     }
   } catch {}
 
-  const stats = await getPersonalStats(userId, groupId, year, month);
+  const stats = await getWeeklyPersonalStats(userId, groupId, weekStart);
 
   if (!stats) {
     await client.replyMessage(event.replyToken, buildEmptyStatsCard(displayName, lang));
@@ -256,12 +264,10 @@ async function handleMyStats(
 
   await client.replyMessage(event.replyToken, buildStatsCard(
     displayName,
-    year,
-    month,
+    weekLabel,
     {
       totalDistance: stats.totalDistance,
       avgPace: formatPace(stats.avgPace),
-      runCount: stats.runCount,
       attendDays: stats.attendDays,
     },
     lang

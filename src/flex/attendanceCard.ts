@@ -68,9 +68,22 @@ export function buildAttendanceCard(
     };
   });
 
-  const titleText = remaining > 0
-    ? (t("runningStreak", lang) as (name: string, days: number) => string)(displayName, totalDays)
-    : (t("perfectAttendance", lang) as (name: string) => string)(displayName);
+  const isLastDay = todayDow === 6; // 일요일
+  let titleText: string;
+  let showName = true;
+  if (totalDays === 7) {
+    titleText = t("perfectAttendance", lang) as string;
+  } else if (isLastDay) {
+    const missedCount = days.filter((d, i) => !d && i <= todayDow).length;
+    if (missedCount > 0) {
+      titleText = t("attendanceFailed", lang) as string;
+      showName = false;
+    } else {
+      titleText = (t("runningStreak", lang) as (days: number) => string)(totalDays);
+    }
+  } else {
+    titleText = (t("runningStreak", lang) as (days: number) => string)(totalDays);
+  }
 
   const countText = (t("attendanceCount", lang) as (total: number) => string)(totalDays);
   const registerLabel = t("registerMyRecord", lang) as string;
@@ -94,16 +107,53 @@ export function buildAttendanceCard(
           weight: "bold",
           color: "#333333",
         },
-        {
-          type: "text",
-          text: titleText,
-          size: "20px" as any,
-          weight: "bold",
-          color: "#111111",
-          margin: "4px" as any,
-          wrap: true,
-          lineSpacing: "2px" as any,
-        },
+        ...(showName
+          ? [
+              {
+                type: "box" as const,
+                layout: "horizontal" as const,
+                margin: "4px" as any,
+                contents: [
+                  {
+                    type: "text" as const,
+                    text: displayName,
+                    size: "20px" as any,
+                    weight: "bold" as const,
+                    color: "#111111",
+                    maxLines: 1,
+                    flex: 0,
+                    wrap: false,
+                  },
+                  {
+                    type: "text" as const,
+                    text: lang === "ko" ? "이" : "",
+                    size: "20px" as any,
+                    weight: "bold" as const,
+                    color: "#111111",
+                    flex: 0,
+                  },
+                ],
+              },
+              {
+                type: "text" as const,
+                text: titleText,
+                size: "20px" as any,
+                weight: "bold" as const,
+                color: "#111111",
+              },
+            ]
+          : [
+              {
+                type: "text" as const,
+                text: titleText,
+                size: "20px" as any,
+                weight: "bold" as const,
+                color: "#111111",
+                margin: "4px" as any,
+                wrap: true,
+                lineSpacing: "2px" as any,
+              },
+            ]),
         {
           type: "text",
           text: remaining > 0
