@@ -244,6 +244,14 @@
       checkForm();
     }
 
+    // URL 파라미터에서 groupId 가져오기 (봇이 전달한 실제 groupId)
+    function getUrlGroupId() {
+      const params = new URLSearchParams(window.location.search);
+      return params.get('groupId');
+    }
+
+    const urlGroupId = getUrlGroupId();
+
     // LIFF 초기화
     async function initLiff() {
       try {
@@ -251,7 +259,7 @@
         if (!liff.isLoggedIn()) { liff.login(); return; }
         liffContext = liff.getContext();
         liffProfile = await liff.getProfile();
-        const gid = liffContext?.groupId || liffContext?.roomId || 'none';
+        const gid = urlGroupId || liffContext?.groupId || liffContext?.roomId || 'none';
         debugEl.textContent = `gid: ${gid.substring(0, 12)}...`;
       } catch (err) {
         statusEl.textContent = 'LIFF 초기화 실패';
@@ -265,7 +273,7 @@
       const eventEndDate = endDateInput.value;
       if (!eventDate || !eventEndDate) return;
 
-      const groupId = liffContext?.groupId || liffContext?.roomId;
+      const groupId = urlGroupId || liffContext?.groupId || liffContext?.roomId;
       if (!groupId) {
         statusEl.textContent = '그룹 채팅방에서 열어주세요';
         statusEl.className = 'status error';

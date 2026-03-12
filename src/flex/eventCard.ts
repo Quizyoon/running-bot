@@ -283,9 +283,11 @@ export function buildWeeklyWinnersCard(
   };
 }
 
-export function buildEventCreateCard(lang: Lang = "ko"): FlexMessage {
+export function buildEventCreateCard(lang: Lang = "ko", groupId?: string): FlexMessage {
   const liffId = process.env.LIFF_ID || "";
-  const liffUrl = `https://liff.line.me/${liffId}`;
+  const liffUrl = groupId
+    ? `https://liff.line.me/${liffId}?groupId=${encodeURIComponent(groupId)}`
+    : `https://liff.line.me/${liffId}`;
 
   const title = lang === "ko" ? "새 이벤트 만들기" : "Create New Event";
   const desc = lang === "ko"

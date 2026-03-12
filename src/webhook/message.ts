@@ -72,16 +72,16 @@ export async function handleTextMessage(
       await handleEventInfo(client, event, groupId, "en");
       break;
     case text === "/명령어":
-      await handleHelp(client, event, "ko");
+      await handleHelp(client, event, groupId, "ko");
       break;
     case text === "/help":
-      await handleHelp(client, event, "en");
+      await handleHelp(client, event, groupId, "en");
       break;
     case text === "/이벤트만들기":
-      await handleEventCreate(client, event, "ko");
+      await handleEventCreate(client, event, groupId, "ko");
       break;
     case text === "/createevent":
-      await handleEventCreate(client, event, "en");
+      await handleEventCreate(client, event, groupId, "en");
       break;
     case text === "/이벤트취소":
       await handleCancelEvent(client, event, userId, groupId, "ko");
@@ -330,17 +330,19 @@ async function handleEventInfo(
 async function handleHelp(
   client: Client,
   event: MessageEvent,
+  groupId: string | null,
   lang: Lang
 ): Promise<void> {
-  await client.replyMessage(event.replyToken, buildHelpCard(lang));
+  await client.replyMessage(event.replyToken, buildHelpCard(lang, groupId || undefined));
 }
 
 async function handleEventCreate(
   client: Client,
   event: MessageEvent,
+  groupId: string | null,
   lang: Lang
 ): Promise<void> {
-  await client.replyMessage(event.replyToken, buildEventCreateCard(lang));
+  await client.replyMessage(event.replyToken, buildEventCreateCard(lang, groupId || undefined));
 }
 
 async function handleCancelEvent(
