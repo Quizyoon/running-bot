@@ -101,7 +101,6 @@
     }
     .success-title { font-size: 18px; font-weight: 700; margin-bottom: 4px; }
     .success-desc { font-size: 14px; color: #999999; }
-    .debug { margin-top: 12px; font-size: 11px; color: #CCCCCC; text-align: center; word-break: break-all; }
   </style>
 </head>
 <body>
@@ -132,7 +131,6 @@
 
     <button id="btnCreate" class="btn-create" disabled>이벤트 만들기</button>
     <div id="status" class="status"></div>
-    <div id="debug" class="debug"></div>
   </div>
 
   <div id="loading-view" class="loading">
@@ -159,7 +157,6 @@
     const endDateInput = document.getElementById('eventEndDate');
     const btnCreate = document.getElementById('btnCreate');
     const statusEl = document.getElementById('status');
-    const debugEl = document.getElementById('debug');
     const formView = document.getElementById('form-view');
     const loadingView = document.getElementById('loading-view');
     const successView = document.getElementById('success-view');
@@ -255,9 +252,7 @@
         if (!liff.isLoggedIn()) { liff.login(); return; }
         liffContext = liff.getContext();
         liffProfile = await liff.getProfile();
-        const gid = urlGroupId || liffContext?.groupId || liffContext?.roomId || 'none';
-        const src = urlGroupId ? 'url' : (liffContext?.groupId ? 'ctx' : 'none');
-        debugEl.textContent = `[${src}] gid: ${gid.substring(0, 12)}... | search: ${window.location.search.substring(0, 50)}`;
+        // groupId resolved silently
       } catch (err) {
         statusEl.textContent = 'LIFF 초기화 실패';
         statusEl.className = 'status error';
@@ -274,7 +269,6 @@
       if (!groupId) {
         statusEl.textContent = '그룹 채팅방에서 열어주세요';
         statusEl.className = 'status error';
-        debugEl.textContent = `context: ${JSON.stringify(liffContext?.type || null)}`;
         return;
       }
 
