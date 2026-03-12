@@ -64,8 +64,8 @@ export function buildEventAnnouncementCard(
           {
             type: "box" as const,
             layout: "vertical" as const,
-            width: "44px",
-            height: "44px",
+            width: "52px",
+            height: "52px",
             cornerRadius: "6px",
             flex: 0,
             contents: [
