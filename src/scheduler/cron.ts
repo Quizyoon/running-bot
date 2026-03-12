@@ -8,6 +8,7 @@ import {
 } from "../services/attendance";
 import {
   getActiveEvent,
+  getEventById,
   closeEventAndDetermineWinner,
   getUpcomingEvents,
   getWeeklyPerfectAttendees,
@@ -18,6 +19,7 @@ import {
   buildEventAnnouncementCard,
   buildEventResultCard,
   buildWeeklyWinnersCard,
+  buildPrizeDeliveryCard,
 } from "../flex/eventCard";
 
 export function setupScheduler(client: Client): void {
@@ -112,6 +114,24 @@ async function sendEventNotifications(client: Client): Promise<void> {
           ranking.length
         );
         await client.pushMessage(groupId, resultCard);
+
+        // 우승자가 있고 상품이 설정된 경우, 이벤트 생성자에게 상품 전달 DM 발송
+        if (winner) {
+          try {
+            const closedEvent = await getEventById(yesterdayEvent.eventId);
+            if (closedEvent && closedEvent.createdBy && closedEvent.prizeProductId) {
+              const deliveryCard = buildPrizeDeliveryCard({
+                eventName: closedEvent.eventName || yesterdayStr,
+                winnerName: winner.winnerName,
+                eventMethod: closedEvent.eventMethod,
+                productId: closedEvent.prizeProductId,
+              });
+              await client.pushMessage(closedEvent.createdBy, deliveryCard);
+            }
+          } catch (dmErr: any) {
+            console.error("Prize delivery DM failed:", dmErr?.message);
+          }
+        }
       }
     }
   } catch (error) {

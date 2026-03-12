@@ -184,6 +184,12 @@ export async function getWeeklyPerfectAttendees(
   }));
 }
 
+export async function getEventById(eventId: string): Promise<EventRecord | null> {
+  const result = await pool.query(`SELECT * FROM events WHERE event_id = $1`, [eventId]);
+  if (result.rows.length === 0) return null;
+  return mapEventRow(result.rows[0]);
+}
+
 function mapEventRow(row: any): EventRecord {
   return {
     eventId: row.event_id,
