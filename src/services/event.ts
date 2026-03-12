@@ -26,18 +26,6 @@ export async function createDailyRaceEvent(
 ): Promise<string> {
   const endDate = options?.eventEndDate || eventDate;
 
-  // 기간이 겹치는 이벤트가 있는지 확인
-  const existing = await pool.query(
-    `SELECT event_id FROM events
-     WHERE group_id = $1 AND event_type = 'DAILY_RACE'
-       AND status != 'CANCELLED'
-       AND event_date <= $3 AND COALESCE(event_end_date, event_date) >= $2`,
-    [groupId, eventDate, endDate]
-  );
-  if (existing.rows.length > 0) {
-    throw new Error("해당 기간에 이미 이벤트가 있습니다.");
-  }
-
   const result = await pool.query(
     `INSERT INTO events (group_id, event_type, event_name, event_date, event_end_date, created_by, prize_info, prize_product_id, prize_image_url, prize_price, event_method, status)
      VALUES ($1, 'DAILY_RACE', $2, $3, $4, $5, $6, $7, $8, $9, $10, 'SCHEDULED')
