@@ -20,7 +20,10 @@ export async function handleEvent(
         await handlePostback(client, event as PostbackEvent);
         break;
     }
-  } catch (error) {
-    console.error("Event handling error:", error);
+  } catch (error: any) {
+    console.error("Event handling error:", error?.message, error?.stack);
+    if (error?.response?.data) {
+      console.error("LINE API error:", JSON.stringify(error.response.data));
+    }
   }
 }
