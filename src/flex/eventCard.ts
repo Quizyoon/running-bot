@@ -58,7 +58,7 @@ export function buildEventAnnouncementCard(
         type: "box" as const,
         layout: "horizontal" as const,
         margin: "12px" as any,
-        spacing: "10px" as any,
+        spacing: "8px" as any,
         alignItems: "center" as const,
         contents: [
           {
