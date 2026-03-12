@@ -15,7 +15,7 @@ export function getMethodLabel(method?: string): string {
 export function buildEventAnnouncementCard(
   eventDate: string,
   daysUntil: number,
-  options?: { eventName?: string; eventEndDate?: string; prizeInfo?: string; prizePrice?: number; prizeImageUrl?: string; eventMethod?: string }
+  options?: { eventName?: string; eventEndDate?: string; prizeInfo?: string; prizePrice?: number; prizeImageUrl?: string; eventMethod?: string; groupId?: string }
 ): FlexMessage {
   const name = options?.eventName || "페이스 랭킹 이벤트";
   const dDayText = daysUntil === 0 ? "TODAY" : `D-${daysUntil}`;
@@ -154,6 +154,7 @@ export function buildEventAnnouncementCard(
     footer: {
       type: "box",
       layout: "vertical",
+      spacing: "8px" as any,
       paddingAll: "16px",
       paddingTop: "0px",
       paddingBottom: "16px",
@@ -178,6 +179,33 @@ export function buildEventAnnouncementCard(
               size: "15px" as any,
               weight: "bold" as const,
               color: "#FFFFFF",
+              align: "center" as const,
+            },
+          ],
+        },
+        {
+          type: "box" as const,
+          layout: "vertical" as const,
+          action: {
+            type: "uri" as const,
+            label: "이벤트 추가하기",
+            uri: (() => {
+              const lid = process.env.LIFF_ID || "";
+              return options?.groupId ? `https://liff.line.me/${lid}/${options.groupId}` : `https://liff.line.me/${lid}`;
+            })(),
+          },
+          backgroundColor: "#F5F5F5",
+          cornerRadius: "8px",
+          paddingAll: "14px",
+          justifyContent: "center" as const,
+          alignItems: "center" as const,
+          contents: [
+            {
+              type: "text" as const,
+              text: "이벤트 추가하기",
+              size: "15px" as any,
+              weight: "bold" as const,
+              color: "#000000",
               align: "center" as const,
             },
           ],
@@ -565,7 +593,8 @@ function formatDateKr(dateStr: string): string {
 
 export function buildEventListCard(
   events: { eventDate: string; daysUntil: number; eventName?: string | null; prizeInfo?: string | null; prizeImageUrl?: string | null; prizePrice?: number | null; eventMethod?: string | null }[],
-  lang: Lang = "ko"
+  lang: Lang = "ko",
+  groupId?: string
 ): FlexMessage {
   const registerLabel = t("registerMyRecord", lang) as string;
   const subLabel = lang === "ko" ? "러닝 앱 스크린샷으로 자동 참여!" : "Auto-join by uploading running screenshots!";
@@ -705,6 +734,7 @@ export function buildEventListCard(
     footer: {
       type: "box",
       layout: "vertical",
+      spacing: "8px" as any,
       paddingAll: "16px",
       paddingTop: "0px",
       paddingBottom: "16px",
@@ -729,6 +759,33 @@ export function buildEventListCard(
               size: "15px" as any,
               weight: "bold" as const,
               color: "#FFFFFF",
+              align: "center" as const,
+            },
+          ],
+        },
+        {
+          type: "box" as const,
+          layout: "vertical" as const,
+          action: {
+            type: "uri" as const,
+            label: lang === "ko" ? "이벤트 추가하기" : "Add Event",
+            uri: (() => {
+              const lid = process.env.LIFF_ID || "";
+              return groupId ? `https://liff.line.me/${lid}/${groupId}` : `https://liff.line.me/${lid}`;
+            })(),
+          },
+          backgroundColor: "#F5F5F5",
+          cornerRadius: "8px",
+          paddingAll: "14px",
+          justifyContent: "center" as const,
+          alignItems: "center" as const,
+          contents: [
+            {
+              type: "text" as const,
+              text: lang === "ko" ? "이벤트 추가하기" : "Add Event",
+              size: "15px" as any,
+              weight: "bold" as const,
+              color: "#000000",
               align: "center" as const,
             },
           ],

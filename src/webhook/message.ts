@@ -324,7 +324,7 @@ async function handleEventInfo(
     return { eventDate: e.eventDate!, daysUntil, eventName: e.eventName, prizeInfo: e.prizeInfo, prizeImageUrl: e.prizeImageUrl, prizePrice: e.prizePrice, eventMethod: e.eventMethod };
   });
 
-  await client.replyMessage(event.replyToken, buildEventListCard(events, lang));
+  await client.replyMessage(event.replyToken, buildEventListCard(events, lang, groupId));
 }
 
 async function handleHelp(

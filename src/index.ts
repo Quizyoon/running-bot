@@ -84,6 +84,7 @@ app.post("/api/event/create", async (req, res) => {
         prizePrice: req.body.prizePrice || undefined,
         prizeImageUrl: prizeImageUrl || undefined,
         eventMethod: eventMethod || undefined,
+        groupId: groupId || undefined,
       });
       await client.pushMessage(groupId, announcement);
     } catch (pushErr: any) {
