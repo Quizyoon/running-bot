@@ -26,37 +26,66 @@ function buildCommandRow(cmd: string, desc: string) {
   };
 }
 
+function buildCommandButton(label: string, messageText: string) {
+  return {
+    type: "box" as const,
+    layout: "vertical" as const,
+    action: {
+      type: "message" as const,
+      label,
+      text: messageText,
+    },
+    backgroundColor: "#F5F5F5",
+    cornerRadius: "8px",
+    paddingAll: "14px",
+    justifyContent: "center" as const,
+    alignItems: "center" as const,
+    contents: [
+      {
+        type: "text" as const,
+        text: label,
+        size: "15px" as any,
+        weight: "bold" as const,
+        color: "#000000",
+        align: "center" as const,
+      },
+    ],
+  };
+}
+
 export function buildHelpCard(lang: Lang = "ko"): FlexMessage {
   const isKo = lang === "ko";
 
   const commands = isKo
     ? [
         { cmd: "📸 스크린샷", desc: "러닝 인증 + 출석" },
-        { cmd: "/내기록", desc: "개인 월간 통계" },
+        { cmd: "/내기록", desc: "주간 개인 통계" },
         { cmd: "/랭킹", desc: "주간 랭킹" },
         { cmd: "/출석", desc: "이번 주 출석 현황" },
         { cmd: "/이벤트", desc: "진행 중인 이벤트" },
-        { cmd: "/도움말", desc: "명령어 안내" },
+        { cmd: "/명령어", desc: "명령어 안내" },
       ]
     : [
         { cmd: "📸 Screenshot", desc: "Log run + attendance" },
-        { cmd: "/mystats", desc: "Monthly personal stats" },
+        { cmd: "/mystats", desc: "Weekly personal stats" },
         { cmd: "/ranking", desc: "Weekly ranking" },
         { cmd: "/attendance", desc: "Weekly attendance" },
         { cmd: "/event", desc: "Upcoming events" },
         { cmd: "/help", desc: "This guide" },
       ];
 
-  const adminCommands = isKo
+  const buttons = isKo
     ? [
-        { cmd: "/이벤트생성", desc: "하루 랭킹 이벤트 생성" },
-        { cmd: "/이벤트취소", desc: "예약 이벤트 취소" },
-        { cmd: "/이벤트현황", desc: "당일 실시간 랭킹" },
+        { label: "기록 등록하기", msg: "/내기록" },
+        { label: "랭킹 보기", msg: "/랭킹" },
+        { label: "출석 확인하기", msg: "/출석" },
+        { label: "이벤트 확인하기", msg: "/이벤트" },
       ]
     : [
-        { cmd: "/createevent", desc: "Create daily event" },
-        { cmd: "/cancelevent", desc: "Cancel event" },
-        { cmd: "/eventstatus", desc: "Today's live ranking" },
+        { label: "Register My Record", msg: "/mystats" },
+        { label: "View Ranking", msg: "/ranking" },
+        { label: "Check Attendance", msg: "/attendance" },
+        { label: "Check Events", msg: "/event" },
       ];
 
   const bubble: FlexBubble = {
@@ -90,22 +119,16 @@ export function buildHelpCard(lang: Lang = "ko"): FlexMessage {
           margin: "16px" as any,
           contents: commands.map((c) => buildCommandRow(c.cmd, c.desc)),
         },
-        {
-          type: "text",
-          text: isKo ? "👑 관리자 전용" : "👑 Admin Only",
-          size: "13px" as any,
-          weight: "bold",
-          color: "#333333",
-          margin: "16px" as any,
-        },
-        {
-          type: "box",
-          layout: "vertical",
-          spacing: "8px" as any,
-          margin: "8px" as any,
-          contents: adminCommands.map((c) => buildCommandRow(c.cmd, c.desc)),
-        },
       ],
+    },
+    footer: {
+      type: "box",
+      layout: "vertical",
+      spacing: "8px" as any,
+      paddingAll: "16px",
+      paddingTop: "0px",
+      paddingBottom: "10px",
+      contents: buttons.map((b) => buildCommandButton(b.label, b.msg)),
     },
   };
 

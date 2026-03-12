@@ -19,7 +19,7 @@ const texts = {
   rankTitle: { ko: (rank: number) => `오늘 ${rank}위에요`, en: (rank: number) => `#${rank} today` },
   registerPrompt: { ko: "기록을 등록해보세요!", en: "Register your record!" },
   checkAttendance: { ko: "출석 확인하기", en: "Check Attendance" },
-  registerMyRecord: { ko: "내 기록 등록하기", en: "Register My Record" },
+  registerMyRecord: { ko: "기록 등록하기", en: "Register My Record" },
 
   // 확인 카드
   distance: { ko: "거리", en: "Distance" },
@@ -58,7 +58,7 @@ const texts = {
   upcomingEvents: { ko: "📢 예정된 이벤트", en: "📢 Upcoming Events" },
 
   helpText: {
-    ko: `📖 러닝 챗봇 명령어 안내\n\n📸 스크린샷 업로드 → 러닝 인증 + 출석\n/내기록 → 개인 월간 통계\n/랭킹 → 이번 달 전체 랭킹\n/출석 → 이번 주 출석 현황\n/이벤트 → 진행 중인 이벤트 안내\n/도움말 → 이 메시지\n\n👑 관리자 전용\n/이벤트생성 [날짜] → 하루 랭킹 이벤트 생성\n/이벤트취소 → 예약 이벤트 취소\n/이벤트현황 → 당일 실시간 랭킹`,
+    ko: `📖 러닝 챗봇 명령어 안내\n\n📸 스크린샷 업로드 → 러닝 인증 + 출석\n/내기록 → 개인 월간 통계\n/랭킹 → 이번 달 전체 랭킹\n/출석 → 이번 주 출석 현황\n/이벤트 → 진행 중인 이벤트 안내\n/명령어 → 이 메시지\n\n👑 관리자 전용\n/이벤트생성 [날짜] → 하루 랭킹 이벤트 생성\n/이벤트취소 → 예약 이벤트 취소\n/이벤트현황 → 당일 실시간 랭킹`,
     en: `📖 Running Bot Commands\n\n📸 Upload screenshot → Log run + attendance\n/mystats → Monthly personal stats\n/ranking → Weekly ranking\n/attendance → Weekly attendance\n/event → Upcoming events\n/help → This message\n\n👑 Admin only\n/createevent [date] → Create daily ranking event\n/cancelevent → Cancel upcoming event\n/eventstatus → Today's live ranking`,
   },
 

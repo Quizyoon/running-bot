@@ -73,7 +73,7 @@ export async function handleTextMessage(
     case text === "/event":
       await handleEventInfo(client, event, groupId, "en");
       break;
-    case text === "/도움말":
+    case text === "/명령어":
       await handleHelp(client, event, "ko");
       break;
     case text === "/help":
