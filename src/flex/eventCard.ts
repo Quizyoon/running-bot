@@ -1,5 +1,6 @@
 import { FlexMessage, FlexBubble } from "@line/bot-sdk";
 import { RankingEntry } from "../services/ranking";
+import { Lang, t } from "../i18n";
 
 export function buildEventAnnouncementCard(
   eventDate: string,
@@ -275,4 +276,206 @@ function formatDateKr(dateStr: string): string {
   const d = new Date(dateStr);
   const days = ["일", "월", "화", "수", "목", "금", "토"];
   return `${d.getMonth() + 1}/${d.getDate()}(${days[d.getDay()]})`;
+}
+
+export function buildEventListCard(
+  events: { eventDate: string; daysUntil: number }[],
+  lang: Lang = "ko"
+): FlexMessage {
+  const registerLabel = t("registerMyRecord", lang) as string;
+  const paceLabel = t("dailyPaceRanking", lang) as string;
+
+  const rows = events.map((e) => ({
+    type: "box" as const,
+    layout: "horizontal" as const,
+    contents: [
+      {
+        type: "text" as const,
+        text: `⚡ ${e.eventDate}`,
+        size: "14px" as any,
+        flex: 4,
+        color: "#111111",
+      },
+      {
+        type: "text" as const,
+        text: `D-${e.daysUntil}`,
+        size: "14px" as any,
+        flex: 1,
+        color: "#999999",
+        align: "end" as const,
+      },
+    ],
+  }));
+
+  const challengeText = t("weeklyChallenge", lang) as string;
+
+  const bubble: FlexBubble = {
+    type: "bubble",
+    size: "kilo",
+    body: {
+      type: "box",
+      layout: "vertical",
+      paddingAll: "16px",
+      backgroundColor: "#FFFFFF",
+      contents: [
+        {
+          type: "text",
+          text: "Events",
+          size: "14px" as any,
+          weight: "bold",
+          color: "#333333",
+        },
+        {
+          type: "text",
+          text: lang === "ko" ? "예정된 이벤트" : "Upcoming Events",
+          size: "20px" as any,
+          weight: "bold",
+          color: "#111111",
+          margin: "4px" as any,
+        },
+        {
+          type: "text",
+          text: paceLabel,
+          size: "12px" as any,
+          color: "#AAAAAA",
+          margin: "8px" as any,
+        },
+        {
+          type: "box",
+          layout: "vertical",
+          spacing: "8px" as any,
+          margin: "12px" as any,
+          contents: rows,
+        },
+        {
+          type: "text",
+          text: challengeText,
+          size: "13px" as any,
+          color: "#999999",
+          margin: "12px" as any,
+          wrap: true,
+        },
+      ],
+    },
+    footer: {
+      type: "box",
+      layout: "vertical",
+      paddingAll: "16px",
+      paddingTop: "0px",
+      paddingBottom: "16px",
+      contents: [
+        {
+          type: "box" as const,
+          layout: "vertical" as const,
+          action: {
+            type: "uri" as const,
+            label: registerLabel,
+            uri: "https://line.me/R/nv/cameraRoll/single",
+          },
+          backgroundColor: "#111111",
+          cornerRadius: "8px",
+          paddingAll: "14px",
+          justifyContent: "center" as const,
+          alignItems: "center" as const,
+          contents: [
+            {
+              type: "text" as const,
+              text: registerLabel,
+              size: "15px" as any,
+              weight: "bold" as const,
+              color: "#FFFFFF",
+              align: "center" as const,
+            },
+          ],
+        },
+      ],
+    },
+  };
+
+  return {
+    type: "flex",
+    altText: t("eventsAlt", lang) as string,
+    contents: bubble,
+  };
+}
+
+export function buildNoEventsCard(lang: Lang = "ko"): FlexMessage {
+  const registerLabel = t("registerMyRecord", lang) as string;
+
+  const bubble: FlexBubble = {
+    type: "bubble",
+    size: "kilo",
+    body: {
+      type: "box",
+      layout: "vertical",
+      paddingAll: "16px",
+      backgroundColor: "#FFFFFF",
+      contents: [
+        {
+          type: "text",
+          text: "Events",
+          size: "14px" as any,
+          weight: "bold",
+          color: "#333333",
+        },
+        {
+          type: "text",
+          text: t("noEventsTitle", lang) as string,
+          size: "20px" as any,
+          weight: "bold",
+          color: "#111111",
+          margin: "4px" as any,
+          wrap: true,
+          lineSpacing: "2px" as any,
+        },
+        {
+          type: "text",
+          text: t("noEventsDesc", lang) as string,
+          size: "13px" as any,
+          color: "#999999",
+          margin: "8px" as any,
+          wrap: true,
+        },
+      ],
+    },
+    footer: {
+      type: "box",
+      layout: "vertical",
+      paddingAll: "16px",
+      paddingTop: "0px",
+      paddingBottom: "16px",
+      contents: [
+        {
+          type: "box" as const,
+          layout: "vertical" as const,
+          action: {
+            type: "uri" as const,
+            label: registerLabel,
+            uri: "https://line.me/R/nv/cameraRoll/single",
+          },
+          backgroundColor: "#111111",
+          cornerRadius: "8px",
+          paddingAll: "14px",
+          justifyContent: "center" as const,
+          alignItems: "center" as const,
+          contents: [
+            {
+              type: "text" as const,
+              text: registerLabel,
+              size: "15px" as any,
+              weight: "bold" as const,
+              color: "#FFFFFF",
+              align: "center" as const,
+            },
+          ],
+        },
+      ],
+    },
+  };
+
+  return {
+    type: "flex",
+    altText: t("noEventsAlt", lang) as string,
+    contents: bubble,
+  };
 }

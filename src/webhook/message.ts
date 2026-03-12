@@ -13,7 +13,9 @@ import {
 } from "../services/event";
 import { buildRankingCard, buildEmptyRankingCard } from "../flex/rankingCard";
 import { buildAttendanceCard } from "../flex/attendanceCard";
-import { buildEventAnnouncementCard, buildEventResultCard } from "../flex/eventCard";
+import { buildEventAnnouncementCard, buildEventResultCard, buildEventListCard, buildNoEventsCard } from "../flex/eventCard";
+import { buildStatsCard, buildEmptyStatsCard } from "../flex/statsCard";
+import { buildHelpCard } from "../flex/helpCard";
 import { pendingRecords } from "./state";
 import { buildConfirmCard } from "../flex/confirmCard";
 import { validateRunData } from "../services/running";
@@ -230,26 +232,40 @@ async function handleMyStats(
   lang: Lang
 ): Promise<void> {
   const now = nowKST();
-  const stats = await getPersonalStats(userId, groupId, now.getFullYear(), now.getMonth() + 1);
+  const year = now.getFullYear();
+  const month = now.getMonth() + 1;
+
+  let displayName = "Unknown";
+  try {
+    const src = event.source as any;
+    if (src.type === "group" && src.groupId) {
+      const p = await client.getGroupMemberProfile(src.groupId, userId);
+      displayName = p.displayName;
+    } else {
+      const p = await client.getProfile(userId);
+      displayName = p.displayName;
+    }
+  } catch {}
+
+  const stats = await getPersonalStats(userId, groupId, year, month);
 
   if (!stats) {
-    await client.replyMessage(event.replyToken, {
-      type: "text",
-      text: t("noStatsThisMonth", lang) as string,
-    });
+    await client.replyMessage(event.replyToken, buildEmptyStatsCard(displayName, lang));
     return;
   }
 
-  const title = (t("myStatsTitle", lang) as (y: number, m: number) => string)(now.getFullYear(), now.getMonth() + 1);
-  const dist = (t("totalDistance", lang) as (d: string) => string)(stats.totalDistance.toFixed(1));
-  const paceStr = (t("avgPace", lang) as (p: string) => string)(formatPace(stats.avgPace));
-  const runs = (t("runCount", lang) as (n: number) => string)(stats.runCount);
-  const attend = (t("attendDays", lang) as (n: number) => string)(stats.attendDays);
-
-  await client.replyMessage(event.replyToken, {
-    type: "text",
-    text: `${title}\n\n${dist}\n${paceStr}\n${runs}\n${attend}`,
-  });
+  await client.replyMessage(event.replyToken, buildStatsCard(
+    displayName,
+    year,
+    month,
+    {
+      totalDistance: stats.totalDistance,
+      avgPace: formatPace(stats.avgPace),
+      runCount: stats.runCount,
+      attendDays: stats.attendDays,
+    },
+    lang
+  ));
 }
 
 async function handleAttendance(
@@ -292,29 +308,19 @@ async function handleEventInfo(
   const upcoming = await getUpcomingEvents(groupId);
 
   if (upcoming.length === 0) {
-    await client.replyMessage(event.replyToken, {
-      type: "text",
-      text: t("noEvents", lang) as string,
-    });
+    await client.replyMessage(event.replyToken, buildNoEventsCard(lang));
     return;
   }
 
-  const paceLabel = t("dailyPaceRanking", lang) as string;
-  const eventList = upcoming
-    .map((e) => {
-      const daysUntil = Math.ceil(
-        (new Date(e.eventDate!).getTime() - Date.now()) / 86400000
-      );
-      return `⚡ ${e.eventDate} (D-${daysUntil}) - ${paceLabel}`;
-    })
-    .join("\n");
-
-  const title = t("upcomingEvents", lang) as string;
-  const challenge = t("weeklyChallenge", lang) as string;
-  await client.replyMessage(event.replyToken, {
-    type: "text",
-    text: `${title}\n\n${eventList}\n\n${challenge}`,
+  const now = nowKST();
+  const events = upcoming.map((e) => {
+    const eventTime = new Date(e.eventDate!).getTime();
+    const todayStart = new Date(now.getFullYear(), now.getMonth(), now.getDate()).getTime();
+    const daysUntil = Math.ceil((eventTime - todayStart) / 86400000);
+    return { eventDate: e.eventDate!, daysUntil };
   });
+
+  await client.replyMessage(event.replyToken, buildEventListCard(events, lang));
 }
 
 async function handleHelp(
@@ -322,10 +328,7 @@ async function handleHelp(
   event: MessageEvent,
   lang: Lang
 ): Promise<void> {
-  await client.replyMessage(event.replyToken, {
-    type: "text",
-    text: t("helpText", lang) as string,
-  });
+  await client.replyMessage(event.replyToken, buildHelpCard(lang));
 }
 
 async function handleCreateEvent(

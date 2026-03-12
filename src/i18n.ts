@@ -74,6 +74,27 @@ const texts = {
     en: { distance: "distance (e.g. 5.2)", duration: "time (e.g. 28:14 or 1:28:14)", pace: "pace (e.g. 5:30)", date: "date (e.g. 2025-03-10)" },
   },
   correctionInputPrompt: { ko: (field: string) => `✏️ 올바른 ${field}을(를) 입력해주세요.`, en: (field: string) => `✏️ Please enter the correct ${field}.` },
+
+  // 내기록 카드
+  myStatsCardTitle: { ko: (y: number, m: number) => `${y}년 ${m}월 기록`, en: (y: number, m: number) => `${y}/${m} Stats` },
+  noStatsTitle: { ko: "이번 달 기록이\n아직 없어요.", en: "No records\nthis month yet." },
+  noStatsDesc: { ko: "러닝 스크린샷을 업로드해보세요!", en: "Upload a running screenshot!" },
+  noStatsAlt: { ko: "이번 달 기록이 없습니다", en: "No records this month" },
+  myStatsAlt: { ko: (y: number, m: number) => `${y}년 ${m}월 내 기록`, en: (y: number, m: number) => `My Stats — ${y}/${m}` },
+  totalDistanceLabel: { ko: "총 거리", en: "Total Distance" },
+  avgPaceLabel: { ko: "평균 페이스", en: "Avg Pace" },
+  runCountLabel: { ko: "러닝 횟수", en: "Runs" },
+  attendDaysLabel: { ko: "출석 일수", en: "Attendance" },
+
+  // 도움말 카드
+  helpCardTitle: { ko: "명령어 안내", en: "Commands" },
+  helpAlt: { ko: "러닝 챗봇 명령어 안내", en: "Running Bot Commands" },
+
+  // 이벤트 목록 카드
+  noEventsTitle: { ko: "예정된 이벤트가\n없어요.", en: "No upcoming\nevents." },
+  noEventsDesc: { ko: "주간 개근 챌린지는 항상 진행 중!", en: "Weekly attendance challenge is always on!" },
+  noEventsAlt: { ko: "예정된 이벤트 없음", en: "No upcoming events" },
+  eventsAlt: { ko: "예정된 이벤트", en: "Upcoming Events" },
 } as const;
 
 export function t(key: keyof typeof texts, lang: Lang): any {
