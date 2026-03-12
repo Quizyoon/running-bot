@@ -2,80 +2,185 @@ import { FlexMessage, FlexBubble } from "@line/bot-sdk";
 import { RankingEntry } from "../services/ranking";
 import { Lang, t } from "../i18n";
 
+export const EVENT_METHODS: Record<string, string> = {
+  fastest_pace: "페이스 1위 우승",
+  longest_distance: "최장 거리 우승",
+  most_runs: "최다 출석 우승",
+};
+
+export function getMethodLabel(method?: string): string {
+  return EVENT_METHODS[method || "fastest_pace"] || EVENT_METHODS.fastest_pace;
+}
+
 export function buildEventAnnouncementCard(
   eventDate: string,
   daysUntil: number,
-  options?: { eventName?: string; prizeInfo?: string }
+  options?: { eventName?: string; eventEndDate?: string; prizeInfo?: string; prizePrice?: number; prizeImageUrl?: string; eventMethod?: string }
 ): FlexMessage {
-  let emoji: string;
-  let title: string;
+  const name = options?.eventName || "페이스 랭킹 이벤트";
+  const dDayText = daysUntil === 0 ? "TODAY" : `D-${daysUntil}`;
+  const period = options?.eventEndDate && options.eventEndDate !== eventDate
+    ? `${eventDate} ~ ${options.eventEndDate}`
+    : eventDate;
 
-  if (daysUntil === 3) {
-    emoji = "🔔";
-    title = `이번 주 ${formatDateKr(eventDate)}은 스피드 데이 이벤트!`;
-  } else if (daysUntil === 1) {
-    emoji = "⚡";
-    title = "내일이 이벤트 당일! 컨디션 관리 잘 하세요";
-  } else if (daysUntil === 0) {
-    emoji = "🏁";
-    title = "오늘이 하루 랭킹 이벤트 당일! 스크린샷 잊지 마세요";
-  } else {
-    emoji = "📢";
-    title = `${formatDateKr(eventDate)} 하루 랭킹 이벤트 예정!`;
+  const infoRows: any[] = [
+    {
+      type: "box" as const,
+      layout: "horizontal" as const,
+      contents: [
+        { type: "text" as const, text: "이벤트", size: "14px" as any, color: "#999999", flex: 2 },
+        { type: "text" as const, text: name, size: "14px" as any, color: "#111111", flex: 5 },
+      ],
+    },
+    {
+      type: "box" as const,
+      layout: "horizontal" as const,
+      contents: [
+        { type: "text" as const, text: "기간", size: "14px" as any, color: "#999999", flex: 2 },
+        { type: "text" as const, text: `${period} (${dDayText})`, size: "14px" as any, color: "#111111", flex: 5 },
+      ],
+    },
+    {
+      type: "box" as const,
+      layout: "horizontal" as const,
+      contents: [
+        { type: "text" as const, text: "방식", size: "14px" as any, color: "#999999", flex: 2 },
+        { type: "text" as const, text: getMethodLabel(options?.eventMethod), size: "14px" as any, color: "#111111", flex: 5 },
+      ],
+    },
+  ];
+
+  // 상품 썸네일 블록 (infoRows 밖, body 하단에 별도 배치)
+  let prizeBlock: any = null;
+  if (options?.prizeInfo) {
+    if (options.prizeImageUrl) {
+      prizeBlock = {
+        type: "box" as const,
+        layout: "horizontal" as const,
+        margin: "12px" as any,
+        spacing: "10px" as any,
+        alignItems: "center" as const,
+        contents: [
+          {
+            type: "box" as const,
+            layout: "vertical" as const,
+            width: "44px",
+            height: "44px",
+            cornerRadius: "6px",
+            flex: 0,
+            contents: [
+              {
+                type: "image" as const,
+                url: options.prizeImageUrl,
+                size: "full" as const,
+                aspectRatio: "1:1",
+                aspectMode: "cover" as const,
+              },
+            ],
+          },
+          {
+            type: "text" as const,
+            text: options.prizeInfo,
+            size: "14px" as any,
+            color: "#111111",
+            flex: 1,
+            maxLines: 1,
+          },
+        ],
+      };
+    } else {
+      const prizeText = options.prizePrice
+        ? `${options.prizeInfo} ($${options.prizePrice})`
+        : options.prizeInfo;
+      infoRows.push({
+        type: "box" as const,
+        layout: "horizontal" as const,
+        contents: [
+          { type: "text" as const, text: "상품", size: "14px" as any, color: "#999999", flex: 2 },
+          { type: "text" as const, text: prizeText, size: "14px" as any, color: "#111111", flex: 5, wrap: true },
+        ],
+      });
+    }
   }
+
+  const bodyContents: any[] = [
+    {
+      type: "text",
+      text: "New Event",
+      size: "14px" as any,
+      weight: "bold",
+      color: "#333333",
+    },
+    {
+      type: "text",
+      text: "새 이벤트가 등록되었습니다",
+      size: "20px" as any,
+      weight: "bold",
+      color: "#111111",
+      margin: "4px" as any,
+      wrap: true,
+    },
+    {
+      type: "text",
+      text: "러닝 앱 스크린샷으로 자동 참여!",
+      size: "13px" as any,
+      color: "#999999",
+      margin: "8px" as any,
+    },
+  ];
+
+  if (prizeBlock) {
+    bodyContents.push(prizeBlock);
+  }
+
+  bodyContents.push({
+    type: "box",
+    layout: "vertical",
+    spacing: "6px" as any,
+    margin: "12px" as any,
+    contents: infoRows,
+  });
 
   const bubble: FlexBubble = {
     type: "bubble",
     size: "kilo",
-    header: {
-      type: "box",
-      layout: "vertical",
-      backgroundColor: "#FF6B35",
-      paddingAll: "15px",
-      contents: [
-        {
-          type: "text",
-          text: `${emoji} 하루 페이스 랭킹 이벤트`,
-          weight: "bold",
-          size: "md",
-          color: "#FFFFFF",
-        },
-      ],
-    },
     body: {
       type: "box",
       layout: "vertical",
-      spacing: "md",
-      paddingAll: "15px",
+      paddingAll: "16px",
+      backgroundColor: "#FFFFFF",
+      contents: bodyContents,
+    },
+    footer: {
+      type: "box",
+      layout: "vertical",
+      paddingAll: "16px",
+      paddingTop: "0px",
+      paddingBottom: "16px",
       contents: [
-        { type: "text", text: title, size: "sm", wrap: true, weight: "bold" },
         {
-          type: "text",
-          text: `📅 날짜: ${eventDate}`,
-          size: "sm",
-          color: "#666666",
-        },
-        {
-          type: "text",
-          text: "🏆 당일 가장 빠른 페이스 1위가 우승!",
-          size: "sm",
-          color: "#666666",
-        },
-        ...(options?.prizeInfo
-          ? [
-              {
-                type: "text" as const,
-                text: `🎁 상품: ${options.prizeInfo}`,
-                size: "sm" as const,
-                color: "#666666",
-              },
-            ]
-          : []),
-        {
-          type: "text",
-          text: "📱 러닝 앱 스크린샷으로 자동 참여",
-          size: "xs",
-          color: "#999999",
+          type: "box" as const,
+          layout: "vertical" as const,
+          action: {
+            type: "uri" as const,
+            label: "기록 등록하기",
+            uri: "https://line.me/R/nv/cameraRoll/single",
+          },
+          backgroundColor: "#111111",
+          cornerRadius: "8px",
+          paddingAll: "14px",
+          justifyContent: "center" as const,
+          alignItems: "center" as const,
+          contents: [
+            {
+              type: "text" as const,
+              text: "기록 등록하기",
+              size: "15px" as any,
+              weight: "bold" as const,
+              color: "#FFFFFF",
+              align: "center" as const,
+            },
+          ],
         },
       ],
     },
@@ -83,7 +188,7 @@ export function buildEventAnnouncementCard(
 
   return {
     type: "flex",
-    altText: `${emoji} ${options?.eventName || title}`,
+    altText: `📢 ${name}`,
     contents: bubble,
   };
 }
@@ -91,92 +196,171 @@ export function buildEventAnnouncementCard(
 export function buildEventResultCard(
   eventDate: string,
   ranking: RankingEntry[],
-  participantCount: number
+  participantCount: number,
+  groupId?: string
 ): FlexMessage {
-  const rows = ranking.slice(0, 10).map((entry) => {
-    const medal =
-      entry.rank === 1 ? "🥇" : entry.rank === 2 ? "🥈" : entry.rank === 3 ? "🥉" : `${entry.rank}.`;
+  const winner = ranking.length > 0 ? ranking[0] : null;
+
+  const rows: any[] = ranking.slice(0, 10).map((entry, index) => {
+    const isWinner = index === 0;
+    const profileImage = {
+      type: "box" as const,
+      layout: "vertical" as const,
+      width: "40px",
+      height: "40px",
+      cornerRadius: "20px",
+      flex: 0,
+      contents: entry.profileUrl
+        ? [
+            {
+              type: "image" as const,
+              url: entry.profileUrl,
+              size: "full" as const,
+              aspectRatio: "1:1",
+              aspectMode: "cover" as const,
+            },
+          ]
+        : ([] as any[]),
+      backgroundColor: entry.profileUrl ? undefined : "#CCCCCC",
+    };
+
     return {
       type: "box" as const,
       layout: "horizontal" as const,
-      margin: "sm" as const,
+      alignItems: "center" as const,
+      spacing: "4px" as any,
+      paddingAll: "8px" as any,
+      paddingStart: "4px" as any,
       contents: [
         {
-          type: "text" as const,
-          text: `${medal} ${entry.displayName}`,
-          size: "sm" as const,
-          flex: 4,
-          maxLines: 1,
+          type: "box" as const,
+          layout: "vertical" as const,
+          width: "20px",
+          flex: 0,
+          contents: [
+            {
+              type: "text" as const,
+              text: String(entry.rank),
+              size: "14px" as any,
+              weight: "bold" as const,
+              color: "#111111",
+              align: "start" as const,
+            },
+          ],
         },
+        profileImage,
         {
-          type: "text" as const,
-          text: `${entry.totalDistance}km`,
-          size: "sm" as const,
-          flex: 2,
-          align: "end" as const,
-        },
-        {
-          type: "text" as const,
-          text: `${entry.paceDisplay}/km`,
-          size: "sm" as const,
-          flex: 3,
-          align: "end" as const,
+          type: "box" as const,
+          layout: "vertical" as const,
+          flex: 1,
+          paddingStart: "12px",
+          contents: [
+            {
+              type: "text" as const,
+              text: isWinner ? `👑 ${entry.displayName}` : entry.displayName,
+              size: "14px" as any,
+              weight: "bold" as const,
+              color: "#111111",
+              maxLines: 1,
+            },
+            {
+              type: "text" as const,
+              text: `${entry.totalDistance}km · ${entry.paceDisplay}/km`,
+              size: "12px" as any,
+              color: "#999999",
+              margin: "2px" as any,
+            },
+          ],
         },
       ],
     };
   });
 
-  const winner = ranking.length > 0 ? ranking[0] : null;
+  const liffId = process.env.LIFF_ID || "";
+  const liffUrl = groupId
+    ? `https://liff.line.me/${liffId}/${groupId}`
+    : `https://liff.line.me/${liffId}`;
 
   const bubble: FlexBubble = {
     type: "bubble",
     size: "kilo",
-    header: {
-      type: "box",
-      layout: "vertical",
-      backgroundColor: "#FFD700",
-      paddingAll: "15px",
-      contents: [
-        {
-          type: "text",
-          text: "🏆 하루 랭킹 이벤트 결과",
-          weight: "bold",
-          size: "lg",
-        },
-        {
-          type: "text",
-          text: `${eventDate} | 참가자 ${participantCount}명`,
-          size: "sm",
-          color: "#666666",
-        },
-      ],
-    },
     body: {
       type: "box",
       layout: "vertical",
-      spacing: "sm",
-      paddingAll: "15px",
+      paddingAll: "16px",
+      paddingBottom: "12px",
+      backgroundColor: "#FFFFFF",
       contents: [
-        ...(winner
-          ? [
-              {
-                type: "text" as const,
-                text: `🎉 우승: ${winner.displayName} (${winner.paceDisplay}/km)`,
-                weight: "bold" as const,
-                size: "md" as const,
-                color: "#1DB446",
-              },
-              { type: "separator" as const, margin: "md" as const },
-            ]
-          : []),
-        ...rows,
+        {
+          type: "text",
+          text: "Event Result",
+          size: "14px" as any,
+          weight: "bold",
+          color: "#333333",
+        },
+        {
+          type: "text",
+          text: winner ? `${winner.displayName} 우승!` : "이벤트 결과",
+          size: "20px" as any,
+          weight: "bold",
+          color: "#111111",
+          margin: "4px" as any,
+          wrap: true,
+        },
+        {
+          type: "text",
+          text: `${eventDate} · 참가자 ${participantCount}명`,
+          size: "12px" as any,
+          color: "#AAAAAA",
+          margin: "8px" as any,
+        },
+        {
+          type: "box",
+          layout: "vertical",
+          margin: "8px" as any,
+          contents: rows,
+        },
+      ],
+    },
+    footer: {
+      type: "box",
+      layout: "vertical",
+      spacing: "8px" as any,
+      paddingAll: "16px",
+      paddingTop: "0px",
+      paddingBottom: "16px",
+      contents: [
+        {
+          type: "box" as const,
+          layout: "vertical" as const,
+          action: {
+            type: "uri" as const,
+            label: "새 이벤트 만들기",
+            uri: liffUrl,
+          },
+          backgroundColor: "#111111",
+          cornerRadius: "8px",
+          paddingAll: "14px",
+          justifyContent: "center" as const,
+          alignItems: "center" as const,
+          contents: [
+            {
+              type: "text" as const,
+              text: "새 이벤트 만들기",
+              size: "15px" as any,
+              weight: "bold" as const,
+              color: "#FFFFFF",
+              align: "center" as const,
+            },
+          ],
+        },
       ],
     },
   };
 
   return {
     type: "flex",
-    altText: `🏆 ${eventDate} 하루 랭킹 결과${winner ? ` - 우승: ${winner.displayName}` : ""}`,
+    altText: `🏆 ${eventDate} 이벤트 결과${winner ? ` - 우승: ${winner.displayName}` : ""}`,
     contents: bubble,
   };
 }
@@ -291,8 +475,8 @@ export function buildEventCreateCard(lang: Lang = "ko", groupId?: string): FlexM
 
   const title = lang === "ko" ? "새 이벤트 만들기" : "Create New Event";
   const desc = lang === "ko"
-    ? "하루 페이스 랭킹 이벤트를 만들어보세요!\n당일 가장 빠른 페이스 1위가 우승합니다."
-    : "Create a daily pace ranking event!\nThe fastest pace on the day wins.";
+    ? "러닝 이벤트를 만들어보세요!\n방식과 상품을 선택할 수 있어요."
+    : "Create a running event!\nChoose the method and prize.";
   const btnLabel = lang === "ko" ? "이벤트 만들기" : "Create Event";
 
   const bubble: FlexBubble = {
@@ -380,43 +564,99 @@ function formatDateKr(dateStr: string): string {
 }
 
 export function buildEventListCard(
-  events: { eventDate: string; daysUntil: number; eventName?: string | null; prizeInfo?: string | null }[],
+  events: { eventDate: string; daysUntil: number; eventName?: string | null; prizeInfo?: string | null; prizeImageUrl?: string | null; prizePrice?: number | null; eventMethod?: string | null }[],
   lang: Lang = "ko"
 ): FlexMessage {
   const registerLabel = t("registerMyRecord", lang) as string;
-  const paceLabel = t("dailyPaceRanking", lang) as string;
+  const subLabel = lang === "ko" ? "러닝 앱 스크린샷으로 자동 참여!" : "Auto-join by uploading running screenshots!";
 
   const rows: any[] = [];
-  events.forEach((e) => {
+  events.forEach((e, idx) => {
+    const dDayText = e.daysUntil === 0 ? "TODAY" : `D-${e.daysUntil}`;
+    const eventName = e.eventName || e.eventDate;
+
+    // 상품 썸네일을 정보 행 위에 배치
+    if (e.prizeInfo) {
+      if (e.prizeImageUrl) {
+        rows.push({
+          type: "box" as const,
+          layout: "horizontal" as const,
+          margin: idx === 0 ? "0px" as any : undefined,
+          spacing: "10px" as any,
+          alignItems: "center" as const,
+          contents: [
+            {
+              type: "box" as const,
+              layout: "vertical" as const,
+              width: "44px",
+              height: "44px",
+              cornerRadius: "6px",
+              flex: 0,
+              contents: [
+                {
+                  type: "image" as const,
+                  url: e.prizeImageUrl,
+                  size: "full" as const,
+                  aspectRatio: "1:1",
+                  aspectMode: "cover" as const,
+                },
+              ],
+            },
+            {
+              type: "text" as const,
+              text: e.prizeInfo,
+              size: "14px" as any,
+              color: "#111111",
+              flex: 1,
+              maxLines: 1,
+            },
+          ],
+        });
+      } else {
+        rows.push({
+          type: "box" as const,
+          layout: "horizontal" as const,
+          contents: [
+            { type: "text" as const, text: "상품", size: "14px" as any, color: "#999999", flex: 2 },
+            { type: "text" as const, text: e.prizeInfo, size: "14px" as any, color: "#111111", flex: 5 },
+          ],
+        });
+      }
+    }
+
+    rows.push({
+      type: "box" as const,
+      layout: "horizontal" as const,
+      margin: e.prizeInfo && e.prizeImageUrl ? "12px" as any : undefined,
+      contents: [
+        { type: "text" as const, text: "이벤트", size: "14px" as any, color: "#999999", flex: 2 },
+        { type: "text" as const, text: eventName, size: "14px" as any, color: "#111111", flex: 5, maxLines: 1 },
+      ],
+    });
     rows.push({
       type: "box" as const,
       layout: "horizontal" as const,
       contents: [
-        {
-          type: "text" as const,
-          text: `⚡ ${e.eventName || e.eventDate}`,
-          size: "14px" as any,
-          flex: 4,
-          color: "#111111",
-          maxLines: 1,
-        },
-        {
-          type: "text" as const,
-          text: e.daysUntil === 0 ? "TODAY" : `D-${e.daysUntil}`,
-          size: "14px" as any,
-          flex: 1,
-          color: e.daysUntil === 0 ? "#FF6B35" : "#999999",
-          align: "end" as const,
-        },
+        { type: "text" as const, text: "기간", size: "14px" as any, color: "#999999", flex: 2 },
+        { type: "text" as const, text: `${e.eventDate} (${dDayText})`, size: "14px" as any, color: "#111111", flex: 5 },
       ],
     });
-    if (e.eventName) {
+    rows.push({
+      type: "box" as const,
+      layout: "horizontal" as const,
+      contents: [
+        { type: "text" as const, text: "방식", size: "14px" as any, color: "#999999", flex: 2 },
+        { type: "text" as const, text: getMethodLabel(e.eventMethod || undefined), size: "14px" as any, color: "#111111", flex: 5 },
+      ],
+    });
+
+    if (idx < events.length - 1) {
       rows.push({
-        type: "text" as const,
-        text: `📅 ${e.eventDate}${e.prizeInfo ? ` · 🎁 ${e.prizeInfo}` : ""}`,
-        size: "12px" as any,
-        color: "#AAAAAA",
-        margin: "2px" as any,
+        type: "box" as const,
+        layout: "vertical" as const,
+        margin: "12px" as any,
+        paddingBottom: "12px" as any,
+        contents: [{ type: "separator" as const }],
       });
     }
   });
@@ -449,7 +689,7 @@ export function buildEventListCard(
         },
         {
           type: "text",
-          text: paceLabel,
+          text: subLabel,
           size: "12px" as any,
           color: "#AAAAAA",
           margin: "8px" as any,
@@ -513,8 +753,12 @@ export function buildEventListCard(
   };
 }
 
-export function buildNoEventsCard(lang: Lang = "ko"): FlexMessage {
-  const registerLabel = t("registerMyRecord", lang) as string;
+export function buildNoEventsCard(lang: Lang = "ko", groupId?: string): FlexMessage {
+  const btnLabel = lang === "ko" ? "새 이벤트 만들기" : "Create New Event";
+  const liffId = process.env.LIFF_ID || "";
+  const liffUrl = groupId
+    ? `https://liff.line.me/${liffId}/${groupId}`
+    : `https://liff.line.me/${liffId}`;
 
   const bubble: FlexBubble = {
     type: "bubble",
@@ -564,8 +808,8 @@ export function buildNoEventsCard(lang: Lang = "ko"): FlexMessage {
           layout: "vertical" as const,
           action: {
             type: "uri" as const,
-            label: registerLabel,
-            uri: "https://line.me/R/nv/cameraRoll/single",
+            label: btnLabel,
+            uri: liffUrl,
           },
           backgroundColor: "#111111",
           cornerRadius: "8px",
@@ -575,7 +819,7 @@ export function buildNoEventsCard(lang: Lang = "ko"): FlexMessage {
           contents: [
             {
               type: "text" as const,
-              text: registerLabel,
+              text: btnLabel,
               size: "15px" as any,
               weight: "bold" as const,
               color: "#FFFFFF",

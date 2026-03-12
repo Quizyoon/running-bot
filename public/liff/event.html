@@ -107,7 +107,7 @@
 <body>
   <div id="form-view">
     <div class="header">이벤트 생성</div>
-    <div class="subtitle">하루 페이스 랭킹 이벤트를 만들어보세요</div>
+    <div class="subtitle">러닝 이벤트를 만들어보세요</div>
 
     <div class="field">
       <div class="field-label">이벤트 이름</div>
@@ -122,6 +122,15 @@
         <input type="date" id="eventEndDate" class="date-input">
       </div>
       <div style="font-size: 12px; color: #AAAAAA; margin-top: 6px;">선택한 종료 날짜의 오전 12:00에 이벤트가 종료됩니다</div>
+    </div>
+
+    <div class="field">
+      <div class="field-label">이벤트 방식</div>
+      <select id="eventMethod" class="text-input" style="padding-right:36px;background-image:url('data:image/svg+xml;utf8,<svg xmlns=%22http://www.w3.org/2000/svg%22 width=%2212%22 height=%228%22><path d=%226 8L0 0h12z%22 fill=%22%23999%22/></svg>');background-repeat:no-repeat;background-position:right 14px center;">
+        <option value="fastest_pace">페이스 1위 우승</option>
+        <option value="longest_distance">최장 거리 우승</option>
+        <option value="most_runs">최다 출석 우승</option>
+      </select>
     </div>
 
     <div class="field prize-section">
@@ -303,6 +312,8 @@
           prizeInfo: selectedProduct ? selectedProduct.name : null,
           prizeProductId: selectedProduct ? selectedProduct.id : null,
           prizePrice: selectedProduct ? selectedProduct.price : null,
+          prizeImageUrl: selectedProduct ? selectedProduct.imageUrl : null,
+          eventMethod: document.getElementById('eventMethod').value,
         };
 
         const res = await fetch('/api/event/create', {

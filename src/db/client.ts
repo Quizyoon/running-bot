@@ -56,6 +56,9 @@ ALTER TABLE events ADD COLUMN IF NOT EXISTS event_name VARCHAR;
 ALTER TABLE events ADD COLUMN IF NOT EXISTS prize_info VARCHAR;
 ALTER TABLE events ADD COLUMN IF NOT EXISTS event_end_date DATE;
 ALTER TABLE events ADD COLUMN IF NOT EXISTS prize_product_id VARCHAR;
+ALTER TABLE events ADD COLUMN IF NOT EXISTS prize_image_url VARCHAR;
+ALTER TABLE events ADD COLUMN IF NOT EXISTS prize_price NUMERIC;
+ALTER TABLE events ADD COLUMN IF NOT EXISTS event_method VARCHAR DEFAULT 'fastest_pace';
 
 CREATE INDEX IF NOT EXISTS idx_sessions_group_date ON running_sessions(group_id, run_date);
 CREATE INDEX IF NOT EXISTS idx_sessions_user_date ON running_sessions(user_id, run_date);

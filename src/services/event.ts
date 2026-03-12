@@ -11,6 +11,9 @@ export interface EventRecord {
   createdBy: string;
   prizeInfo: string | null;
   prizeProductId: string | null;
+  prizeImageUrl: string | null;
+  prizePrice: number | null;
+  eventMethod: string;
   status: string;
   winnerUserId: string | null;
 }
@@ -19,7 +22,7 @@ export async function createDailyRaceEvent(
   groupId: string,
   eventDate: string,
   createdBy: string,
-  options?: { eventName?: string; prizeInfo?: string; eventEndDate?: string; prizeProductId?: string }
+  options?: { eventName?: string; prizeInfo?: string; eventEndDate?: string; prizeProductId?: string; prizeImageUrl?: string; prizePrice?: number; eventMethod?: string }
 ): Promise<string> {
   const endDate = options?.eventEndDate || eventDate;
 
@@ -36,10 +39,10 @@ export async function createDailyRaceEvent(
   }
 
   const result = await pool.query(
-    `INSERT INTO events (group_id, event_type, event_name, event_date, event_end_date, created_by, prize_info, prize_product_id, status)
-     VALUES ($1, 'DAILY_RACE', $2, $3, $4, $5, $6, $7, 'SCHEDULED')
+    `INSERT INTO events (group_id, event_type, event_name, event_date, event_end_date, created_by, prize_info, prize_product_id, prize_image_url, prize_price, event_method, status)
+     VALUES ($1, 'DAILY_RACE', $2, $3, $4, $5, $6, $7, $8, $9, $10, 'SCHEDULED')
      RETURNING event_id`,
-    [groupId, options?.eventName || null, eventDate, endDate, createdBy, options?.prizeInfo || null, options?.prizeProductId || null]
+    [groupId, options?.eventName || null, eventDate, endDate, createdBy, options?.prizeInfo || null, options?.prizeProductId || null, options?.prizeImageUrl || null, options?.prizePrice || null, options?.eventMethod || "fastest_pace"]
   );
   return result.rows[0].event_id;
 }
@@ -106,21 +109,50 @@ export async function closeEventAndDetermineWinner(
   eventId: string,
   groupId: string
 ): Promise<{ winnerId: string; winnerName: string } | null> {
-  // 가장 빠른 페이스의 참가자 찾기
   const event = await pool.query(
-    `SELECT event_date FROM events WHERE event_id = $1`,
+    `SELECT event_date, event_end_date, event_method FROM events WHERE event_id = $1`,
     [eventId]
   );
   if (event.rows.length === 0) return null;
 
-  const sessions = await pool.query(
-    `SELECT user_id, display_name, pace_min_per_km, created_at
-     FROM running_sessions
-     WHERE group_id = $1 AND run_date = $2
-     ORDER BY pace_min_per_km ASC, created_at ASC
-     LIMIT 1`,
-    [groupId, event.rows[0].event_date]
-  );
+  const { event_date, event_end_date, event_method } = event.rows[0];
+  const startDate = event_date;
+  const endDate = event_end_date || event_date;
+  const method = event_method || "fastest_pace";
+
+  let query: string;
+  let params: any[];
+
+  switch (method) {
+    case "longest_distance":
+      query = `SELECT user_id, display_name
+               FROM running_sessions
+               WHERE group_id = $1 AND run_date >= $2 AND run_date <= $3
+               ORDER BY distance_km DESC, created_at ASC
+               LIMIT 1`;
+      params = [groupId, startDate, endDate];
+      break;
+    case "most_runs":
+      query = `SELECT user_id, MAX(display_name) AS display_name, COUNT(DISTINCT run_date) AS cnt
+               FROM running_sessions
+               WHERE group_id = $1 AND run_date >= $2 AND run_date <= $3
+               GROUP BY user_id
+               ORDER BY cnt DESC, MIN(created_at) ASC
+               LIMIT 1`;
+      params = [groupId, startDate, endDate];
+      break;
+    case "fastest_pace":
+    default:
+      query = `SELECT user_id, display_name
+               FROM running_sessions
+               WHERE group_id = $1 AND run_date >= $2 AND run_date <= $3
+               ORDER BY pace_min_per_km ASC, created_at ASC
+               LIMIT 1`;
+      params = [groupId, startDate, endDate];
+      break;
+  }
+
+  const sessions = await pool.query(query, params);
 
   if (sessions.rows.length === 0) {
     await pool.query(
@@ -182,6 +214,9 @@ function mapEventRow(row: any): EventRecord {
     createdBy: row.created_by,
     prizeInfo: row.prize_info || null,
     prizeProductId: row.prize_product_id || null,
+    prizeImageUrl: row.prize_image_url || null,
+    prizePrice: row.prize_price ? Number(row.prize_price) : null,
+    eventMethod: row.event_method || "fastest_pace",
     status: row.status,
     winnerUserId: row.winner_user_id,
   };

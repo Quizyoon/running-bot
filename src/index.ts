@@ -52,7 +52,7 @@ app.get("/liff/event/:groupId?", (req, res) => {
 // API: Create event from LIFF
 app.post("/api/event/create", async (req, res) => {
   try {
-    const { groupId, eventDate, eventEndDate, userId, eventName, prizeInfo, prizeProductId } = req.body;
+    const { groupId, eventDate, eventEndDate, userId, eventName, prizeInfo, prizeProductId, prizeImageUrl, prizePrice, eventMethod } = req.body;
     console.log(`[LIFF] Event create: groupId=${groupId} date=${eventDate}~${eventEndDate} user=${userId} name=${eventName} prize=${prizeProductId}`);
 
     if (!groupId || !eventDate || !userId) {
@@ -65,6 +65,9 @@ app.post("/api/event/create", async (req, res) => {
       prizeInfo: prizeInfo || undefined,
       prizeProductId: prizeProductId || undefined,
       eventEndDate: eventEndDate || undefined,
+      prizeImageUrl: prizeImageUrl || undefined,
+      prizePrice: prizePrice || undefined,
+      eventMethod: eventMethod || undefined,
     });
 
     // 그룹에 이벤트 공지 푸시 (실패해도 이벤트 생성은 유지)
@@ -74,7 +77,11 @@ app.post("/api/event/create", async (req, res) => {
       );
       const announcement = buildEventAnnouncementCard(eventDate, daysUntil, {
         eventName: eventName || undefined,
+        eventEndDate: eventEndDate || undefined,
         prizeInfo: prizeInfo || undefined,
+        prizePrice: req.body.prizePrice || undefined,
+        prizeImageUrl: prizeImageUrl || undefined,
+        eventMethod: eventMethod || undefined,
       });
       await client.pushMessage(groupId, announcement);
     } catch (pushErr: any) {
