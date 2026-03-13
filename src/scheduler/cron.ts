@@ -28,6 +28,19 @@ export function setupScheduler(client: Client): void {
   // 매일 18시 (KST) - 이벤트 중간 순위
   cron.schedule("0 18 * * *", () => sendMidDayRanking(client), tz);
 
+  // 14분마다 self-ping → Render free tier sleep 방지
+  const APP_URL = process.env.RENDER_EXTERNAL_URL || process.env.APP_URL;
+  if (APP_URL) {
+    cron.schedule("*/14 * * * *", async () => {
+      try {
+        const res = await fetch(`${APP_URL}/health`);
+        console.log(`[keep-alive] ${res.status}`);
+      } catch (err: any) {
+        console.error("[keep-alive] failed:", err?.message);
+      }
+    });
+  }
+
   console.log("Scheduler initialized");
 }
 
@@ -98,18 +111,17 @@ async function midnightTasks(client: Client): Promise<void> {
 async function sendEventNotifications(client: Client): Promise<void> {
   try {
     const groupIds = await getAllGroupIds();
-    const today = nowKST();
-    today.setHours(0, 0, 0, 0);
+    const todayStr = todayString();
+    const todayDate = new Date(todayStr + "T00:00:00");
 
     for (const groupId of groupIds) {
       // D-3, D-1 공지
       const events = await getUpcomingEvents(groupId);
       for (const evt of events) {
         if (!evt.eventDate) continue;
-        const eventDate = new Date(evt.eventDate);
-        eventDate.setHours(0, 0, 0, 0);
+        const eventDate = new Date(evt.eventDate + "T00:00:00");
         const daysUntil = Math.round(
-          (eventDate.getTime() - today.getTime()) / 86400000
+          (eventDate.getTime() - todayDate.getTime()) / 86400000
         );
 
         if (daysUntil === 3 || daysUntil === 1) {
@@ -126,9 +138,9 @@ async function sendEventNotifications(client: Client): Promise<void> {
       }
 
       // 자정에 마감된 이벤트의 결과 카드 발표 (CLOSED 상태, 어제 종료)
-      const yesterday = new Date(today);
-      yesterday.setDate(yesterday.getDate() - 1);
-      const yesterdayStr = `${yesterday.getFullYear()}-${String(yesterday.getMonth() + 1).padStart(2, "0")}-${String(yesterday.getDate()).padStart(2, "0")}`;
+      const yesterdayDate = new Date(todayDate);
+      yesterdayDate.setDate(yesterdayDate.getDate() - 1);
+      const yesterdayStr = `${yesterdayDate.getFullYear()}-${String(yesterdayDate.getMonth() + 1).padStart(2, "0")}-${String(yesterdayDate.getDate()).padStart(2, "0")}`;
 
       const result = await pool.query(
         `SELECT * FROM events
@@ -147,6 +159,12 @@ async function sendEventNotifications(client: Client): Promise<void> {
         const period = startDate === endDate ? startDate : `${startDate} ~ ${endDate}`;
         const resultCard = buildEventResultCard(period, ranking, ranking.length, groupId);
         await client.pushMessage(groupId, resultCard);
+
+        // 결과 발표 완료 → 재발송 방지
+        await pool.query(
+          `UPDATE events SET status = 'RESULT_SENT' WHERE event_id = $1`,
+          [evt.event_id]
+        );
       }
     }
   } catch (error) {
